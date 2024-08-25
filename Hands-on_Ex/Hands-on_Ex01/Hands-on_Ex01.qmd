@@ -15,7 +15,7 @@ author: "Dew Stella Chan"
 
 ## 1.1 Getting Started
 
-### 1.1.1  **Data Acquisition**
+### 1.1.1 **Data Acquisition**
 
 The following list of data and their sources are listed as follows:
 
@@ -119,7 +119,7 @@ listings <- read_csv("data/aspatial/listings.csv")
 list(listings) 
 ```
 
-### 1.5.2 Geocode : Creating a simple feature data frame from an aspatial data frame 
+### 1.5.2 Geocode : Creating a simple feature data frame from an aspatial data frame
 
 ```{r}
 listings_sf <- st_as_sf(listings, 
@@ -161,7 +161,7 @@ The scenario:
 
 A pre-school service group want to find out the numbers of pre-schools in each Planning Subzone.
 
-### 1.7.1 Intersect to derive the number of pre-school in each sub planning zone. 
+### 1.7.1 Intersect to derive the number of pre-school in each sub planning zone.
 
 The use of intersects instead of intersections, to derive a new attribute from existing attribute. In this case a new layer is not required, hence intersections is not being used.
 
@@ -253,7 +253,7 @@ ggplot(data=mpsz3414,
 pacman::p_load(sf, tmap, tidyverse)
 ```
 
-## 2.2: Data source and importation of data. 
+## 2.2: Data source and importation of data.
 
 ### 2.2.1 Data source:
 
@@ -471,7 +471,7 @@ equal_10 <- tm_shape(mpsz_pop2020)+
 tmap_arrange(equal_2,equal_5,equal_10, asp=2, ncol=2)
 ```
 
-## 2.4 Colour scheme:
+### 2.4 Colour scheme:
 
 #### 2.4.4.1 Using ColourBrewer palette
 
