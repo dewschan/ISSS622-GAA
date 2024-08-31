@@ -132,6 +132,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../../Hands-on_Ex/hands-on_ex01/hands-on_ex01.html">
  <span class="dropdown-text">Hands-on Exercise 1</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/hands-on_ex02/hands-on_ex02.html">
+ <span class="dropdown-text">Hands-on Exercise 2</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -198,7 +202,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#using-the-following-codes-to-check-for-projection" id="toc-using-the-following-codes-to-check-for-projection" class="nav-link" data-scroll-target="#using-the-following-codes-to-check-for-projection">1.4.1 Using the following codes to check for projection:</a></li>
   </ul></li>
-  <li><a href="#assign-the-correct-epsg-code-to-mpsz-data-frame-st_set_crs-of-sf-package-is-used" id="toc-assign-the-correct-epsg-code-to-mpsz-data-frame-st_set_crs-of-sf-package-is-used" class="nav-link" data-scroll-target="#assign-the-correct-epsg-code-to-mpsz-data-frame-st_set_crs-of-sf-package-is-used">1.4.2 assign the correct EPSG code to&nbsp;<code>mpsz</code>&nbsp;data frame,&nbsp;<em>st_set_crs()</em>&nbsp;of&nbsp;<strong>sf</strong>&nbsp;package is used</a>
+  <li><a href="#assign-the-correct-epsg-code-to-mpsz-data-frame-st_set_crs-of-sf-package-is-used" id="toc-assign-the-correct-epsg-code-to-mpsz-data-frame-st_set_crs-of-sf-package-is-used" class="nav-link" data-scroll-target="#assign-the-correct-epsg-code-to-mpsz-data-frame-st_set_crs-of-sf-package-is-used">1.4.2 assign the correct EPSG code to mpsz data frame, st_set_crs() of sf package is used</a>
   <ul class="collapse">
   <li><a href="#transforming-the-projection-of-preschool-from-wgs84-to-svy21." id="toc-transforming-the-projection-of-preschool-from-wgs84-to-svy21." class="nav-link" data-scroll-target="#transforming-the-projection-of-preschool-from-wgs84-to-svy21.">1.4.3 Transforming the projection of preschool from wgs84 to svy21.</a></li>
   </ul></li>
@@ -541,7 +545,7 @@ PROJCRS["SVY21",
 </section>
 </section>
 <section id="assign-the-correct-epsg-code-to-mpsz-data-frame-st_set_crs-of-sf-package-is-used" class="level2">
-<h2 class="anchored" data-anchor-id="assign-the-correct-epsg-code-to-mpsz-data-frame-st_set_crs-of-sf-package-is-used">1.4.2 assign the correct EPSG code to&nbsp;<code>mpsz</code>&nbsp;data frame,&nbsp;<em>st_set_crs()</em>&nbsp;of&nbsp;<strong>sf</strong>&nbsp;package is used</h2>
+<h2 class="anchored" data-anchor-id="assign-the-correct-epsg-code-to-mpsz-data-frame-st_set_crs-of-sf-package-is-used">1.4.2 assign the correct EPSG code to mpsz data frame, st_set_crs() of sf package is used</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>mpsz3414 <span class="ot">&lt;-</span> <span class="fu">st_set_crs</span>(mpsz, <span class="dv">3414</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
@@ -863,8 +867,8 @@ Projected CRS: SVY21 / Singapore TM
 <section id="data-source" class="level3">
 <h3 class="anchored" data-anchor-id="data-source">2.2.1 Data source:</h3>
 <ul>
-<li><p>Master Plan 2014 Subzone Boundary (Web) (i.e.&nbsp;<code>MP14_SUBZONE_WEB_PL</code>) from <a href="https://data.gov.sg/">data.gov.sg</a></p></li>
-<li><p>Singapore Residents by Planning Area / Subzone, Age Group, Sex and Type of Dwelling, June 2011-2020 in csv format (i.e.&nbsp;<code>respopagesextod2011to2020.csv</code>) from <a href="https://www.singstat.gov.sg/">Department of Statistics, Singapore</a>&nbsp;</p></li>
+<li><p>Master Plan 2014 Subzone Boundary (Web) (i.e.<code>MP14_SUBZONE_WEB_PL</code>) from <a href="https://data.gov.sg/">data.gov.sg</a></p></li>
+<li><p>Singapore Residents by Planning Area / Subzone, Age Group, Sex and Type of Dwelling, June 2011-2020 in csv format (i.e.<code>respopagesextod2011to2020.csv</code>) from <a href="https://www.singstat.gov.sg/">Department of Statistics, Singapore</a>.</p></li>
 </ul>
 </section>
 <section id="importation-of-data" class="level3">
@@ -964,7 +968,7 @@ dbl (2): Pop, Time
 <span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from=</span>AG, </span>
 <span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">values_from=</span>POP) <span class="sc">%&gt;%</span></span>
 <span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">YOUNG =</span> <span class="fu">rowSums</span>(.[<span class="dv">3</span><span class="sc">:</span><span class="dv">6</span>])</span>
-<span id="cb62-9"><a href="#cb62-9" aria-hidden="true" tabindex="-1"></a>         <span class="sc">+</span><span class="fu">rowSums</span>(.[<span class="dv">12</span>])) <span class="sc">%&gt;%</span></span>
+<span id="cb62-9"><a href="#cb62-9" aria-hidden="true" tabindex="-1"></a>         <span class="sc">+</span><span class="fu">rowSums</span>(.[<span class="dv">13</span>])) <span class="sc">%&gt;%</span></span>
 <span id="cb62-10"><a href="#cb62-10" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="st">`</span><span class="at">ECONOMY ACTIVE</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">rowSums</span>(.[<span class="dv">7</span><span class="sc">:</span><span class="dv">11</span>])<span class="sc">+</span></span>
 <span id="cb62-11"><a href="#cb62-11" aria-hidden="true" tabindex="-1"></a><span class="fu">rowSums</span>(.[<span class="dv">13</span><span class="sc">:</span><span class="dv">15</span>]))<span class="sc">%&gt;%</span></span>
 <span id="cb62-12"><a href="#cb62-12" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="st">`</span><span class="at">AGED</span><span class="st">`</span><span class="ot">=</span><span class="fu">rowSums</span>(.[<span class="dv">16</span><span class="sc">:</span><span class="dv">21</span>])) <span class="sc">%&gt;%</span></span>
