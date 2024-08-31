@@ -287,14 +287,10 @@ plot(kde_childcareSG.bw, main = "Fixed bandwidth")
 plot(kde_childcareSG_adaptive, main = "Adaptive bandwidth")
 ```
 
-4.7.3 Converting KDE output into grid object.(not working)
+4.7.3 Converting KDE output into grid object.
 
-```{r}
-gridded_kde_childcareSG_bw <- as.SpatialGridDataFrame..im(kde_childcareSG.bw)
-spplot(gridded_kde_childcareSG_bw)
-```
 
-Alternative code:
+Alternative code from the exercise:
 
 ```{r}
 library(raster)
