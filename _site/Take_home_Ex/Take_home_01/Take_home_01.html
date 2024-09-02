@@ -222,7 +222,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>rdacc_sf <span class="ot">&lt;-</span><span class="fu">read_csv</span>(<span class="st">"data/thai_road_accident_2019_2022.csv"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">is.na</span>(longitude) <span class="sc">&amp;</span> longitude <span class="sc">!=</span> <span class="st">""</span>, </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(longitude) <span class="sc">&amp;</span> longitude <span class="sc">!=</span> <span class="st">""</span>, </span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>         <span class="sc">!</span><span class="fu">is.na</span>(latitude)<span class="sc">&amp;</span> latitude <span class="sc">!=</span> <span class="st">""</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords=</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>),<span class="at">crs =</span><span class="dv">4326</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs=</span><span class="dv">32647</span>) <span class="co">#transforming to geographic data.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -236,22 +236,6 @@ dttm  (2): incident_datetime, report_datetime
 
 ℹ Use `spec()` to retrieve the full column specification for this data.
 ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in min(cc[[1]], na.rm = TRUE): no non-missing arguments to min;
-returning Inf</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in min(cc[[2]], na.rm = TRUE): no non-missing arguments to min;
-returning Inf</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in max(cc[[1]], na.rm = TRUE): no non-missing arguments to max;
-returning -Inf</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in max(cc[[2]], na.rm = TRUE): no non-missing arguments to max;
-returning -Inf</code></pre>
 </div>
 </div>
 

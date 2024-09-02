@@ -15,7 +15,7 @@ set.seed(1234) #set seed to ensure the result is consistant
 
 ```{r}
 rdacc_sf <-read_csv("data/thai_road_accident_2019_2022.csv") %>%
-  filter(is.na(longitude) & longitude != "", 
+  filter(!is.na(longitude) & longitude != "", 
          !is.na(latitude)& latitude != "") %>%
   st_as_sf(coords= c("longitude", "latitude"),crs =4326) %>%
   st_transform(crs=32647) #transforming to geographic data.
