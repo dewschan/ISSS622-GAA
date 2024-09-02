@@ -22,8 +22,16 @@ This webpage consists of two portions from hands-on namely:
 
 ### 2.1 Installing and loading of packages
 
+
 ```{r}
 pacman::p_load(sf, sp, raster, spatstat, tmap, tidyverse)
+set.seed(1234) #set seed to ensure the result is consistant
+```
+
+
+```{r}
+#| eval: false
+install.packages("maptools", repos="https://packagemanager.posit.co/cran/2023-10-13")
 ```
 
 ### 2.2 Data used for this exercise:
@@ -141,7 +149,7 @@ any(duplicated(childcare_ppp))
 
 Codes for counting the number of points with duplicate
 
-The points with darker color on the map are duplicate values.
+No duplicates. 
 
 ```{r}
 tmap_mode('view')
@@ -164,7 +172,7 @@ tm_shape(childcare) +
 ```{r}
 childcare_ppp_jit <- rjitter(childcare_ppp, 
                              retry=TRUE, 
-                             nsim=1, 
+                             nsim=10, 
                              drop=TRUE)
 ```
 
@@ -287,6 +295,12 @@ plot(kde_childcareSG_adaptive, main = "Adaptive bandwidth")
 ```
 
 #### 2.7.3 Converting KDE output into grid object.
+
+```{r}
+gridded_kde_childcareSG_SG<- as.(kde_childcareSG_adaptive,"spatialGridDataFrame")
+spplot(gridded_kde_childcareSG_bw)
+```
+
 
 Alternative codes, different from the code listed for the exercise.
 
@@ -456,7 +470,7 @@ clarkevans.test(childcare_ck_ppp,
                 correction="none",
                 clipregion=NULL,
                 alternative=c("two.sided"),
-                nsim=999)
+                nsim=99)
 ```
 
 ### 2.8.3 Clark and Evans Test: Tampines planning area
@@ -466,7 +480,7 @@ clarkevans.test(childcare_tm_ppp,
                 correction="none",
                 clipregion=NULL,
                 alternative=c("two.sided"),
-                nsim=999)
+                nsim=99)
 ```
 
 # 2.9 Second-order Spatial Point Patterns Analysis
@@ -499,7 +513,7 @@ The null hypothesis will be rejected if p-value is smaller than alpha value of 0
 Monte Carlo test with G-function
 
 ```{r}
-G_CK.csr <- envelope(childcare_ck_ppp, Gest, nsim = 999)
+G_CK.csr <- envelope(childcare_ck_ppp, Gest, nsim = 99)
 ```
 
 ```{r}
@@ -516,7 +530,7 @@ plot(F_tm)
 ```
 
 ```{r}
-F_tm.csr <- envelope(childcare_tm_ppp, Fest, correction = "all", nsim = 999)
+F_tm.csr <- envelope(childcare_tm_ppp, Fest, correction = "all", nsim = 99)
 ```
 
 ```{r}
@@ -540,7 +554,7 @@ plot(F_CK)
 
 ####2.9.2.1.2 Performing Complete Spatial Randomness Test
 ```{r}
-F_CK.csr <- envelope(childcare_ck_ppp, Fest, nsim = 999)
+F_CK.csr <- envelope(childcare_ck_ppp, Fest, nsim = 99)
 ```
 
 ```{r}
@@ -555,7 +569,7 @@ plot(F_tm)
 ```
 
 ```{r}
-F_tm.csr <- envelope(childcare_tm_ppp, Fest, correction = "all", nsim = 999)
+F_tm.csr <- envelope(childcare_tm_ppp, Fest, correction = "all", nsim = 99)
 ```
 
 ```{r}

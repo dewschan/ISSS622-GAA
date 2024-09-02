@@ -1,0 +1,22 @@
+---
+title: "Take Home Exercise 01"
+author: "Dew Stella Chan"
+execute: 
+  eval: true
+  echo: true
+  message: false
+  freeze: true
+---
+```{r}
+pacman::p_load(sf, sp, raster, spatstat, tmap, tidyverse)
+set.seed(1234) #set seed to ensure the result is consistant
+```
+
+
+```{r}
+rdacc_sf <-read_csv("data/thai_road_accident_2019_2022.csv") %>%
+  filter(is.na(longitude) & longitude != "", 
+         !is.na(latitude)& latitude != "") %>%
+  st_as_sf(coords= c("longitude", "latitude"),crs =4326) %>%
+  st_transform(crs=32647) #transforming to geographic data.
+```
