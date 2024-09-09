@@ -7,16 +7,65 @@ execute:
   message: false
   freeze: true
 ---
+
 ```{r}
 pacman::p_load(sf, sp, raster, spatstat, tmap, tidyverse)
-set.seed(1234) #set seed to ensure the result is consistant
+set.seed(1234) #set seed to ensure the result is consistent
 ```
 
-
+## Data preparation
 ```{r}
 rdacc_sf <-read_csv("data/thai_road_accident_2019_2022.csv") %>%
   filter(!is.na(longitude) & longitude != "", 
          !is.na(latitude)& latitude != "") %>%
   st_as_sf(coords= c("longitude", "latitude"),crs =4326) %>%
   st_transform(crs=32647) #transforming to geographic data.
+
+
+```
+
+
+## Preparing the data for Bangkok Metropolitan Region
+```{r}
+SAB = st_read(dsn = "data", layer = "tha_admbnda_adm0_rtsd_20220121") %>%
+  st_transform(crs = 32647)
+
+SAB_1 = st_read(dsn = "data", layer = "tha_admbnda_adm1_rtsd_20220121")%>%
+  st_transform(crs = 32647) %>%
+  filter(ADM1_PCODE == "TH10")
+
+SAB_2 = st_read(dsn = "data", layer = "tha_admbnda_adm2_rtsd_20220121")%>%
+  st_transform(crs = 32647)%>%
+  filter(ADM1_PCODE == "TH10")
+
+SAB_3 = st_read(dsn = "data", layer = "tha_admbnda_adm3_rtsd_20220121")%>%
+  st_transform(crs = 32647)%>%
+  filter(ADM1_PCODE == "TH10")
+
+```
+
+
+
+```{r}
+Rd = st_read(dsn = "data", layer = "hotosm_tha_roads_lines_shp")
+st_set_crs(Rd,32647)
+```
+
+```{r}
+st_geometry(rdacc_sf)
+st_geometry (SAB)
+st_geometry (SAB_1)
+st_geometry (SAB_2)
+st_geometry (SAB_3)
+st_geometry (Rd)
+
+```
+
+```{r}
+plot(st_geometry(rdacc_sf))
+plot(st_geometry(SAB))#Outline of Thailand 
+plot(st_geometry(SAB_1))#Outline of Bangkok MR 
+plot(st_geometry(SAB_2))
+plot(st_geometry(SAB_3))
+#plot(st_geometry(Rd))# need to intersect then plot 
 ```

@@ -1,0 +1,128 @@
+Field,Label,Value
+id,Dataset ID,d24bdc45-eb4c-4e3d-8b16-44db02667c27
+title,Title of Dataset,Thailand - Subnational Administrative Boundaries
+name,Dataset URL,cod-ab-tha
+notes,Description,"Thailand administrative level 0 (country), 1 (province), 2 (district), and 3 (sub-district, tambon) boundaries Vetting and live service provision by Information Technology Outreach Services (ITOS) with funding from USAID. The administrative level 0 and 1 shapefiles and geodatabase features are suitable for database or GIS linkage to the Thailand - Subnational Population Statistics tables. 6 November 2019 update: Table with feature areas added"
+dataset_source,Source,Royal Thai Survey Department
+organization,Contributor,OCHA Regional Office for Asia and the Pacific (ROAP)
+dataset_date,Reference Period,[2017-08-17T00:00:00 TO *]
+last_modified,Updated,2023-06-30T20:47:22.390764
+data_update_frequency,Expected Update Frequency,Every year
+groups,Location,Thailand
+license_title,License,Creative Commons Attribution for Intergovernmental Organisations
+methodology,Methodology,Other
+methodology_other,Define Methodology,"Acquired by ICRC from the Royal Thai Survey Department by the and made available to OCHA.
+
+Vetted, configured, and live services provided by ITOS."
+caveats,Caveats/Comments,"Currently the ADM2_TH (Thai language) name for administrative level 2 feature ""Pom Prap Sattru Phai"" [TH1008] is incorrect.  The correct name is  ป้อมปราบศัตรูพ่าย.
+
+Earlier problems with the live service rendering Thai labels are thought to be have been corrected.  Users experiencing any difficulties should contact the contributor.
+
+
+UPDATE (2019 03 01)
+Shapefiles have been replaced.  The previous versions were derived from the geodatabase and had truncated field names.  There is no change to the content."
+tags,Tags,"administrative boundaries-divisions, gazetteer"
+resource_1_created,Created,2022-01-27T14:00:15.001479
+resource_1_description,Description,Thailand administrative level 0-3 geodatabase
+resource_1_format,File Format,Geodatabase
+resource_1_download_url,Download URL,https://data.humdata.org/dataset/d24bdc45-eb4c-4e3d-8b16-44db02667c27/resource/e809a00e-02a2-4c6d-8be7-b8c05ba8bea5/download/tha_adminboundaries_candidate.gdb.zip
+resource_1_id,Resource ID,e809a00e-02a2-4c6d-8be7-b8c05ba8bea5
+resource_1_last_modified,Updated,2022-01-27T14:00:13.153178
+resource_1_metadata_modified,Metadata Updated,2023-11-08T22:06:33.233613
+resource_1_microdata,Microdata,False
+resource_1_dataset_id,Dataset ID,d24bdc45-eb4c-4e3d-8b16-44db02667c27
+resource_1_resource_type,Resource Type,file.upload
+resource_1_name,Resource Name,THA_AdminBoundaries_candidate.gdb.zip
+resource_1_mimetype,MIME Type,application/x-zip-compressed
+resource_1_size,Size,174.8M
+resource_2_created,Created,2017-02-01T10:48:57.716202
+resource_2_description,Description,Thailand administrative level 0-3 shapefiles
+resource_2_format,File Format,SHP
+resource_2_download_url,Download URL,https://data.humdata.org/dataset/d24bdc45-eb4c-4e3d-8b16-44db02667c27/resource/d0c722ff-6939-4423-ac0d-6501830b1759/download/tha_adm_rtsd_itos_20210121_shp.zip
+resource_2_id,Resource ID,d0c722ff-6939-4423-ac0d-6501830b1759
+resource_2_last_modified,Updated,2022-01-27T13:51:37.749163
+resource_2_metadata_modified,Metadata Updated,2023-11-08T22:06:33.233811
+resource_2_microdata,Microdata,False
+resource_2_dataset_id,Dataset ID,d24bdc45-eb4c-4e3d-8b16-44db02667c27
+resource_2_resource_type,Resource Type,file.upload
+resource_2_name,Resource Name,tha_adm_rtsd_itos_20210121_SHP.zip
+resource_2_mimetype,MIME Type,application/x-zip-compressed
+resource_2_size,Size,358.4M
+resource_3_created,Created,2019-02-27T14:54:28.332676
+resource_3_description,Description,"Thailand administrative level 0 (country), 1 (province), 2 (district), 3 (sub-district, tambon) gazetteer"
+resource_3_format,File Format,XLSX
+resource_3_download_url,Download URL,https://data.humdata.org/dataset/d24bdc45-eb4c-4e3d-8b16-44db02667c27/resource/6b7c48a7-497a-49e2-8f60-16ce687bd37c/download/tha_adminboundaries_tabulardata.xlsx
+resource_3_id,Resource ID,6b7c48a7-497a-49e2-8f60-16ce687bd37c
+resource_3_last_modified,Updated,2023-04-04T20:12:25.935030
+resource_3_metadata_modified,Metadata Updated,2023-11-08T22:06:33.233951
+resource_3_microdata,Microdata,False
+resource_3_dataset_id,Dataset ID,d24bdc45-eb4c-4e3d-8b16-44db02667c27
+resource_3_resource_type,Resource Type,file.upload
+resource_3_name,Resource Name,THA_AdminBoundaries_TabularData.xlsx
+resource_3_mimetype,MIME Type,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+resource_3_size,Size,643.7K
+resource_4_created,Created,2019-11-06T10:31:59.440709
+resource_4_description,Description,"Thailand administrative level 0 (country), 1 (province), 2 (district), 3 (sub-district, tambon) boundary attribute tables with feature areas in square metres"
+resource_4_format,File Format,XLSX
+resource_4_download_url,Download URL,https://data.humdata.org/dataset/d24bdc45-eb4c-4e3d-8b16-44db02667c27/resource/b21b4a56-d2fc-41a6-9703-0665e7b625e6/download/tha_adm_feature_areas_20191106.xls
+resource_4_id,Resource ID,b21b4a56-d2fc-41a6-9703-0665e7b625e6
+resource_4_last_modified,Updated,2019-11-06T10:31:57.581485
+resource_4_metadata_modified,Metadata Updated,2023-11-08T22:06:33.234071
+resource_4_microdata,Microdata,False
+resource_4_dataset_id,Dataset ID,d24bdc45-eb4c-4e3d-8b16-44db02667c27
+resource_4_resource_type,Resource Type,file.upload
+resource_4_name,Resource Name,tha_adm_feature_areas_20191106.xls
+resource_4_mimetype,MIME Type,application/vnd.ms-excel
+resource_4_size,Size,2.8M
+resource_5_created,Created,2023-06-30T20:47:22.420696
+resource_5_description,Description,"This map service contains OCHA Common Operational Datasets for Thailand, in English: Administrative Boundaries. The service is available as ESRI Map, ESRI Feature, WMS, and KML Services. See the OCHA COD/FOD terms of use for access and use constraints."
+resource_5_format,File Format,Geoservice
+resource_5_download_url,Download URL,https://codgis.itos.uga.edu/arcgis/rest/services/COD_External/THA_EN/MapServer
+resource_5_id,Resource ID,0ac54774-12a0-487e-8d09-3457f51e7874
+resource_5_last_modified,Updated,2023-06-30T20:47:22.390234
+resource_5_metadata_modified,Metadata Updated,2023-11-09T06:22:42.180966
+resource_5_microdata,Microdata,False
+resource_5_dataset_id,Dataset ID,d24bdc45-eb4c-4e3d-8b16-44db02667c27
+resource_5_resource_type,Resource Type,api
+resource_5_name,Resource Name,COD_External/THA_EN (MapServer)
+resource_5_mimetype,MIME Type,
+resource_5_size,Size,
+resource_6_created,Created,2023-06-30T20:47:22.420701
+resource_6_description,Description,"This service is intended as a labelling layer for PCODES from OCHA's Common Operational Datasets for Thailand. As a map service it is intended to be used in conjunction with the basemap located at https://codgis.itos.uga.edu/arcgis/rest/services/COD_External/THA_EN/MapServer. The service also provides feature access to Administrative Boundaries geometry and taxonomy. The service is available as ESRI Map, WMS, ESRI Feature, WFS and KML Services"
+resource_6_format,File Format,Geoservice
+resource_6_download_url,Download URL,https://codgis.itos.uga.edu/arcgis/rest/services/COD_External/THA_pcode/FeatureServer
+resource_6_id,Resource ID,91c8a615-ea8c-457b-813a-d3d2f34e64e1
+resource_6_last_modified,Updated,2023-06-30T20:47:22.390443
+resource_6_metadata_modified,Metadata Updated,2023-11-09T06:22:42.181172
+resource_6_microdata,Microdata,False
+resource_6_dataset_id,Dataset ID,d24bdc45-eb4c-4e3d-8b16-44db02667c27
+resource_6_resource_type,Resource Type,api
+resource_6_name,Resource Name,COD_External/THA_pcode (FeatureServer)
+resource_6_mimetype,MIME Type,
+resource_6_size,Size,
+resource_7_created,Created,2023-06-30T20:47:22.420703
+resource_7_description,Description,"This service is intended as a labelling layer for PCODES from OCHA's Common Operational Datasets for Thailand. As a map service it is intended to be used in conjunction with the basemap located at https://codgis.itos.uga.edu/arcgis/rest/services/COD_External/THA_EN/MapServer. The service also provides feature access to Administrative Boundaries geometry and taxonomy. The service is available as ESRI Map, WMS, ESRI Feature, WFS and KML Services"
+resource_7_format,File Format,Geoservice
+resource_7_download_url,Download URL,https://codgis.itos.uga.edu/arcgis/rest/services/COD_External/THA_pcode/MapServer
+resource_7_id,Resource ID,bb04ceff-0d7d-409d-a339-e31061376375
+resource_7_last_modified,Updated,2023-06-30T20:47:22.390619
+resource_7_metadata_modified,Metadata Updated,2023-11-09T06:22:42.181352
+resource_7_microdata,Microdata,False
+resource_7_dataset_id,Dataset ID,d24bdc45-eb4c-4e3d-8b16-44db02667c27
+resource_7_resource_type,Resource Type,api
+resource_7_name,Resource Name,COD_External/THA_pcode (MapServer)
+resource_7_mimetype,MIME Type,
+resource_7_size,Size,
+resource_8_created,Created,2023-06-30T20:47:22.420705
+resource_8_description,Description,"This map service contains OCHA Common Operational Datasets for Thailand, in Thai: Administrative Boundaries. The service is available as ESRI Map, ESRI Feature, WMS, and KML Services. See the OCHA COD/FOD terms of use for access and use constraints."
+resource_8_format,File Format,Geoservice
+resource_8_download_url,Download URL,https://codgis.itos.uga.edu/arcgis/rest/services/COD_External/THA_TH/MapServer
+resource_8_id,Resource ID,4984859b-9e4c-4b5e-a66f-1d2ca016f8d6
+resource_8_last_modified,Updated,2023-06-30T20:47:22.390764
+resource_8_metadata_modified,Metadata Updated,2023-11-09T06:22:42.181543
+resource_8_microdata,Microdata,False
+resource_8_dataset_id,Dataset ID,d24bdc45-eb4c-4e3d-8b16-44db02667c27
+resource_8_resource_type,Resource Type,api
+resource_8_name,Resource Name,COD_External/THA_TH (MapServer)
+resource_8_mimetype,MIME Type,
+resource_8_size,Size,

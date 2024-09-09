@@ -72,31 +72,28 @@ Note: There is another function called lixelize_lines.mc() which provide multico
 
 Next, lines_center() of spNetwork will be used to generate a SpatialPointsDataFrame (i.e. samples) with line centre points as shown in the code chunk below.
 
-```{r} 
+```{r}
 samples <- lines_center(lixels)
-```         
-
+```
 
 #### 3.4.3 Performing NKDE
 
-The following code chunk is used to perform NKDE. 
+The following code chunk is used to perform NKDE.
 
 kernel_name argument indicates that quartic kernel is used. Are possible kernel methods supported by spNetwork are: triangle, gaussian, scaled gaussian, tricube, cosine ,triweight, epanechnikov or uniform.
 
-method argument indicates that simple method is used to calculate the NKDE. Currently, spNetwork support three popular methods, they are:
-method=“simple”. This first method was presented by Xie et al. (2008) and proposes an intuitive solution. The distances between events and sampling points are replaced by network distances, and the formula of the kernel is adapted to calculate the density over a linear unit instead of an areal unit.
+method argument indicates that simple method is used to calculate the NKDE. Currently, spNetwork support three popular methods, they are: method=“simple”. This first method was presented by Xie et al. (2008) and proposes an intuitive solution. The distances between events and sampling points are replaced by network distances, and the formula of the kernel is adapted to calculate the density over a linear unit instead of an areal unit.
 
 method=“discontinuous”. The method is proposed by Okabe et al (2008), which equally “divides” the mass density of an event at intersections of lixels.
 
 method=“continuous”. If the discontinuous method is unbiased, it leads to a discontinuous kernel function which is a bit counter-intuitive. Okabe et al (2008) proposed another version of the kernel, that divide the mass of the density at intersection but adjusts the density before the intersection to make the function continuous.
 
-As the childcare is in 3D different geometry, it is converted to 2D using the following code. 
+As the childcare is in 3D different geometry, it is converted to 2D using the following code.
 
 ```{r}
 # Convert geometry to 2D by dropping Z and M dimensions
 childcare_2<- st_zm(childcare, drop = TRUE, what = "ZM")
 ```
-
 
 ```{r}
 #performing NkDE using the code
@@ -116,7 +113,6 @@ densities <- nkde(network,
                   sparse = TRUE,
                   verbose = FALSE)
 ```
-
 
 ```{r}
 # 
@@ -138,7 +134,6 @@ densities_dis <- nkde(network,
 
 ```
 
-
 ```{r}
 # 
 densities_con <- nkde(network, 
@@ -158,7 +153,6 @@ densities_con <- nkde(network,
                   verbose = FALSE)
 ```
 
-
 #### 3.4.4 Visualisaing NKDE
 
 ```{r}
@@ -166,13 +160,11 @@ samples$density <- densities
 lixels$density <- densities
 ```
 
-
 ```{r}
 # re-scaling to help the mapping
 samples$density <- samples$density*10000
 lixels$density <- lixels$density*10000
 ```
-
 
 ```{r}
 # To prepare interactive and high cartographic quality map visualization
@@ -211,7 +203,6 @@ tm_shape(childcare)+
 tmap_mode('plot')
 ```
 
-
 ```{r}
 # To prepare interactive and high cartographic quality map visualization for Continuous method
 tmap_mode('view')
@@ -222,7 +213,7 @@ tm_shape(childcare)+
 tmap_mode('plot')
 ```
 
-### 3.5 Network Constrained G- and K-Function Analysis
+## 3.5 Network Constrained G- and K-Function Analysis
 
 The complete spatial randomness (CSR) test by using kfunctions() of spNetwork package. The null hypothesis is defined as:
 
@@ -234,17 +225,7 @@ If this hypothesis is rejected, we may infer that the distribution of childcare 
 
 There are ten arguments used in the code chunk above they are:
 
-lines: A SpatialLinesDataFrame with the sampling points. The geometries must be a SpatialLinesDataFrame (may crash if some geometries are invalid).
-points: A SpatialPointsDataFrame representing the points on the network. These points will be snapped on the network.
-start: A double, the start value for evaluating the k and g functions.
-end: A double, the last value for evaluating the k and g functions.
-step: A double, the jump between two evaluations of the k and g function.
-width: The width of each donut for the g-function.
-nsim: An integer indicating the number of Monte Carlo simulations required. In the above example, 50 simulation was performed. Note: most of the time, more simulations are required for inference
-resolution: When simulating random points on the network, selecting a resolution will reduce greatly the calculation time. When resolution is null the random points can occur everywhere on the graph. If a value is specified, the edges are split according to this value and the random points are selected vertices on the new network.
-conf_int: A double indicating the width confidence interval (default = 0.05).
-
-
+lines: A SpatialLinesDataFrame with the sampling points. The geometries must be a SpatialLinesDataFrame (may crash if some geometries are invalid). points: A SpatialPointsDataFrame representing the points on the network. These points will be snapped on the network. start: A double, the start value for evaluating the k and g functions. end: A double, the last value for evaluating the k and g functions. step: A double, the jump between two evaluations of the k and g function. width: The width of each donut for the g-function. nsim: An integer indicating the number of Monte Carlo simulations required. In the above example, 50 simulation was performed. Note: most of the time, more simulations are required for inference resolution: When simulating random points on the network, selecting a resolution will reduce greatly the calculation time. When resolution is null the random points can occur everywhere on the graph. If a value is specified, the edges are split according to this value and the random points are selected vertices on the new network. conf_int: A double indicating the width confidence interval (default = 0.05).
 
 ```{r}
 #k function
@@ -260,4 +241,3 @@ kfun_childcare <- kfunctions(network,
                              conf_int = 0.05)
 kfun_childcare$plotk
 ```
-
