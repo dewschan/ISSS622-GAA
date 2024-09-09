@@ -25,7 +25,7 @@ network<- st_read(dsn = "data/geospatial", layer ="Punggol_St") %>%
 
 ```{r}
 childcare <- st_read (dsn= "data/geospatial", layer="Punggol_CC") %>%
-    st_transform( crs = 3414)
+    st_transform( crs = 3414) %>% st_zm()
 ```
 
 ## 3.3 Visualising the Geospatial Data

@@ -1,11 +1,14 @@
 ---
 title: "Take Home Exercise 01"
 author: "Dew Stella Chan"
+date: "Septemeber 9, 2024"
+date-modified: "last-modified"
 execute: 
   eval: true
   echo: true
   message: false
   freeze: true
+  warning: false
 ---
 
 ```{r}
@@ -19,11 +22,16 @@ rdacc_sf <-read_csv("data/thai_road_accident_2019_2022.csv") %>%
   filter(!is.na(longitude) & longitude != "", 
          !is.na(latitude)& latitude != "") %>%
   st_as_sf(coords= c("longitude", "latitude"),crs =4326) %>%
-  st_transform(crs=32647) #transforming to geographic data.
-
-
+  st_transform(crs=32647)
+#transforming to geographic data.
 ```
-
+```{r}
+acc <-read_csv("data/thai_road_accident_2019_2022.csv") %>%
+ mutate(month_num = month(incident_datetime)) %>%
+ mutate(month_fac = month(incident_datetime,label = TRUE, 
+        abbr= TRUE )) %>%
+ mutate(dateofweek = day(incident_datetime))
+```
 
 ## Preparing the data for Bangkok Metropolitan Region
 ```{r}

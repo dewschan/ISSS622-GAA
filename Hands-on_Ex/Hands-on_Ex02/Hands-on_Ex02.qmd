@@ -22,12 +22,10 @@ This webpage consists of two portions from hands-on namely:
 
 ### 2.1 Installing and loading of packages
 
-
 ```{r}
 pacman::p_load(sf, sp, raster, spatstat, tmap, tidyverse)
 set.seed(1234) #set seed to ensure the result is consistant
 ```
-
 
 ```{r}
 #| eval: false
@@ -149,7 +147,7 @@ any(duplicated(childcare_ppp))
 
 Codes for counting the number of points with duplicate
 
-No duplicates. 
+No duplicates.
 
 ```{r}
 tmap_mode('view')
@@ -279,9 +277,9 @@ plot(density(childcareSG_ppp.km,
      main="Disc")
 ```
 
-### 2.7 Fixed and Adaptive KDE**
+### 2.7 Fixed and Adaptive KDE\*\*
 
-#### 2.7.1 Computing KDE by using fixed bandwidth**
+#### 2.7.1 Computing KDE by using fixed bandwidth\*\*
 
 ```{r}
 kde_childcareSG_adaptive <- adaptive.density(childcareSG_ppp.km, method="kernel")
@@ -300,7 +298,6 @@ plot(kde_childcareSG_adaptive, main = "Adaptive bandwidth")
 gridded_kde_childcareSG_SG<- as.(kde_childcareSG_adaptive,"spatialGridDataFrame")
 spplot(gridded_kde_childcareSG_bw)
 ```
-
 
 Alternative codes, different from the code listed for the exercise.
 
@@ -329,7 +326,7 @@ projection(kde_childcareSG_bw_raster) <- CRS("+init=EPSG:3414")
 kde_childcareSG_bw_raster
 ```
 
-### 2.7.5 Comparing Spatial Point Patterns using KD**
+### 2.7.5 Comparing Spatial Point Patterns using KD\*\*
 
 ```{r}
 tm_shape(kde_childcareSG_bw_raster) + 
@@ -451,7 +448,7 @@ plot(density(childcare_tm_ppp.km,
 
 ## 2.8 Nearest Neighbour Analysis
 
-### 2.8.1 Testing spatial point patterns using Clark and Evans Test**
+### 2.8.1 Testing spatial point patterns using Clark and Evans Test\*\*
 
 ```{r}
 clarkevans.test(childcareSG_ppp,
@@ -537,13 +534,14 @@ F_tm.csr <- envelope(childcare_tm_ppp, Fest, correction = "all", nsim = 99)
 plot(F_tm.csr)
 ```
 
-## 2.9.2 Analysing Spatial Point Process Using F-Function**
+## 2.9.2 Analysing Spatial Point Process Using F-Function\*\*
 
 The F function estimates the empty space function F(r) or its hazard rate h(r) from a point pattern in a window of arbitrary shape. In this section, you will learn how to compute F-function estimation by using [*Fest()*](https://rdrr.io/cran/spatstat/man/Fest.html) of **spatstat** package. You will also learn how to perform monta carlo simulation test using [*envelope()*](https://rdrr.io/cran/spatstat/man/envelope.html) of **spatstat** package.
 
 #### 2.9.2.1 Choa Chu Kang Planning Area
 
 #### 2.9.2.1.1 Computing F-function estimation
+
 The code chunk below is used to compute F-function using *Fest()* of **spatat** package.
 
 ```{r}
@@ -551,8 +549,8 @@ F_CK = Fest(childcare_ck_ppp)
 plot(F_CK)
 ```
 
-
 ####2.9.2.1.2 Performing Complete Spatial Randomness Test
+
 ```{r}
 F_CK.csr <- envelope(childcare_ck_ppp, Fest, nsim = 99)
 ```
@@ -561,8 +559,8 @@ F_CK.csr <- envelope(childcare_ck_ppp, Fest, nsim = 99)
 plot(F_CK.csr)
 ```
 
-
 #### 2.9.2.2 Tampines planning area
+
 ```{r}
 F_tm = Fest(childcare_tm_ppp, correction = "best")
 plot(F_tm)
@@ -576,21 +574,21 @@ F_tm.csr <- envelope(childcare_tm_ppp, Fest, correction = "all", nsim = 99)
 plot(F_tm.csr)
 ```
 
-
 ## 2.9.3 Analysing Spatial Point Process Using K-Function
+
 K-function measures the number of events found up to a given distance of any particular event. In this section, you will learn how to compute K-function estimates by using Kest() of spatstat package. You will also learn how to perform monta carlo simulation test using envelope() of spatstat package.
 
 #### 2.9.3.1 Choa Chu Kang planning area
 
-#2.9.1.1 Computing K-fucntion estimate
-K-function measures the number of events found up to a given distance of any particular event. In this section, you will learn how to compute K-function estimates by using Kest() of spatstat package. You will also learn how to perform monta carlo simulation test using envelope() of spatstat package.
+#2.9.1.1 Computing K-fucntion estimate K-function measures the number of events found up to a given distance of any particular event. In this section, you will learn how to compute K-function estimates by using Kest() of spatstat package. You will also learn how to perform monta carlo simulation test using envelope() of spatstat package.
 
 ```{r}
 K_ck = Kest(childcare_ck_ppp, correction = "Ripley")
 plot(K_ck, . -r ~ r, ylab= "K(d)-r", xlab = "d(m)")
 ```
 
-#### 2.9.2.1.2 Performing Complete Spatial Randomness Test**
+#### 2.9.2.1.2 Performing Complete Spatial Randomness Test\*\*
+
 To confirm the observed spatial patterns above, a hypothesis test will be conducted. The hypothesis and test are as follows:
 
 Ho = The distribution of childcare services at Choa Chu Kang are randomly distributed.
@@ -635,7 +633,8 @@ to compute L-function estimation by using Lest() of spatstat package. You will a
 
 ### 2.9.4.1 Choa Chu Kang planning area
 
-#### 2.9.4.1.1 computation of L function. 
+#### 2.9.4.1.1 computation of L function.
+
 ```{r}
 L_ck = Lest(childcare_ck_ppp, correction = "Ripley")
 plot(L_ck, . -r ~ r, 
@@ -643,6 +642,7 @@ plot(L_ck, . -r ~ r,
 ```
 
 #### 2.9.4.1.2 Performing Complete Spatial Randomness Test
+
 o confirm the observed spatial patterns above, a hypothesis test will be conducted. The hypothesis and test are as follows:
 
 Ho = The distribution of childcare services at Choa Chu Kang are randomly distributed.
