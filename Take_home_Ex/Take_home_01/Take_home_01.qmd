@@ -22,19 +22,32 @@ rdacc_sf <-read_csv("data/thai_road_accident_2019_2022.csv") %>%
   filter(!is.na(longitude) & longitude != "", 
          !is.na(latitude)& latitude != "") %>%
   st_as_sf(coords= c("longitude", "latitude"),crs =4326) %>%
-  st_transform(crs=32647)
+  st_transform(crs=32647) %>%
+ mutate(month_num = month(incident_datetime)) %>%
+ mutate(month_fac = month(incident_datetime,label = TRUE, 
+        abbr= TRUE )) %>%
+ mutate(dateofweek = day(incident_datetime))
 #transforming to geographic data.
 ```
 ```{r}
+#|eval: False
 acc <-read_csv("data/thai_road_accident_2019_2022.csv") %>%
  mutate(month_num = month(incident_datetime)) %>%
  mutate(month_fac = month(incident_datetime,label = TRUE, 
         abbr= TRUE )) %>%
  mutate(dateofweek = day(incident_datetime))
 ```
+```{r}
+write_rds(acc,"data/rds/acc.rds")#to save the file to rds
+```
+
+```{r}
+acc<-read_rds("data/rds/acc.rds") #re-reading the acc file to the environments
+```
 
 ## Preparing the data for Bangkok Metropolitan Region
 ```{r}
+#|eval: False
 SAB = st_read(dsn = "data", layer = "tha_admbnda_adm0_rtsd_20220121") %>%
   st_transform(crs = 32647)
 
@@ -50,9 +63,20 @@ SAB_3 = st_read(dsn = "data", layer = "tha_admbnda_adm3_rtsd_20220121")%>%
   st_transform(crs = 32647)%>%
   filter(ADM1_PCODE == "TH10")
 
+
 ```
 
+```{r}
+write_rds(SAB,"data/rds/SAB.rds")#to save the file to rds
+```
 
+```{r}
+SAB<-read_rds("data/rds/SAB.rds") #re-reading the acc file to the environments
+```
+
+```{r}
+plot(st_geometry(SAB))#Outline of Thailand 
+```
 
 ```{r}
 Rd = st_read(dsn = "data", layer = "hotosm_tha_roads_lines_shp")
