@@ -21,7 +21,7 @@ resource_1_download_url,Download URL,https://s3.dualstack.us-east-1.amazonaws.co
 resource_1_id,Resource ID,e3723d7d-06be-4c6e-a39c-441b6cb9b4ab
 resource_1_last_modified,Updated,2024-09-01T22:09:08.640184
 resource_1_metadata_modified,Metadata Updated,2024-09-01T22:13:52.974445
-resource_1_microdata,Microdata,False
+resource_1_microdata,Microdata,FALSE
 resource_1_dataset_id,Dataset ID,cc8cb371-40c3-45df-ab19-00c11675a105
 resource_1_resource_type,Resource Type,api
 resource_1_name,Resource Name,hotosm_tha_roads_lines_shp.zip
@@ -34,7 +34,7 @@ resource_2_download_url,Download URL,https://export.hotosm.org/downloads/6fa0de1
 resource_2_id,Resource ID,9467e6a0-0c00-42f1-8b79-27b355c97986
 resource_2_last_modified,Updated,2020-01-12T23:01:53.639738
 resource_2_metadata_modified,Metadata Updated,2024-03-05T10:00:03.188426
-resource_2_microdata,Microdata,False
+resource_2_microdata,Microdata,FALSE
 resource_2_dataset_id,Dataset ID,cc8cb371-40c3-45df-ab19-00c11675a105
 resource_2_resource_type,Resource Type,api
 resource_2_name,Resource Name,hotosm_tha_roads_polygons_shp.zip
@@ -47,7 +47,7 @@ resource_3_download_url,Download URL,https://export.hotosm.org/downloads/6fa0de1
 resource_3_id,Resource ID,4b32b436-48f1-4f83-b8f2-3f621883ad62
 resource_3_last_modified,Updated,2020-01-12T23:01:53.639738
 resource_3_metadata_modified,Metadata Updated,2023-03-02T18:28:57.149835
-resource_3_microdata,Microdata,False
+resource_3_microdata,Microdata,FALSE
 resource_3_dataset_id,Dataset ID,cc8cb371-40c3-45df-ab19-00c11675a105
 resource_3_resource_type,Resource Type,api
 resource_3_name,Resource Name,hotosm_tha_roads_gpkg.zip
@@ -60,7 +60,7 @@ resource_4_download_url,Download URL,https://s3.dualstack.us-east-1.amazonaws.co
 resource_4_id,Resource ID,9eabd1fc-8849-42e9-bf56-d4caab2c36b5
 resource_4_last_modified,Updated,2024-09-01T22:09:08.640295
 resource_4_metadata_modified,Metadata Updated,2024-09-01T22:14:52.267481
-resource_4_microdata,Microdata,False
+resource_4_microdata,Microdata,FALSE
 resource_4_dataset_id,Dataset ID,cc8cb371-40c3-45df-ab19-00c11675a105
 resource_4_resource_type,Resource Type,api
 resource_4_name,Resource Name,hotosm_tha_roads_lines_kml.zip
@@ -73,7 +73,7 @@ resource_5_download_url,Download URL,https://export.hotosm.org/downloads/6fa0de1
 resource_5_id,Resource ID,bf2f4bdf-24e8-4164-8927-99f545960ea5
 resource_5_last_modified,Updated,2020-01-12T23:01:53.639738
 resource_5_metadata_modified,Metadata Updated,2024-03-05T10:00:05.335105
-resource_5_microdata,Microdata,False
+resource_5_microdata,Microdata,FALSE
 resource_5_dataset_id,Dataset ID,cc8cb371-40c3-45df-ab19-00c11675a105
 resource_5_resource_type,Resource Type,api
 resource_5_name,Resource Name,hotosm_tha_roads_polygons_kml.zip
@@ -86,7 +86,7 @@ resource_6_download_url,Download URL,https://export.hotosm.org/downloads/6fa0de1
 resource_6_id,Resource ID,9a473412-52e4-48ce-a7ec-0e1f92b90e5b
 resource_6_last_modified,Updated,2020-01-12T23:01:53.639738
 resource_6_metadata_modified,Metadata Updated,2023-03-02T18:28:57.150425
-resource_6_microdata,Microdata,False
+resource_6_microdata,Microdata,FALSE
 resource_6_dataset_id,Dataset ID,cc8cb371-40c3-45df-ab19-00c11675a105
 resource_6_resource_type,Resource Type,api
 resource_6_name,Resource Name,hotosm_tha_gmapsupp_img.zip
@@ -99,7 +99,7 @@ resource_7_download_url,Download URL,https://s3.dualstack.us-east-1.amazonaws.co
 resource_7_id,Resource ID,581595cf-1959-4bf8-ab08-08a7d6c6aa3f
 resource_7_last_modified,Updated,2024-09-01T22:09:08.640374
 resource_7_metadata_modified,Metadata Updated,2024-09-01T22:18:54.003752
-resource_7_microdata,Microdata,False
+resource_7_microdata,Microdata,FALSE
 resource_7_dataset_id,Dataset ID,cc8cb371-40c3-45df-ab19-00c11675a105
 resource_7_resource_type,Resource Type,api
 resource_7_name,Resource Name,hotosm_tha_roads_lines_geojson.zip
@@ -112,7 +112,7 @@ resource_8_download_url,Download URL,https://s3.dualstack.us-east-1.amazonaws.co
 resource_8_id,Resource ID,10d61523-e304-4fbc-9d1c-cf5b40947c4a
 resource_8_last_modified,Updated,2024-09-01T22:09:08.640433
 resource_8_metadata_modified,Metadata Updated,2024-09-01T22:09:09.036609
-resource_8_microdata,Microdata,False
+resource_8_microdata,Microdata,FALSE
 resource_8_dataset_id,Dataset ID,cc8cb371-40c3-45df-ab19-00c11675a105
 resource_8_resource_type,Resource Type,api
 resource_8_name,Resource Name,hotosm_tha_roads_lines_gpkg.zip

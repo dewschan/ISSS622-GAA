@@ -1,0 +1,201 @@
+---
+title: "Hands-on Exercise 4"
+author: "Dew Stella Chan"
+execute: 
+  eval: true
+  echo: true
+  message: false
+  freeze: true
+---
+
+# Hands-on Exercise 4
+
+This webpage documents Hands-on Exercise 03.
+
+## 4.1 Installation and Loading of Packages
+
+```{r}
+pacman:: p_load(sf, spdep, tmap, tidyverse, knitr)
+```
+
+
+## 4.2 Importation and preparation of the data
+
+```{r}
+hunan <- st_read(dsn = "data/geospatial", 
+                 layer = "Hunan")
+
+hunan2012 <- read_csv("data/aspatial/Hunan_2012.csv")
+```
+## 4.3 Performing relational join
+
+The below code is to merge GDP related information with human information and select the related columns. 
+```{r}
+hunan <- left_join(hunan,hunan2012)%>%
+  select(1:4, 7, 15)
+```
+## 4.4  Visualising Regional Development Indicator
+
+```{r}
+basemap <- tm_shape(hunan) +
+  tm_polygons() +
+  tm_text("NAME_3", size=0.5)
+
+gdppc <- qtm(hunan, "GDPPC")
+tmap_arrange(basemap, gdppc, asp=1, ncol=2)
+```
+
+
+## 4.5 Computing Contiguity Spatial Weights
+
+### 4.5.1 Computing (QUEEN) contiguity based neighbours
+
+```{r}
+wm_q <- poly2nb(hunan, queen=TRUE)
+summary(wm_q)
+```
+```{r}
+wm_q[[1]]
+```
+
+
+```{r}
+str(wm_q)
+```
+
+### 4.5.2 Creating (ROOK) contiguity based neighbours
+
+
+```{r}
+wm_r <- poly2nb(hunan, queen=FALSE)
+summary(wm_r)
+```
+
+### 4.5.3 Visualising contiguity weights
+
+```{r}
+longitude <- map_dbl(hunan$geometry, ~st_centroid(.x)[[1]])
+```
+
+```{r}
+latitude <- map_dbl(hunan$geometry, ~st_centroid(.x)[[2]])
+```
+
+```{r}
+coords <- cbind(longitude, latitude)
+```
+
+
+```{r}
+head(coords)
+```
+#### 4.5.3.1 Plotting Queen contiguity based neighbours map
+
+```{r}
+plot(hunan$geometry, border="lightgrey")
+plot(wm_q, coords, pch = 19, cex = 0.6, add = TRUE, col= "red")
+```
+#### 4.5.3.3 Plotting both Queen and Rook contiguity based neighbours maps
+
+```{r}
+par(mfrow=c(1,2))
+plot(hunan$geometry, border="lightgrey", main="Queen Contiguity")
+plot(wm_q, coords, pch = 19, cex = 0.6, add = TRUE, col= "red")
+plot(hunan$geometry, border="lightgrey", main="Rook Contiguity")
+plot(wm_r, coords, pch = 19, cex = 0.6, add = TRUE, col = "red")
+```
+## 4.6 Computing distance based neighbours
+
+### 4.6.1 Determine the cut-off distance
+To derive distance-based weight matrices by using dnearneigh() of spdep package.
+
+The function identifies neighbours of region points by Euclidean distance with a distance band with lower d1= and upper d2= bounds controlled by the bounds= argument. If unprojected coordinates are used and either specified in the coordinates object x or with x as a two column matrix and longlat=TRUE, great circle distances in km will be calculated assuming the WGS84 reference ellipsoid.
+
+
+```{r}
+#coords <- coordinates(hunan)
+k1 <- knn2nb(knearneigh(coords))
+k1dists <- unlist(nbdists(k1, coords, longlat = TRUE))
+summary(k1dists)
+```
+### 4.6.2 Computing fixed distance weight matrix
+
+We will compute the distance weight matrix by using dnearneigh() as shown in the code chunk below.
+
+```{r}
+wm_d62 <- dnearneigh(coords, 0, 62, longlat = TRUE)
+wm_d62
+```
+
+The average number of links is each the number of neighbours which a point is linked to. 
+
+```{r}
+str(wm_d62)
+```
+
+```{r}
+table(hunan$County, card(wm_d62))
+```
+
+
+
+```{r}
+n_comp <- n.comp.nb(wm_d62)
+n_comp$nc
+```
+```{r}
+table(n_comp$comp.id)
+```
+#### 4.6.2.1 Plotting fixed distance weight matrix
+
+Plot the distance weight matrix by using the code chunk below.
+
+
+```{r}
+plot(hunan$geometry, border="lightgrey")
+plot(wm_d62, coords, add=TRUE)
+plot(k1, coords, add=TRUE, col="red", length=0.08)
+```
+```{r}
+par(mfrow=c(1,2))
+plot(hunan$geometry, border="lightgrey", main="1st nearest neighbours")
+plot(k1, coords, add=TRUE, col="red", length=0.08)
+plot(hunan$geometry, border="lightgrey", main="Distance link")
+plot(wm_d62, coords, add=TRUE, pch = 19, cex = 0.6)
+```
+### 4.6.3 Computing adaptive distance weight matrix
+
+One of the characteristics of fixed distance weight matrix is that more densely settled areas (usually the urban areas) tend to have more neighbours and the less densely settled areas (usually the rural counties) tend to have lesser neighbours. Having many neighbours smoothes the neighbour relationship across more neighbours.
+
+It is possible to control the numbers of neighbours directly using k-nearest neighbours, either accepting asymmetric neighbours or imposing symmetry as shown in the code chunk below.
+
+```{r}
+knn6 <- knn2nb(knearneigh(coords, k=6))
+knn6
+```
+
+```{r}
+str(knn6)
+```
+
+#### 4.6.3.1 Plotting distance based neighbours
+
+```{r}
+plot(hunan$geometry, border="lightgrey")
+plot(knn6, coords, pch = 19, cex = 0.6, add = TRUE, col = "red")
+```
+
+### 8.7 Weights based on IDW
+
+```{r}
+dist <- nbdists(wm_q, coords, longlat = TRUE)
+ids <- lapply(dist, function(x) 1/(x))
+ids
+```
+
+
+to derive a spatial weight matrix based on Inversed Distance method.
+
+First, we will compute the distances between areas by using nbdists() of spdep.
+
+
