@@ -10,6 +10,7 @@ execute:
   freeze: true
   warning: false
 ---
+
 ```{r}
 pacman:: p_load(sf, spNetwork, tmap, tidyverse)
 set.seed(1234) #set seed to ensure the result is consistant
@@ -24,9 +25,8 @@ childcare <- st_read (dsn= "data/rawdata", layer="Punggol_CC") %>%
     st_transform( crs = 3414) %>% st_zm(childcare, drop = TRUE, what = "ZM")
 ```
 
-
 ```{r}
-tmap_mode('view')
+tmap_mode('plot')
 tm_shape(childcare) + 
   tm_dots("red") + 
   tm_shape(network) +
@@ -34,14 +34,14 @@ tm_shape(childcare) +
 tmap_mode('plot') #to keep it as plot to keep it light.
 ```
 
-Split the road into line segements. 
+Split the road into line segements.
+
 ```{r}
 lixels <- lixelize_lines(network, 700, 
                          mindist = 350)
 #reasonable walking distance in Singapore base on one of the research by NTU, set as half of this
 #min distance is the distance which is retained.
 ```
-
 
 ```{r}
 lixels <- lixelize_lines(network, 1000, 
@@ -53,15 +53,15 @@ lixels <- lixelize_lines(network, 1000,
 samples <- lines_center(lixels)
 ```
 
-
 ```{r}
-tmap_mode('view')
+tmap_mode('plot')
 tm_shape(lixels) + 
   tm_lines() + 
   tm_shape(samples) +
   tm_dots(size=0.001)
 tmap_mode('plot') #to keep it as plot to keep it light.
 ```
+
 ```{r}
 #performing NkDE using the code
 densities <- nkde(network, 
@@ -81,28 +81,26 @@ densities <- nkde(network,
                   verbose = FALSE)
 ```
 
-Added the density to the dataframe
-It can be appended back as the dataframes (samples and lixels are not sorted)
+Added the density to the dataframe It can be appended back as the dataframes (samples and lixels are not sorted)
 
-If we want to shade the points on the map, we will use samples. 
-If we want to shade the lines then we will shade use lixels
+If we want to shade the points on the map, we will use samples. If we want to shade the lines then we will shade use lixels
 
 ```{r}
 samples$density <- densities
 lixels$density <- densities
 ```
 
-Since the density is very small and it is in length and scale it up. 
+Since the density is very small and it is in length and scale it up.
+
 ```{r}
 # re-scaling to help the mapping
 samples$density <- samples$density*1000
 lixels$density <- lixels$density*1000
 ```
 
-
 ```{r}
 # To prepare interactive and high cartographic quality map visualization
-tmap_mode('view')
+tmap_mode('plot')
 tm_shape(lixels) +
   tm_lines(col = "density") +
 tm_shape(childcare)+
@@ -110,7 +108,7 @@ tm_shape(childcare)+
 tmap_mode('plot')
 ```
 
-Although the sytax indicates k functions, the algothrim is based on g functions. 
+Although the sytax indicates k functions, the algothrim is based on g functions.
 
 ```{r}
 #k function

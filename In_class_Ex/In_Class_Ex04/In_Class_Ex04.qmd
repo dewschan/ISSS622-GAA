@@ -1,0 +1,70 @@
+---
+title: "In Class Exercise 04"
+author: "Dew Stella Chan"
+date: "20 Aug 2024"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  message: false
+  freeze: true
+---
+
+```{r}
+pacman:: p_load(sf, ggstatsplot, tmap, tidyverse, knitr, GWmodel)
+```
+
+
+```{r}
+hunan <- st_read(dsn = "data/geospatial", 
+                 layer = "Hunan")
+
+hunan2012 <- read_csv("data/aspatial/Hunan_2012.csv")
+```
+
+The join field is not defined.
+
+```{r}
+hunan_sf <- left_join(hunan,hunan2012)%>%
+  select(1:3, 7, 15)
+```
+
+```{r}
+hunan_sp <- hunan_sf %>% as_Spatial()
+```
+
+Cross Validation
+
+```{r}
+bw_cv<- bw.gwr(GDPPC~1, data = hunan_sp, approach= "CV", adaptive = TRUE, Kernel = "bisquare", longlat = T) 
+```
+
+AIC
+```{r}
+bw_AIC<- bw.gwr(GDPPC~1, data = hunan_sp, approach= "AIC", adaptive = TRUE, Kernel = "bisquare", longlat = T) 
+```
+
+GWSS
+```{r}
+gwstat<- gwss(data = hunan_sp, vars ="GDPPC", bw =bw_AIC, kernel = "bisquare", adaptive= TRUE, longlat=T)
+```
+```{r}
+gwstat_df <-as.data.frame(gwstat$SDF)
+```
+
+```{r}
+hunam_gstat <- Cbind(hunam_sf,gwstat_df)
+```
+
+
+```{r}
+tm_shape(hunan_gstat) +
+  tm-fill("GPPC_LM",n =5, style = "quantile") + tm_borders    (alpha= 0,5)+
+  tm_layout(main.title ="distribution of gepgraplically weighted mean", main.title.position = "center", 
+main.title.size= 1.2, 
+legend.test.size=1.2,
+legned.height =1.50,
+legend.width=1.50,
+frame= TRUE)
+```
+
