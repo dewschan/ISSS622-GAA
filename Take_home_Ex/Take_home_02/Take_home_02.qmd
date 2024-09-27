@@ -1,0 +1,75 @@
+---
+title: "Take-Home Exercise 2"
+author: "Dew Stella Chan"
+format: html
+editor: visual
+date: "Septemeber 27, 2024"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  message: false
+  freeze: true
+  warning: false
+---
+
+# Take Home Exercise 2
+
+## Loading of Libraries. 
+
+```{r}
+pacman::p_load(sf, sp, raster, spatstat, tmap, tidyverse, lubridate, readxl, spNetwork)
+set.seed(1234) #set seed to ensure the result is consistent
+```
+
+
+## Data preparation and Transformation
+
+### Loading of Thailand - Subnational Administrative Boundaries
+
+```{r}
+#|eval: false
+SAB = st_read(dsn = "data", layer = "tha_admbnda_adm0_rtsd_20220121") %>%
+  st_transform(crs = 32647)
+
+SAB_1 = st_read(dsn = "data", layer = "tha_admbnda_adm1_rtsd_20220121")%>%
+  st_transform(crs = 32647)
+
+SAB_2 = st_read(dsn = "data", layer = "tha_admbnda_adm2_rtsd_20220121")%>%
+  st_transform(crs = 32647)
+
+SAB_3 = st_read(dsn = "data", layer = "tha_admbnda_adm3_rtsd_20220121")%>%
+  st_transform(crs = 32647)
+```
+
+
+### writing and reading the data to rds folder
+```{r}
+write_rds(SAB,"data/rds/SAB.rds")
+write_rds(SAB_1,"data/rds/SAB_1.rds")
+write_rds(SAB_2,"data/rds/SAB_2.rds")
+write_rds(SAB_3,"data/rds/SAB_3.rds")#to save the file to rds
+```
+
+```{r}
+SAB<-read_rds("data/rds/SAB.rds")#re-reading the acc file to the environments
+SAB_1<-read_rds("data/rds/SAB_1.rds")
+SAB_2<-read_rds("data/rds/SAB_2.rds")
+SAB_3<-read_rds("data/rds/SAB_3.rds")
+```
+
+
+## Thailand Domestic Tourism Statistics
+```{r}
+Tour_data <- read_csv("data/thailand_domestic_tourism_2019_2023_ver2.csv")
+```
+### writing and reading the data in Tourism Statistics to rds folder
+```{r}
+write_rds(Tour_data,"data/rds/Tour_data.rds")
+#to save the file to rds
+```
+
+```{r}
+Tour_data<-read_rds("data/rds/Tour_data.rds")
+#re-reading the acc file to the environments
+```

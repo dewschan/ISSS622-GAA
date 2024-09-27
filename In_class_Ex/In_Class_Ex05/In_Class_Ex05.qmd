@@ -1,0 +1,100 @@
+---
+title: "In Class Exercise 05"
+author: "Dew Stella Chan"
+execute: 
+  execute: 
+  eval: true
+  echo: true
+  message: false
+  freeze: true
+  warning: false
+---
+
+```{r}
+pacman:: p_load(sf, sfdep, tmap, tidyverse)
+
+```
+
+```{r}
+hunan <- st_read(dsn = "data/geospatial", 
+                 layer = "Hunan")
+```
+
+```{r}
+hunan2012 <- read_csv("data/aspatial/Hunan_2012.csv")
+```
+
+```{r}
+hunan_GPDPC <- left_join(hunan,hunan2012)
+```
+
+
+Step 1 : Deriving Queen's contiguity weights: Sfdep methods
+```{r}
+wm_q <- hunan_GPDPC %>% 
+  mutate (nb=st_contiguity(geometry),wt = st_weights (nb,style ="W"), .before=1)
+```
+
+
+computing Global Moran'I
+```{r}
+moranI <-global_moran(wm_q$GDPPC, wm_q$nb, wm_q$wt)
+
+glimpse(moranI)
+```
+```{r}
+global_moran_test(wm_q$GDPPC, wm_q$nb, wm_q$wt)
+```
+The P value is lower than the z 
+
+```{r}
+set.seed(1234)
+```
+
+
+this kind of analysis is faster then point pattern. 
+
+Even running 999 simulation, the global moran is the same.  
+```{r}
+global_moran_perm(wm_q$GDPPC, wm_q$nb, wm_q$wt, nsim= 99)
+```
+```{r}
+Lisa<- wm_q %>%
+  mutate(local_moran = local_moran( GDPPC, nb, wt, nsim= 99), .before =1) %>% unnest(local_moran)
+```
+
+
+
+tmap_mode("plot")
+map1 <-tm_shape(Lisa) +
+  tm_fill("ii")
+  tm_borders(alpha = 0.5)
+  tm_view(set,zoom.limit= c(6,8)) +
+  tm_layout(main.title = "local Moran's I of GDPPC
+            main.title.size=2")
+  
+map2<- tm_shape(Lisa) +
+  tm_fill("p_il", breaks(0.001,0.01, 0.05,1),)
+
+
+
+Lisa_sig <- Lisa %>%
+  filter(p_ii <0.05)
+tmap_mode("plot")
+tm_shape(Lisa)+
+  tm_borders(alpha= 0,5)+
+  tm_shape(Lisa_sig)+
+  tm_fill("mean")+
+  tm_borders(alpha= 0.4)
+
+
+
+
+wm-idw <- hunan_GPPC %>%
+  mutate(nb = st_contiguity(geometry), scale= 1, alpha= 1m ,belfoer =1 ))
+
+
+
+HCSA <- HCS 
+
+

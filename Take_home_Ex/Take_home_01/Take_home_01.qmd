@@ -105,6 +105,7 @@ SAB_3 = st_read(dsn = "data", layer = "tha_admbnda_adm3_rtsd_20220121")%>%
   st_transform(crs = 32647)  # Transform to EPSG:32647
 
 ```
+
 ### writing and reading the data in  rds folder
 ```{r}
 write_rds(SAB,"data/rds/SAB.rds")
@@ -307,7 +308,7 @@ densities <- nkde(Bkk_rds_Ln,
                   method = "simple", 
                   digits = 1, 
                   tol = 1,
-                  grid_shape = c(10,10), 
+                  grid_shape = c(100,100), 
                   max_depth = 2,# reducing the depth to aid in the calculation
                   agg = 100000, #we aggregate events within a 1km radius (faster calculation)
                   sparse = TRUE,

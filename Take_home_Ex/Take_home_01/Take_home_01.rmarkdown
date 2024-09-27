@@ -367,7 +367,7 @@ densities <- nkde(Bkk_rds_Ln,
                   method = "simple", 
                   digits = 1, 
                   tol = 1,
-                  grid_shape = c(10,10), 
+                  grid_shape = c(100,100), 
                   max_depth = 2,# reducing the depth to aid in the calculation
                   agg = 100000, #we aggregate events within a 1km radius (faster calculation)
                   sparse = TRUE,

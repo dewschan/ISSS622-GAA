@@ -1,0 +1,15 @@
+{
+  "hash": "49431f91d31b44e7dc0a2af2c550e4fe",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Take-Home Exercise 06\"\nauthor: \"Dew Stella Chan\"\nformat: html\neditor: visual\ndate: \"Septemeber 27, 2024\"\ndate-modified: \"last-modified\"\nexecute: \n  eval: true\n  echo: true\n  message: false\n  freeze: true\n  warning: false\n---\n\n---\n\n## Quarto\n\nQuarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.\n\n## Running Code\n\nWhen you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:\n\n::: {.cell}\n\n```{.r .cell-code}\n1 + 1\n```\n\n::: {.cell-output .cell-output-stdout}\n\n```\n[1] 2\n```\n\n\n:::\n:::\n\nYou can add options to executable code like this\n\n::: {.cell}\n::: {.cell-output .cell-output-stdout}\n\n```\n[1] 4\n```\n\n\n:::\n:::\n\nThe `echo: false` option disables the printing of code (only output is displayed).\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
