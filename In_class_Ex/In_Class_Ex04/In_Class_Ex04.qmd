@@ -10,7 +10,8 @@ execute:
   freeze: true
 ---
 
-# Loading  of Libraries and Data
+# Loading of Libraries and Data
+
 ```{r}
 pacman:: p_load(sf, ggstatsplot, tmap, tidyverse, knitr, GWmodel)
 ```
@@ -21,7 +22,8 @@ hunan_sf <- st_read(dsn = "data/geospatial",
 
 hunan2012<- read_csv("data/aspatial/Hunan_2012.csv")
 ```
-The join field is not define,by default joined by country. If it is rerun the joined field will change. 
+
+The join field is not define,by default joined by country. If it is rerun the joined field will change.
 
 ```{r}
 hunan_sf <- left_join(hunan_sf, hunan2012) %>%
@@ -29,6 +31,7 @@ hunan_sf <- left_join(hunan_sf, hunan2012) %>%
 ```
 
 Mapping GDPPC
+
 ```{r}
 basemap <- tm_shape(hunan_sf) +
   tm_polygons() +
@@ -68,8 +71,7 @@ bw_AIC <- bw.gwr(GDPPC ~ 1,
              longlat = T)
 ```
 
-Geographically Weighted Summary Statistics with adaptive bandwidth
-Computing geographically wieghted summary statistics
+Geographically Weighted Summary Statistics with adaptive bandwidth Computing geographically wieghted summary statistics
 
 ```{r}
 gwstat <- gwss(data = hunan_sp,
@@ -80,9 +82,7 @@ gwstat <- gwss(data = hunan_sp,
                longlat = T)
 ```
 
-Geographically Weighted Summary Statistics with adaptive bandwidth
-Preparing the output data
-Code chunk below is used to extract SDF data table from gwss object output from gwss(). It will be converted into data.frame by using as.data.frame().
+Geographically Weighted Summary Statistics with adaptive bandwidth Preparing the output data Code chunk below is used to extract SDF data table from gwss object output from gwss(). It will be converted into data.frame by using as.data.frame().
 
 ```{r}
 gwstat_df <-as.data.frame(gwstat$SDF)
@@ -94,9 +94,7 @@ Next, cbind() is used to append the newly derived data.frame onto hunan_sf sf da
 hunan_gstat <- cbind(hunan_sf, gwstat_df)
 ```
 
-
 Visualising geographically weighted summary statistics
-
 
 ```{r}
 tm_shape(hunan_gstat) +
@@ -112,10 +110,13 @@ tm_shape(hunan_gstat) +
             legend.width = 1.50,
             frame = TRUE)
 ```
+
 ## Geographically Weighted Summary Statistics with fixed
+
 Determine fixed bandwidth
 
 Cross-Validataion
+
 ```{r}
 bw_CV <- bw.gwr(GDPPC ~ 1, 
              data = hunan_sp,
@@ -133,6 +134,7 @@ bw_AIC <- bw.gwr(GDPPC ~ 1,
              kernel = "bisquare", 
              longlat = T)
 ```
+
 ```{r}
 gwstat <- gwss(data = hunan_sp,
                vars = "GDPPC",
@@ -142,8 +144,7 @@ gwstat <- gwss(data = hunan_sp,
                longlat = T)
 ```
 
-Preparing the output data
-Code chunk below is used to extract SDF data table from gwss object output from gwss(). It will be converted into data.frame by using as.data.frame().
+Preparing the output data Code chunk below is used to extract SDF data table from gwss object output from gwss(). It will be converted into data.frame by using as.data.frame().
 
 ```{r}
 gwstat_df <- as.data.frame(gwstat$SDF)
@@ -172,10 +173,9 @@ tm_shape(hunan_gstat) +
             frame = TRUE)
 ```
 
-
 ## Geographically Weighted Correlation with Adaptive Bandwidth
-Business question: Is there any relationship between GDP per capita and Gross Industry Output?
 
+Business question: Is there any relationship between GDP per capita and Gross Industry Output?
 
 ```{r}
 ggscatterstats(
@@ -211,8 +211,8 @@ gwstats <- gwss(hunan_sp,
                 longlat = T)
 ```
 
-
 Code chunk below is used to extract SDF data table from gwss object output from gwss(). It will be converted into data.frame by using as.data.frame().
+
 ```{r}
 gwstat_df <- as.data.frame(gwstats$SDF) %>%
   select(c(12,13)) %>%
@@ -225,7 +225,6 @@ Next, cbind() is used to append the newly derived data.frame onto hunan_sf sf da
 ```{r}
 hunan_Corr <- cbind(hunan_sf, gwstat_df)
 ```
-
 
 ```{r}
 tm_shape(hunan_Corr) +
@@ -241,7 +240,6 @@ tm_shape(hunan_Corr) +
             legend.width = 1.0,
             frame = TRUE)
 ```
-
 
 ```{r}
 tm_shape(hunan_Corr) +
