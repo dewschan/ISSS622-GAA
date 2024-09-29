@@ -83,7 +83,7 @@ tm_shape(mpsz_sf) +
 ## 2.4 Overlay subzone with childcare layer
 
 ```{r}
-tmap_mode("view")
+tmap_mode("plot")
 tm_shape(mpsz_sf_valid) +
   tm_polygons()+
   tm_shape (childcare_sf) + 
@@ -150,7 +150,7 @@ Codes for counting the number of points with duplicate
 No duplicates.
 
 ```{r}
-tmap_mode('view')
+tmap_mode('plot')
 tm_shape(childcare) +
   tm_dots(alpha=0.4, 
           size=0.05)
