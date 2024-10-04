@@ -218,14 +218,15 @@ wm_idw <- hunan_GDPPC %>%
                               alpha = 1),
          .before = 1)
 ```
+
 -   Note:\
     Gi\* and local Gi\* are distance-based spatial statistics. Hence, distance methods instead of contiguity methods should be used to derive the spatial weight matrix.
 
 -   Since we are going to compute Gi\* statistics, include_self()is used.
 
-###Computing local Gi* statistics
+###Computing local Gi\* statistics
 
-Now, we will compute the local Gi* by using the code chunk below.
+Now, we will compute the local Gi\* by using the code chunk below.
 
 ```{r}
 HCSA <- wm_idw %>% 
@@ -235,9 +236,8 @@ HCSA <- wm_idw %>%
   unnest(local_Gi)
 HCSA
 ```
-Visualising Gi*
-In the code chunk below, tmap functions are used to plot the local Gi* (i.e. gi_star) at the province level.
 
+Visualising Gi *In the code chunk below, tmap functions are used to plot the local Gi* (i.e. gi_star) at the province level.
 
 ```{r}
 tmap_mode("plot")
@@ -249,7 +249,7 @@ tm_shape(HCSA) +
 
 ## Visualising p-value of HCSA
 
-In the code chunk below, tmap functions are used to plot the p-values of local Gi* (i.e. p_sim) at the province level.
+In the code chunk below, tmap functions are used to plot the p-values of local Gi\* (i.e. p_sim) at the province level.
 
 ```{r}
 tmap_mode("plot")
@@ -257,7 +257,6 @@ tm_shape(HCSA) +
   tm_fill("p_sim") + 
   tm_borders(alpha = 0.5)
 ```
-
 
 ## Visuaising local HCSA
 
@@ -297,7 +296,4 @@ tm_shape(HCSA_sig) +
   tm_borders(alpha = 0.4)
 ```
 
-
-Note:
-Figure above reveals that there is one hot spot area and two cold spot areas. Interestingly, the hot spot areas coincide with the High-high cluster identifies by using local Moran’s I method in the earlier sub-section.
-
+Note: Figure above reveals that there is one hot spot area and two cold spot areas. Interestingly, the hot spot areas coincide with the High-high cluster identifies by using local Moran’s I method in the earlier sub-section.
