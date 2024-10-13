@@ -1,0 +1,431 @@
+---
+title: "Take Home Exercise 01"
+author: "Dew Stella Chan"
+date: "Septemeber 9, 2024"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  message: false
+  freeze: true
+  warning: false
+---
+
+# Take Home Exercise 1
+
+## Loading of Libraries.
+
+```{r}
+pacman::p_load(sf, sp, raster, spatstat, tmap, tidyverse, lubridate, readxl, spNetwork)
+set.seed(1234) #set seed to ensure the result is consistent
+```
+
+## Data preparation and Transformation
+
+### Loading of Thai Accident Data
+
+Loading of Thai accident data and transforming the incident datetime to date, day, hour.
+
+The data transformation steps for incident time is done to categories when did the accident occurred. The dataframe is subsequently match with the Thai public holiday database to pick up holidays,and further process to differentiate between weekend or weekdays.
+
+```{r}
+#|eval: false
+rdacc_sf <- read_csv("data/thai_road_accident_2019_2022.csv") %>%
+  filter(!is.na(longitude) & longitude != "", 
+         !is.na(latitude) & latitude != "") %>%
+  st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>%
+  st_transform(crs = 32647) %>%
+   # Ensure datetime is correctly parsed
+  mutate(incident_datetime = parse_date_time(incident_datetime, orders = "d/m/Y H:M")) %>%  
+  mutate(month_num = month(incident_datetime)) %>%
+  mutate(month_fac = month(incident_datetime, label = TRUE, abbr = TRUE)) %>%
+  mutate(day = day(incident_datetime)) %>%
+  mutate(dayofweek = wday(incident_datetime, label = TRUE, abbr = TRUE)) %>%
+  mutate(weekend = if_else(dayofweek %in% c("Sat", "Sun"), "weekend", "weekday")) %>%
+  mutate(hour = hour(incident_datetime)) %>%
+  mutate(peak_hours = if_else(dayofweek %in% c("Mon", "Tue", "Wed", "Thu", "Fri") & 
+                              ((hour >= 7 & hour < 9) | (hour >= 16 & hour < 19)), 
+                              "peak", "off-peak"))%>%
+  mutate(incident_date = format(incident_datetime, "%d/%m/%Y"))
+```
+
+### Loading of Thai holiday data.
+
+The code chunk below filters the public holiday containing on the national holidays.
+
+Depending on the requirements of the project, the file name "Thai_PH" contains different types of holidays types such as Observance, Season , Bank holiday and National Holidays which could be used for futher projects.
+
+For this project, we will be using the National Holidays.
+
+```{r}
+#|eval: false
+Thai_PH <- read_csv("data/ThaiPH_2019to2022_csv.csv") %>%
+  mutate(Date = strftime(strptime(Date, format = "%d/%m/%Y"), format = "%d/%m/%Y")) %>%
+  filter(Type == "National holiday")
+```
+
+### Joining of Accident data with the national holidays data
+
+```{r}
+rdacc_sf <- rdacc_sf %>%
+  left_join(Thai_PH, by = c("incident_date" = "Date")) %>%
+  mutate(is_holiday = if_else(!is.na(Name), "holiday", "non-holiday")) 
+```
+
+#### Writing the process data to rds folder and re-reading it.
+
+```{r}
+write_rds(rdacc_sf,"data/rds/rdacc_sf.rds")#to save the file to rds
+```
+
+```{r}
+rdacc_sf<-read_rds("data/rds/rdacc_sf.rds") #re-reading the rdacc_sf file to the environments
+```
+
+### Preparing the data for Bangkok Metropolitan Region
+
+Based on the metadata, province of the Bangkok Metropolitan Region Codes are: ADM1_PCODE == "TH10", "TH73", "TH12", "TH13", "TH11", "TH74"
+
+```{r}
+#|eval: false
+SAB = st_read(dsn = "data", layer = "tha_admbnda_adm0_rtsd_20220121") %>%
+  st_transform(crs = 32647)%>%  # Set CRS to WGS84
+  st_transform(crs = 32647)  # Transform to EPSG:32647
+
+SAB_1 = st_read(dsn = "data", layer = "tha_admbnda_adm1_rtsd_20220121")%>%
+  st_transform(crs = 32647) %>%
+  filter(ADM1_PCODE == "TH10" | ADM1_PCODE == "TH73"| ADM1_PCODE == "TH12" | ADM1_PCODE == "TH13"| ADM1_PCODE == "TH11"| ADM1_PCODE == "TH74") %>% # Set CRS to WGS84
+  st_transform(crs = 32647)  # Transform to EPSG:32647
+
+SAB_2 = st_read(dsn = "data", layer = "tha_admbnda_adm2_rtsd_20220121")%>%
+  st_transform(crs = 32647)%>%
+  filter(ADM1_PCODE == "TH10" | ADM1_PCODE == "TH73"| ADM1_PCODE == "TH12" | ADM1_PCODE == "TH13"| ADM1_PCODE == "TH11"| ADM1_PCODE == "TH74") %>% # Set CRS to WGS84
+  st_transform(crs = 32647)  # Transform to EPSG:32647
+
+SAB_3 = st_read(dsn = "data", layer = "tha_admbnda_adm3_rtsd_20220121")%>%
+  st_transform(crs = 32647)%>%
+  filter(ADM1_PCODE == "TH10" | ADM1_PCODE == "TH73"| ADM1_PCODE == "TH12" | ADM1_PCODE == "TH13"| ADM1_PCODE == "TH11"| ADM1_PCODE == "TH74") %>% # Set CRS to WGS84
+  st_transform(crs = 32647)  # Transform to EPSG:32647
+
+```
+
+### writing and reading the data in rds folder
+
+```{r}
+write_rds(SAB,"data/rds/SAB.rds")
+write_rds(SAB_1,"data/rds/SAB_1.rds")
+write_rds(SAB_2,"data/rds/SAB_2.rds")
+write_rds(SAB_3,"data/rds/SAB_3.rds")#to save the file to rds
+```
+
+```{r}
+SAB<-read_rds("data/rds/SAB.rds")#re-reading the acc file to the environments
+SAB_1<-read_rds("data/rds/SAB_1.rds")
+SAB_2<-read_rds("data/rds/SAB_2.rds")
+SAB_3<-read_rds("data/rds/SAB_3.rds")
+```
+
+#### To check on the st geometry data is able to be plotted properly.
+
+```{r}
+plot(st_geometry(SAB))#Outline of Thailand 
+```
+
+### Loading Thailand Road data
+
+```{r}
+#|eval: false
+Rd = st_read(dsn = "data", layer = "hotosm_tha_roads_lines_shp")%>% 
+  st_set_crs(4326)%>%
+  st_transform(crs = 32647)
+```
+
+Inspecting data structure.
+
+```{r}
+glimpse(Rd)
+st_crs(Rd)
+```
+
+### Filtering to the required highwayys
+
+```{r}
+#|eval: false
+Rd <- Rd %>%
+  filter(highway %in% c("motorway", "trunk", "primary", "secondary", "tertiary", "unclassified"))
+```
+
+#### Saving the road data to the rds folder.
+
+```{r}
+write_rds(Rd,"data/rds/Rd.rds")
+#to save the file to rds
+```
+
+#### Reading the road data from rds folder.
+
+```{r}
+Rd<-read_rds("data/rds/Rd.rds")
+```
+
+#### Merging polygon of the 5 provinces in Bangkok Metropoiltan Area into 1 overall boundary
+
+This will be the main boundary which will be used to sieve out the road network and road accidents which have occured in Bangkok Metropolitan Area.
+
+```{r}
+SAB_1_M<- SAB_1 %>%
+ st_union()
+```
+
+```{r}
+#plot(st_geometry(rdacc_sf)), Need to intersect
+plot(st_geometry(SAB))#Outline of Thailand 
+plot(st_geometry(SAB_1_M))#Outline of Bangkok MR 
+plot(st_geometry(SAB_2)) 
+plot(st_geometry(SAB_3))
+#plot(st_geometry(Rd))# need to intersect then plot 
+```
+
+### Intersect Thailand Road and to sieve out the Road at Bangkok Metropolitan area.
+
+```{r}
+Bkk_Rd<-st_intersection (Rd, SAB_1)
+```
+
+#### Saving the Bankok road data to the rds folder.
+
+```{r}
+write_rds(Bkk_Rd,"data/rds/Bkk_Rd.rds")
+#to save the file to rds
+```
+
+#### Reading the Bangkok road data from rds folder.
+
+```{r}
+Bkk_Rd<-read_rds("data/rds/Bkk_Rd.rds")
+```
+
+### Merging multilinestring to single line.
+
+```{r}
+Bkk_rds_Ln <- Bkk_Rd[(st_geometry_type(Bkk_Rd)== "LINESTRING"),]
+```
+
+```{r}
+Bkk_rds_Ln 
+```
+
+#### Saving the Bankok road data to the rds folder.
+
+```{r}
+write_rds(Bkk_Rd,"data/rds/Bkk_Rd.rds")
+#to save the file to rds
+```
+
+#### Reading the Bangkok road data from rds folder.
+
+```{r}
+Bkk_Rd<-read_rds("data/rds/Bkk_Rd.rds")
+```
+
+#### Saving the Linestring Bankok road data to the rds folder.
+
+```{r}
+write_rds(Bkk_rds_Ln ,"data/rds/Bkk_rds_Ln.rds")
+#to save the file to rds
+```
+
+#### Reading the Linestring Bangkok road data from rds folder.
+
+```{r}
+Bkk_rds_Ln<-read_rds("data/rds/Bkk_rds_Ln.rds")
+```
+
+### ploting Merged bankok Layer to ensure that the geometry is working.
+
+```{r}
+plot(st_geometry(Bkk_rds_Ln))
+```
+
+### Intersect Road Accidents which happeneded at Bangkok Metropoliton Area.
+
+In the code chunk below, we intersect the the accidents with Bangkok Metropoliton Area, then the output is convert back to the Sf object so that the accident data could be joined with the necessary information which allow us to carry out explotary data analysis in the subsequent sections.
+
+```{r}
+Bkk_Rd_Acc <-st_intersection (SAB_1_M, rdacc_sf)
+Bkk_Rd_Acc <- st_as_sf(Bkk_Rd_Acc)
+Bkk_Rd_Acc<- st_join(Bkk_Rd_Acc, rdacc_sf)
+```
+
+### Plot Road Accidents at Bangkok Metropoliton Area to visualise that the correct accidents are picked up
+
+```{r}
+plot(st_geometry(Bkk_Rd_Acc))
+```
+
+#### Saving the Linestring Bankok road data to the rds folder.
+
+```{r}
+write_rds(Bkk_Rd_Acc,"data/rds/Bkk_Rd_Acc.rds")
+#to save the file to rds
+```
+
+#### Reading the Linestring Bangkok road data from rds folder.
+
+```{r}
+Bkk_Rd_Acc<-read_rds("data/rds/Bkk_Rd_Acc.rds")
+```
+
+### Adding buffer to Bangkok Road.
+
+```{r}
+Bkk_Rd_m_50 <- st_buffer(Bkk_rds_Ln, dist = 50) # buffer distance in buffer 
+# Check the result
+plot(st_geometry(Bkk_Rd_m_50))
+```
+
+#### Saving the Linestring Bankok road data to the rds folder.
+
+```{r}
+write_rds(Bkk_Rd_m_50,"data/rds/Bkk_Rd_m_50.rds")
+#to save the file to rds
+```
+
+#### Reading the Linestring Bangkok road data from rds folder.
+
+```{r}
+Bkk_Rd_m_50<-read_rds("data/rds/Bkk_Rd_m_50.rds")
+```
+
+### Network KDE (NKDE) Analysis:
+
+https://cran.r-project.org/web/packages/spNetwork/vignettes/NKDE.html
+
+Referring to the example stated in the documentation, the bike accidents are plotted at radius of 300. and lixlize is set at 200m. Given the large large area of the area, Lixel should be size to up increase to 100 km
+
+
+# Apply the lixelize_lines function
+lixels <- lixelize_lines(Bkk_rds_Ln, 100000, mindist = 37500)
+
+
+
+samples <- lines_center(lixels)
+
+
+densities <- nkde(Bkk_rds_Ln, 
+                  events = Bkk_Rd_Acc,
+                  w = rep(1, nrow(Bkk_Rd_Acc)),
+                  samples = samples,
+                  kernel_name = "quartic",
+                  bw = 100000, #change the bandwidth to 2km
+                  div= "bw", 
+                  method = "simple", 
+                  digits = 1, 
+                  tol = 1,
+                  grid_shape = c(100,100), 
+                  max_depth = 2,# reducing the depth to aid in the calculation
+                  agg = 100000, #we aggregate events within a 1km radius (faster calculation)
+                  sparse = TRUE,
+                  verbose = FALSE)
+
+
+
+samples$density <- densities
+lixels$density <- densities
+
+
+
+# re-scaling to help the mapping
+samples$density <- samples$density*1000
+lixels$density <- lixels$density*1000
+
+
+
+# To prepare interactive and high cartographic quality map visualization
+tmap_mode('plot')
+tm_shape(lixels) +
+  tm_lines(col = "density") +
+tm_shape(Bkk_Rd_Acc)+
+  tm_dots()
+
+
+
+#k function
+kfun_Bkk_Acc_Ln <- kfunctions(Bkk_rds_Ln, 
+                             Bkk_Rd_Acc,
+                             start = 0, 
+                             end = 1000, 
+                             step = 50, 
+                             width = 50, 
+                             nsim = 20, # 50 simulation, start from 0.
+                             resolution = 50,
+                             verbose = FALSE, 
+                             conf_int = 0.05)
+
+kfun_Bkk_Acc_Lne$plotk
+
+
+## Exploratory Data Analysis
+
+The following sections exploratory data analysis. Histograms were plotted to view if there are any observations observed for the accidents which occurred within Bangkok Metropolitan Area.
+
+### 1. Accidents occured during peak and non-peak hours, holidays and non holidays.
+
+Based on the following data generated, majority of the accidents have occurred outside the peak hours. Peak hours in Bangkok Metropolitan Area is defined as 7 – 9 AM and 4 – 7 PM on weekdays for this project.
+
+```{r}
+ggplot(Bkk_Rd_Acc, aes(x = peak_hours)) +
+  geom_histogram(stat = "count", fill = "steelblue", color = "black", bins = 2) +
+  labs(title = "Count of Accidents During Peak and Non-Peak Hours",
+       x = "Acc Code",
+       y = "Count of Accidents") +
+  theme_minimal()
+```
+
+The following code shows the number of accidents which took place during the holidays vs non holidays.
+
+Although that based on the histogram majority of the accidents occurred during non- holidays. This should not be considered as the number of days which was public holiday is much lower than non holiday. Hence it will be more accurate to normalise by the number of days to provide a more accurate picture.
+
+```{r}
+ggplot(Bkk_Rd_Acc, aes(x = is_holiday)) +
+  geom_histogram(stat = "count", fill = "steelblue", color = "black", bins = 2) +
+  labs(title = "Count of Accidents During Holidays and non-Holidays",
+       x = "Acc Code",
+       y = "Count of Accidents") +
+  theme_minimal()
+```
+
+The next code chunk is to plot the accidents which had occurred through the days in the week.
+
+Based on the chart, it is observed that it has occurred more commonly on Friday, Saturday and Sunday in the Bangkok Metropolitan Area.
+
+```{r}
+ggplot(Bkk_Rd_Acc, aes(x = dayofweek)) +
+  geom_histogram(stat = "count", fill = "steelblue", color = "black", bins = 2) +
+  labs(title = "Count of Accidents by days of the week",
+       x = "Acc Code",
+       y = "Count of Accidents") +
+  theme_minimal()
+```
+
+The following code chunk is to plot the type of vehicles which were common to involve accidents.
+
+```{r}
+ggplot(Bkk_Rd_Acc, aes(x = vehicle_type)) +
+  geom_histogram(stat = "count", fill = "steelblue", color = "black", bins = 2) +
+  labs(title = "Count of Accidents by vehicle types",
+       x = "Acc Code",
+       y = "Count of Accidents") +
+  theme_minimal()
+```
+
+The following code view the accidents which had occurred in different weather conditions.
+
+```{r}
+ggplot(Bkk_Rd_Acc, aes(x = weather_condition)) +
+  geom_histogram(stat = "count", fill = "steelblue", color = "black", bins = 2) +
+  labs(title = "Count of Accidents by weather conditions",
+       x = "Acc Code",
+       y = "Count of Accidents") +
+  theme_minimal()
+```
