@@ -1,0 +1,49 @@
+---
+title: "In Class Exercise 01"
+author: "Dew Stella Chan"
+date: "20 Aug 2024"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  message: false
+  freeze: true
+---
+
+#Loading of R packages
+
+```{r}
+pacman::p_load(sf,tidyverse, tmap,ggstatsplot)
+```
+
+#Loading of geographical data into R, and rewriting the file to kml format
+
+```{r}
+mpsz_shp <- st_read(dsn = "data/geospatial/MasterPlan2014SubzoneBoundaryWebSHP", 
+                  layer = "MP14_SUBZONE_WEB_PL")
+
+
+st_write(mpsz_shp , "data/geospatial/MasterPlan2014SubzoneBoundary.kml",
+         delete_dsn = TRUE )
+
+```
+
+#Importing the data to and compare the diffences between the shapefile or kml file format.
+
+#If the data useing
+
+```{r}
+mpsz_2019_shp <- st_read(dsn = "data/geospatial/MPSZ-2019", 
+                  layer = "MPSZ-2019")
+
+mpsz_2019_kml <- st_read(dsn = "data/geospatial/MasterPlan2019SubzoneBoundaryNoSeaKML.kml")
+
+```
+
+#Importing data plus transformation of to the projection coordination system
+
+```{r}
+mpsz_2019_shp <- st_read(dsn = "data/geospatial/MPSZ-2019", 
+                  layer = "MPSZ-2019") %>%
+    st_transform( crs = 3414)
+```

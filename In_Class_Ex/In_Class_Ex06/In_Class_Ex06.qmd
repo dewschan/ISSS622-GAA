@@ -1,0 +1,151 @@
+---
+title: "In Class Exercise 06"
+author: "Dew Stella Chan"
+date: " 30 Sep 2024"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  message: false
+  freeze: true
+---
+
+##Loading of Libraries
+
+```{r}
+pacman:: p_load(sf, sfdep, tmap, plotly, tidyverse, Kendall)
+```
+
+No spatial transformation required.
+
+```{r}
+hunan <- st_read(dsn = "data/geospatial",                   layer = "Hunan")
+
+```
+
+##Time sequence
+
+Cannot use original datetime. cos the time is in demical. either convert the date time into integer.
+
+```{r}
+GDPPC <- read_csv("data/aspatial/Hunan_GDPPC.csv")
+```
+
+## Create a space time
+
+```{r}
+GDPPC_st <- spacetime(GDPPC, hunan,
+                      .loc_col = "County",
+                      .time_col = "Year")
+```
+
+This is to check if it is GDPPC is datetime field
+
+```{r}
+is_spacetime_cube(GDPPC_st)
+```
+
+Only useful if it is kept constant, if the car changes with trajectory.If the the boundary changes, we will not be able to use this method.
+
+```{r}
+GDPPC_nb <- GDPPC_st %>%
+  activate("geometry") %>%
+  mutate(nb=include_self(
+    st_contiguity(geometry)),
+    wt=st_inverse_distance(nb,
+                           geometry,
+                           scale=1, 
+                           alpha=1),#more distance decay.
+    .before=1)%>% #all this newly derived variables will go infront
+  set_nbs("nb")%>% #avoid sorting, this is a cube, we should not sort, we order them 
+  set_wts("wt")
+```
+
+Computing GI
+
+```{r}
+gi_stars <- GDPPC_nb %>%
+  group_by(Year)%>%
+  mutate(gi_star=local_gstar_perm(
+    GDPPC, nb, wt)) %>%
+  tidyr::unnest(gi_star)
+```
+
+```{r}
+cbg <- gi_stars %>%
+  ungroup %>%
+  filter(County=="Changsha") |>#same as %>%
+  select(County,Year,gi_star)
+```
+
+```{r}
+ggplot(data = cbg,
+       aes(x = Year, 
+           y = gi_star)) +
+  geom_line()+
+  theme_light()
+```
+
+```{r}
+p<-ggplot(data=cbg,
+          aes(x= Year,
+              y =gi_star)) +
+  geom_line()+
+  theme_light()
+ggplotly(p)
+```
+
+```{r}
+cbg %>%
+  summarise (mk=list(
+    unclass(
+      Kendall::MannKendall(gi_star)))) %>%
+  tidyr::unnest_wider(mk)
+```
+
+```{r}
+ehsa <-gi_stars %>%
+  group_by(County)%>%
+  summarise(mk=list(
+    unclass(
+      Kendall::MannKendall(gi_star)))) %>%
+    tidyr::unnest_wider(mk)
+  
+head(ehsa)
+```
+
+## Emerging Hotspot Analysis:
+
+```{r}
+ehsa <- emerging_hotspot_analysis(
+  x = GDPPC_st,
+  .var= "GDPPC",
+  k = 1,
+  nsim = 99
+)
+```
+
+the following code didnt filter out the stats signiificant,
+
+```{r}
+ggplot(data=ehsa,
+       aes(x=classification))+
+         geom_bar()
+```
+
+```{r}
+huanan_ehsa <- hunan %>%
+  left_join(ehsa,by = join_by(County == location))
+```
+
+```{r}
+ehsa_sig <- huanan_ehsa %>%
+  filter(p_value<0.05)
+tmap_mode("plot")
+tm_shape (huanan_ehsa)+
+  tm_polygons() +
+  tm_borders(alpha = 0.5)+
+tm_shape(ehsa_sig)+
+  tm_fill("classification")+
+  tm_borders(alpha=0.4)
+```

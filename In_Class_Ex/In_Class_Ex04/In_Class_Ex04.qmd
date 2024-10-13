@@ -1,0 +1,257 @@
+---
+title: "In Class Exercise 04"
+author: "Dew Stella Chan"
+date: "20 Aug 2024"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  message: false
+  freeze: true
+---
+
+# Loading of Libraries and Data
+
+```{r}
+pacman:: p_load(sf, ggstatsplot, tmap, tidyverse, knitr, GWmodel)
+```
+
+```{r}
+hunan_sf <- st_read(dsn = "data/geospatial", 
+                 layer = "Hunan")
+
+hunan2012<- read_csv("data/aspatial/Hunan_2012.csv")
+```
+
+The join field is not define,by default joined by country. If it is rerun the joined field will change.
+
+```{r}
+hunan_sf <- left_join(hunan_sf, hunan2012) %>%
+  select(1:3, 7, 15, 16, 31, 32)
+```
+
+Mapping GDPPC
+
+```{r}
+basemap <- tm_shape(hunan_sf) +
+  tm_polygons() +
+  tm_text("NAME_3", size=0.5)
+
+gdppc <- qtm(hunan_sf, "GDPPC") #should be plotted using hunan_sf. instead of hunan.
+tmap_arrange(basemap, gdppc, asp=1, ncol=2)
+```
+
+Converting to SpatialPolygonDataFrame:
+
+GWmodel presently is built around the older sp and not sf formats for handling spatial data in R.
+
+```{r}
+hunan_sp <- hunan_sf %>% as_Spatial()
+```
+
+Cross Validation
+
+```{r}
+bw_CV <- bw.gwr(GDPPC ~ 1, 
+             data = hunan_sp,
+             approach = "CV",
+             adaptive = TRUE, 
+             kernel = "bisquare", 
+             longlat = T)
+```
+
+AIC
+
+```{r}
+bw_AIC <- bw.gwr(GDPPC ~ 1, 
+             data = hunan_sp,
+             approach ="AIC",
+             adaptive = TRUE, 
+             kernel = "bisquare", 
+             longlat = T)
+```
+
+Geographically Weighted Summary Statistics with adaptive bandwidth Computing geographically wieghted summary statistics
+
+```{r}
+gwstat <- gwss(data = hunan_sp,
+               vars = "GDPPC",
+               bw = bw_AIC,
+               kernel = "bisquare",
+               adaptive = TRUE,
+               longlat = T)
+```
+
+Geographically Weighted Summary Statistics with adaptive bandwidth Preparing the output data Code chunk below is used to extract SDF data table from gwss object output from gwss(). It will be converted into data.frame by using as.data.frame().
+
+```{r}
+gwstat_df <-as.data.frame(gwstat$SDF)
+```
+
+Next, cbind() is used to append the newly derived data.frame onto hunan_sf sf data.frame.
+
+```{r}
+hunan_gstat <- cbind(hunan_sf, gwstat_df)
+```
+
+Visualising geographically weighted summary statistics
+
+```{r}
+tm_shape(hunan_gstat) +
+  tm_fill("GDPPC_LM",
+          n = 5,
+          style = "quantile") +
+  tm_borders(alpha = 0.5) +
+  tm_layout(main.title = "Distribution of geographically wieghted mean",
+            main.title.position = "center",
+            main.title.size = 1.0,
+            legend.text.size = 0.8,
+            legend.height = 1.50, 
+            legend.width = 1.50,
+            frame = TRUE)
+```
+
+## Geographically Weighted Summary Statistics with fixed
+
+Determine fixed bandwidth
+
+Cross-Validataion
+
+```{r}
+bw_CV <- bw.gwr(GDPPC ~ 1, 
+             data = hunan_sp,
+             approach = "CV",
+             adaptive = FALSE, 
+             kernel = "bisquare", 
+             longlat = T)
+```
+
+```{r}
+bw_AIC <- bw.gwr(GDPPC ~ 1, 
+             data = hunan_sp,
+             approach ="AIC",
+             adaptive = FALSE, 
+             kernel = "bisquare", 
+             longlat = T)
+```
+
+```{r}
+gwstat <- gwss(data = hunan_sp,
+               vars = "GDPPC",
+               bw = bw_AIC,
+               kernel = "bisquare",
+               adaptive = FALSE,
+               longlat = T)
+```
+
+Preparing the output data Code chunk below is used to extract SDF data table from gwss object output from gwss(). It will be converted into data.frame by using as.data.frame().
+
+```{r}
+gwstat_df <- as.data.frame(gwstat$SDF)
+```
+
+Next, cbind() is used to append the newly derived data.frame onto hunan_sf sf data.frame.
+
+```{r}
+hunan_gstat <- cbind(hunan_sf, gwstat_df)
+```
+
+Visualising geographically weighted summary statistics
+
+```{r}
+tm_shape(hunan_gstat) +
+  tm_fill("GDPPC_LM",
+          n = 5,
+          style = "quantile") +
+  tm_borders(alpha = 0.5) +
+  tm_layout(main.title = "Distribution of geographically wieghted mean",
+            main.title.position = "center",
+            main.title.size = 2.0,
+            legend.text.size = 1.2,
+            legend.height = 1.50, 
+            legend.width = 1.50,
+            frame = TRUE)
+```
+
+## Geographically Weighted Correlation with Adaptive Bandwidth
+
+Business question: Is there any relationship between GDP per capita and Gross Industry Output?
+
+```{r}
+ggscatterstats(
+  data = hunan2012, 
+  x = Agri, 
+  y = GDPPC,
+  xlab = "Gross Agriculture Output", ## label for the x-axis
+  ylab = "GDP per capita", 
+  label.var = County, 
+  label.expression = Agri > 10000 & GDPPC > 50000, 
+  point.label.args = list(alpha = 0.7, size = 4, color = "grey50"),
+  xfill = "#CC79A7", 
+  yfill = "#009E73", 
+  title = "Relationship between GDP PC and Gross Agriculture Output")
+```
+
+Determine the bandwidth
+
+```{r}
+bw <- bw.gwr(GDPPC ~ GIO, 
+             data = hunan_sp, 
+             approach = "AICc", 
+             adaptive = TRUE)
+```
+
+```{r}
+
+gwstats <- gwss(hunan_sp, 
+                vars = c("GDPPC", "GIO"), 
+                bw = bw,
+                kernel = "bisquare",
+                adaptive = TRUE, 
+                longlat = T)
+```
+
+Code chunk below is used to extract SDF data table from gwss object output from gwss(). It will be converted into data.frame by using as.data.frame().
+
+```{r}
+gwstat_df <- as.data.frame(gwstats$SDF) %>%
+  select(c(12,13)) %>%
+  rename(gwCorr = Corr_GDPPC.GIO,
+         gwSpearman = Spearman_rho_GDPPC.GIO)
+```
+
+Next, cbind() is used to append the newly derived data.frame onto hunan_sf sf data.frame.
+
+```{r}
+hunan_Corr <- cbind(hunan_sf, gwstat_df)
+```
+
+```{r}
+tm_shape(hunan_Corr) +
+  tm_fill("gwSpearman",
+          n = 5,
+          style = "quantile") +
+  tm_borders(alpha = 0.5) +
+  tm_layout(main.title = "Local Spearman Rho",
+            main.title.position = "center",
+            main.title.size = 1.0,
+            legend.text.size = 0.7,
+            legend.height = 1.0, 
+            legend.width = 1.0,
+            frame = TRUE)
+```
+
+```{r}
+tm_shape(hunan_Corr) +
+  tm_fill("gwCorr",
+          n = 5,
+          style = "quantile") +
+  tm_borders(alpha = 0.5) +
+  tm_layout(main.title = "Local Correlation Coefficient",
+            main.title.position = "center",
+            main.title.size = 1.0,
+            legend.text.size = 0.7,
+            legend.height = 1.0, 
+            legend.width = 1.0,
+            frame = TRUE)
+```
