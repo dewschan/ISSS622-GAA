@@ -1,0 +1,15 @@
+{
+  "hash": "58d505f085ac3d0bdcb49c63eb97b4dc",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Hands-on Exercise 07\"\nauthor: \"Dew Stella Chan\"\ndate: \"October 13, 2024\"\ndate-modified: \"last-modified\"\nexecute: \n  eval: true\n  echo: true\n  message: false\n  freeze: true\n  warning: false\n---\n\n\n\n\n\nThe Data:\nTwo data sets will be used in this model building exercise, they are:\n\nURA Master Plan subzone boundary in shapefile format (i.e. MP14_SUBZONE_WEB_PL)\ncondo_resale_2015 in csv format (i.e. condo_resale_2015.csv)\n\nGetting Started\n\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\npacman::p_load(olsrr, corrplot, ggpubr, sf, spdep, GWmodel, tmap, tidyverse, gtsummary)\n```\n\n::: {.cell-output .cell-output-stdout}\n\n```\npackage 'glue' successfully unpacked and MD5 sums checked\npackage 'gtsummary' successfully unpacked and MD5 sums checked\n\nThe downloaded binary packages are in\n\tC:\\Users\\user\\AppData\\Local\\Temp\\RtmpyiRtV5\\downloaded_packages\n```\n\n\n:::\n:::\n\n\n\n\n\nImporting geospatial data\n\n\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\nmpsz = st_read(dsn = \"data/geospatial\", layer = \"MP14_SUBZONE_WEB_PL\")\n```\n\n::: {.cell-output .cell-output-stdout}\n\n```\nReading layer `MP14_SUBZONE_WEB_PL' from data source \n  `C:\\dewschan\\ISSS622-GAA\\Hands-on_Ex\\Hands-On_Ex07\\data\\geospatial' \n  using driver `ESRI Shapefile'\nSimple feature collection with 323 features and 15 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY\nBounding box:  xmin: 2667.538 ymin: 15748.72 xmax: 56396.44 ymax: 50256.33\nProjected CRS: SVY21\n```\n\n\n:::\n:::",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
