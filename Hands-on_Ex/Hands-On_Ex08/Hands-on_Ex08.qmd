@@ -170,12 +170,13 @@ gwr_bw_test_adaptive <- read_rds("data/rds/gwr_bw_test_adaptive.rds")
 
 14.8.7 Computing predicted values of the test data
 
+```{r}
 gwr_pred <- gwr.predict(formula = resale_price ~
                           floor_area_sqm + storey_order +
                           remaining_lease_mths + PROX_CBD + 
                           PROX_ELDERLYCARE + PROX_HAWKER + 
                           PROX_MRT + PROX_PARK + PROX_MALL + 
-                          PROX_SUPERMARKET + WITHIN_350M_KINDERGARTEN +
+                          PROX_SUPERMARKET +WITHIN_350M_KINDERGARTEN +
                           WITHIN_350M_CHILDCARE + WITHIN_350M_BUS + 
                           WITHIN_1KM_PRISCH, 
                         data=train_data_sp, 
@@ -184,7 +185,7 @@ gwr_pred <- gwr.predict(formula = resale_price ~
                         kernel = 'gaussian', 
                         adaptive=TRUE, 
                         longlat = FALSE)
-
+```
 
 ## Preparing coordinates data
 
@@ -207,6 +208,7 @@ train_data <- train_data %>%
 ## Calibrating Random Forest Model
 
 ```{r}
+#eval|False 
 set.seed(1234)
 rf <- ranger(resale_price ~ floor_area_sqm + storey_order + 
                remaining_lease_mths + PROX_CBD + PROX_ELDERLYCARE + 
@@ -221,6 +223,7 @@ rf
 ```
 
 ```{r}
+#eval|False
 rf <- read_rds("data/rds/rf.rds")
 rf
 ```
@@ -254,8 +257,8 @@ test_data <- cbind(test_data, coords_test) %>%
 
 Predicting with test data
 
-
-gwRF_pred <- predict.grf(gwRF_adaptive, 
+```{r}
+gwRF_pred <- predict.grf(, 
                            test_data, 
                            x.var.name="X",
                            y.var.name="Y", 
@@ -265,8 +268,10 @@ gwRF_pred <- predict.grf(gwRF_adaptive,
 
 
 GRF_pred <- write_rds(gwRF_pred, "data/model/GRF_pred.rds")
+```
 
 
+```{r}
 GRF_pred <- read_rds("data/model/GRF_pred.rds")
 GRF_pred_df <- as.data.frame(GRF_pred)
 
@@ -275,19 +280,22 @@ GRF_pred_df <- as.data.frame(GRF_pred)
 test_data_p <- cbind(test_data, GRF_pred_df)
 write_rds(test_data_p, "data/rds/test_data_p.rds")
 
+```
 
 ### Calculating Root Mean Square Error
 
-
+```{r}
 rmse(test_data_p$resale_price, 
      test_data_p$GRF_pred)
+```
 
 
 ### Visualising the predicted values
 
-
+````{r}
 ggplot(data = test_data_p,
        aes(x = GRF_pred,
            y = resale_price)) +
   geom_point()
+```
 
