@@ -1,0 +1,128 @@
+---
+title: "Preparing HDB data"
+author: "Dr. Kam Tin Seong"
+---
+
+::: {style="font-size: 1.50em"}
+```{r}
+pacman::p_load(tidyverse, sf, httr, jsonlite, rvest)
+#rvest is used to harvest data.
+```
+
+## Data Preparation. 
+
+This is the subset of the resales data from 2023 Jan to Sep 2024. 
+
+```{r}
+resale <- read_csv("data/resale.csv") %>%
+  filter(month >= "2023-01" & month <= "2024-09")
+```
+Combine the block and street names together to form address.
+and change the remaining lease in years and months. 
+```{r}
+resale_tidy <- resale %>%
+  mutate(address = paste(block,street_name)) %>%
+  mutate(remaining_lease_yr = as.integer(
+    str_sub(remaining_lease, 0, 2)))%>%
+  mutate(remaining_lease_mth = as.integer(
+    str_sub(remaining_lease, 9, 11)))
+```
+
+This is to keep the class size small for in class is not needed 
+```{r}
+resale_selected <- resale_tidy %>%
+  filter(month == "2024-09")
+```
+
+This is to create a list.to sort them and pass it as a list. 
+```{r}
+add_list <- sort(unique(resale_selected$address))
+```
+to reduce the number of data to through the portal
+
+```{r} 
+#creation of functions. 
+get_coords <- function(add_list){
+  
+  # Create a data frame to store all retrieved coordinates
+  postal_coords <- data.frame()
+    
+  for (i in add_list){
+    #print(i)
+
+    r <- GET('https://www.onemap.gov.sg/api/common/elastic/search?',
+           query=list(searchVal=i,
+                     returnGeom='Y',
+                     getAddrDetails='Y'))
+    data <- fromJSON(rawToChar(r$content))
+    found <- data$found
+    res <- data$results
+    
+    # Create a new data frame for each address
+    new_row <- data.frame()
+    
+    # If single result, append, can be change to x and y, and it will be projected coordinate system. 
+    
+    if (found == 1){
+      postal <- res$POSTAL 
+      lat <- res$LATITUDE
+      lng <- res$LONGITUDE
+      new_row <- data.frame(address= i, 
+                            postal = postal, 
+                            latitude = lat, 
+                            longitude = lng)
+    }
+    
+    # If multiple results, drop NIL and append top 1
+    else if (found > 1){
+      # Remove those with NIL as postal
+      res_sub <- res[res$POSTAL != "NIL", ]
+      
+      # Set as NA first if no Postal, this is to accept failed geocoding. 
+      if (nrow(res_sub) == 0) {
+          new_row <- data.frame(address= i, 
+                                postal = NA, 
+                                latitude = NA, 
+                                longitude = NA)
+      }
+      
+      else{
+        top1 <- head(res_sub, n = 1)
+        postal <- top1$POSTAL 
+        lat <- top1$LATITUDE
+        lng <- top1$LONGITUDE
+        new_row <- data.frame(address= i, 
+                              postal = postal, 
+                              latitude = lat, 
+                              longitude = lng)
+      }
+    }
+
+    else {
+      new_row <- data.frame(address= i, 
+                            postal = NA, 
+                            latitude = NA, 
+                            longitude = NA)
+    }
+    
+    # Add the row
+    postal_coords <- rbind(postal_coords, new_row)
+  }
+  return(postal_coords)
+}
+```
+
+```{r}
+coords <- get_coords(add_list)
+#read the list.
+```
+
+```{r}
+write_rds(coords, "data/rds/coords.rds")
+```
+
+```{r}
+resale_sgeo <- merge(coords,resale_selected)
+```
+
+Then need to reset the data:
