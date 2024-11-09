@@ -21,7 +21,7 @@ pacman::p_load(sf, spdep, GWmodel, SpatialML,
 ## Reading data
 
 ```{r}
-mdata <- read_rds("data/mdata.rds")
+mdata <- read_rds("data/rds/mdata.rds")
 ```
 
 ## Partitioning Dataset

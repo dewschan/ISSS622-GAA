@@ -1,46 +1,127 @@
 ---
-title: "Preparing HDB data"
-author: "Dr. Kam Tin Seong"
+title: "Data Prepration for Take Home Exercise 03b"
+author: "Dew Stella Chan"
+date: "October 27, 2024"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  message: false
+  freeze: true
+  warning: false
 ---
 
-::: {style="font-size: 1.50em"}
+# Scope of this analysis:
+
+The scope of this analysis is to focus on building predictive model for predicting the 5- room HDB resale price in Singapore.
+
+The model is calibrated using the 5-room flat transactions from January 2023 to September 2024, and then random select of sample 6,500 were extracted to form the part of the training and test data.
+
+The process of data preparation was carried out using all the HDB transactions from January 2023 to September 2024.
+
+# R Packages used in this Analysis
+
 ```{r}
-pacman::p_load(tidyverse, sf, httr, jsonlite, rvest)
-#rvest is used to harvest data.
+pacman::p_load(sf, spdep, GWmodel, tmap, rsample, Metrics, tidyverse, sf, httr, jsonlite, rvest, xml2, SpatialML, knitr, kableExtra)
+#rvest is used to harvest data from OneMap API
 ```
 
-## Data Preparation. 
+# Data Preparation.
 
-This is the subset of the resales data from 2023 Jan to Sep 2024. 
+### Loading of Resale HDB Data
+
+This is the subset of the resales data from 2023 Jan to Sep 2024.
 
 ```{r}
-resale <- read_csv("data/resale.csv") %>%
-  filter(month >= "2023-01" & month <= "2024-09")
+#| eval: false
+resale <- read_csv("data/resale.csv") 
 ```
-Combine the block and street names together to form address.
-and change the remaining lease in years and months. 
+
+The following code block is to:
+
+-   combine the block and street names together to form address field.
+
+-   Extract out the the remaining lease in years and months.
+
+-   calculate the remaining lease in the months.
+
 ```{r}
+#| eval: false
 resale_tidy <- resale %>%
-  mutate(address = paste(block,street_name)) %>%
-  mutate(remaining_lease_yr = as.integer(
-    str_sub(remaining_lease, 0, 2)))%>%
-  mutate(remaining_lease_mth = as.integer(
-    str_sub(remaining_lease, 9, 11)))
+  filter(month >= "2023-01" & month <= "2024-09")%>%
+  mutate(address = paste(block, street_name)) %>%
+  mutate(remaining_lease_yr = as.integer(str_sub(remaining_lease, 0, 2))) %>%
+  mutate(remaining_lease_mth = as.integer(str_sub(remaining_lease, 9, 11))) %>%
+  replace_na(list(remaining_lease_mth = 0)) %>%  # Replace NA in remaining_lease_mth with 0
+  mutate(rem_lease_inMths = remaining_lease_yr * 12 + remaining_lease_mth)
+write_rds(resale_tidy, "data/rds/resale_tidy.rds")
 ```
 
-This is to keep the class size small for in class is not needed 
 ```{r}
-resale_selected <- resale_tidy %>%
-  filter(month == "2024-09")
+#| eval: false
+resale_tidy <-read_rds("data/rds/resale_tidy.rds")
 ```
 
-This is to create a list.to sort them and pass it as a list. 
+#### Reverse Geo-coding using the address of the resale HDB data
+
 ```{r}
-add_list <- sort(unique(resale_selected$address))
+#| eval: false
+add_list <- sort(unique(resale_tidy$address))
 ```
-to reduce the number of data to through the portal
 
-```{r} 
+### Loading of School data
+
+The general information of the school data downloaded from data.gov.sg. The popular primary school is determined by over subscription at phrase 2B and 2C of 2023 and 2024 primary one school registration exercise. The outcome of the registration are from the following website:
+
+-   https://www.creativecampus.com.sg/best-primary-schools-in-Singapore-2024
+
+-   https://elite.com.sg/primary-schools
+
+The schools which are oversubscribed at either of the phases are assessed as popular primary.
+
+```{r}
+#| eval: false
+Sch <- read_csv("data/School.csv")
+write_rds(Sch, "data/rds/sch.rds")
+```
+
+### Reverse Geo-coding using the address of the school.
+
+To group the list of unique addresses for reverse Geo-coding
+
+```{r}
+#| eval: false
+add_list <- sort(unique(Sch$address))
+```
+
+### List of shopping mall in Singapore
+
+The following list of shopping malls was extracted from Wikipedia.
+
+-   https://en.wikipedia.org/wiki/List_of_shopping_malls_in_Singapore
+
+```{r}
+#| eval: false
+mall_list <- c("100 AM", "313@Somerset", "Aperia", "Balestier Hill Shopping Centre","Bugis Cube", "Bugis Junction", "Bugis+", "Capitol Piazza", "Cathay Cineleisure Orchard", "Clarke Quay Central", "The Centrepoint", "City Square Mall", "City Gate Mall", "CityLink Mall", "Duo", "Far East Plaza", "Funan", "Great World City", "HDB Hub", "Holland Village Shopping Mall", "ION Orchard", "Junction 8", "Knightsbridge", "Liat Towers", "Lucky Plaza", "Marina Bay Sands", 
+"The Shoppes at Marina Bay Sands", "Marina Bay Link Mall", 
+"Marina Square", "Millenia Walk", "Mustafa 1 entre", "Ngee Ann City", "One Holland Village", "Orchard Central", "Orchard Gateway", 
+"Orchard Plaza", "Midpoint Orchard", "Palais Renaissance", "People's Park Centre", "People's Park Complex", "Plaza Singapura","GRiD(pomo)", "Raffles City", "Scotts Square", "Shaw House and Centre", "Sim Lim Square", "Singapore Shopping Centre", "The South Beach", "Square 2", "Sunshine Plaza", "Suntec City", "Tanglin Mall", "Tanjong Pagar Centre", "Tekka Centre", "The Adelphi", "The Paragon","Tiong Bahru Plaza", "The Poiz", "Thomson Plaza", "United Square", "Thomson V", "Velocity@Novena Square", "Wheelock Place", "Wisma Atria","Zhongshan Mall","Bedok Mall", "Century Square", "City Plaza", "Changi City Point","Downtown East", "Djitsun Mall Bedok", "Eastpoint Mall","Jewel Changi Airport", "KINEX", "Katong Shopping Centre", "Katong Square", "Kallang Wave Mall", "Leisure Park Kallang", "i12 Katong","Our Tampines Hub", "Parkway Parade", "Pasir Ris Mall", "Pasir Ris West Plaza","Paya Lebar Square", "Paya Lebar Quarter", "Roxy Square", "Singpost Centre", "Tampines 1", "Tampines Mall", "White Sands", "Elias Mall", "Loyang Point", "888 Plaza", "Admiralty Place", "AMK Hub", "Canberra Plaza", "Causeway Point", "HDB Hub", "Broadway Plaza", "Jubilee Square", "Junction 8", "Junction Nine", "Marsiling Mall", "Northpoint City", "Sembawang Shopping Centre", "Sun Plaza", "Vista Point", "Wisteria Mall", "Woodlands Civic Centre", "Woodlands Mart", "Woodlands North Plaza","Anchorvale Village", "Buangkok Square", "Compass One", "Greenwich V", "Heartland Mall", "Hougang 1", "Hougang Green Shopping Mall", "Hougang Mall", "NEX", "Northshore Plaza", "Oasis Terraces", "Punggol Coast Mall", "Punggol Plaza", "Rivervale Mall", "Rivervale Plaza", "Sengkang Grand Mall", "The Seletar Mall", "Upper Serangoon Shopping Centre", "Waterway Point", "myVillage At Serangoon Garden, shopping_malls", "Beauty World Centre", "Beauty World Plaza", "Bukit Panjang Plaza", "Bukit Timah Plaza", "Fajar Shopping Centre", "Greenridge Shopping Centre", "Hillion Mall", "HillV2", "Junction 10", "Keat Hong Shopping Centre", "Limbang Shopping Centre", "Lot One", "Rail Mall", "Sunshine Place", "Teck Whye Shopping Centre", "West Mall", "Yew Tee Point", "Yew Tee Square", "VivoCity", "HarbourFront Centre", "Alexandra Retail Centre", "321 Clementi", "The Clementi Mall", "IMM", "Jem", "Westgate", "Jurong Point", "Pioneer Mall", "The Star Vista", "Alexandra Central", "Anchorpoint", "OD Mall", "Boon Lay Shopping Centre", "Grantral Mall", "Fairprice Hub", "Gek Poh Shopping Centre", "Rochester Mall", "Taman Jurong Shopping Centre", "West Coast Plaza","Plantation Plaza", "Tengah Mall (2027)", "Queensway Shopping Centre", "The Rail Mall" )
+
+```
+
+#### Reverse Geo-coding using the address of the shopping mall
+
+```{r}
+#| eval: false
+add_list <- sort(unique(mall_list))
+```
+
+### Reverse Geo-coding using One Map API.
+
+Function to get the address from SLA API via reverse geo-coding
+
+```{r}
+#| eval: false
 #creation of functions. 
 get_coords <- function(add_list){
   
@@ -112,17 +193,586 @@ get_coords <- function(add_list){
 }
 ```
 
-```{r}
-coords <- get_coords(add_list)
-#read the list.
-```
+### Code to get the coordinates from One Map API
+
+The following code chunk will return with the coordinates of the HDB resales flats, school and shopping mall, depending what have been added to the add_list.
 
 ```{r}
+#| eval: false
+#last run is Shopping mall 
+coords<- get_coords(add_list)
+
+```
+
+### Codes to write the coordinates to rds folder.
+
+The data frame coords in rds folder contains all the HDB transactions coordinates.
+
+***The following two code chunks should be not re-run, so the coordinates of HDB transaction will not be replaced.***
+
+```{r}
+#| eval: false
 write_rds(coords, "data/rds/coords.rds")
 ```
 
 ```{r}
-resale_sgeo <- merge(coords,resale_selected)
+#| eval: false
+coords <-read_rds("data/rds/coords.rds")
 ```
 
-Then need to reset the data:
+```{r}
+#| eval: false
+resale_tidy_sgeo <- merge(coords,resale_tidy)
+write_rds(resale_tidy_sgeo , "data/rds/resale_tidy_sgeo.rds")
+```
+
+```{r}
+#| eval: false
+resale_tidy_sgeo <-read_rds("data/rds/resale_tidy_sgeo.rds")
+```
+
+#### Converting the HDB Transaction data to spatial data.
+
+As mentioned in the earlier section, the codes are in lag-long, we will need to transform the geographical systems.
+
+```{r}
+#| eval: false
+resale_tidy_geo <-  st_as_sf(resale_tidy_sgeo,coords = c("longitude", "latitude"),crs = 4326) %>% #project to WGS 84
+  st_transform(3414) #convert to SVY21
+write_rds(resale_tidy_geo, "data/rds/resale_tidy_geo.rds")
+```
+
+```{r}
+#| eval: false
+resale_tidy_geo <-read_rds("data/rds/resale_tidy_geo.rds")
+```
+
+### Converting the school data to spatial data
+
+```{r}
+#| eval: false
+
+Sch_sgeo <- merge(coords,Sch)
+write_rds(Sch_sgeo , "data/rds/Sch_sgeo.rds")
+```
+
+```{r}
+#| eval: false
+Sch_sgeo <-read_rds("data/rds/Sch_sgeo.rds")
+```
+
+```{r}
+#| eval: false
+Sch_geo <-  st_as_sf(Sch_sgeo,coords = c(
+    "longitude", "latitude"),crs = 4326) %>% #project to WGS 84
+  st_transform(3414) #convert to SVY21
+write_rds(Sch_geo , "data/rds/Sch_geo.rds")
+```
+
+```{r}
+#| eval: false
+Sch_geo <-read_rds("data/rds/Sch_geo.rds")
+```
+
+### Convert shopping mall list to spatial data
+
+```{r}
+#| eval: false
+Mall_sgeo <- coords
+Mall_sgeo<- Mall_sgeo[Mall_sgeo$address != "GRiD(pomo)", ]
+write_rds(Mall_sgeo , "data/rds/Mall_sgeo.rds")
+```
+
+```{r}
+#| eval: false
+Mall_geo <-  st_as_sf(Mall_sgeo,coords = c("longitude", "latitude"),crs = 4326) %>% #project to WGS 84
+  st_transform(3414) #convert to SVY21
+write_rds(Mall_geo , "data/rds/Mall_geo.rds")
+```
+
+####check the projection system The following code can be use to check the projection system.
+
+```{r}
+#| eval: false
+st_crs(resale_tidy_geo)
+```
+
+## Loading spatial data layers:
+
+The following code are the load the required spatial data to derive the predictors.
+
+```{r}
+#| eval: false
+childcare_sf <- st_read("data/ChildCareServices.geojson") %>%
+  st_transform(crs = 3414) %>% 
+  st_zm()
+
+eldercare <- st_read(dsn = "data", layer = "ELDERCARE")  %>%
+  st_transform(crs = 3414)
+
+Kindergartens_sf <- st_read("data/Kindergartens.geojson") %>%
+  st_transform(crs = 3414)%>%
+  st_zm()
+
+Supermkt_sf <- st_read("data/SupermarketsGEOJSON.geojson") %>%
+  st_transform(crs = 3414)%>%
+  st_zm()
+
+HC_sf <- st_read("data/HawkerCentresGEOJSON.geojson") %>%
+  st_transform(crs = 3414)%>%
+  st_zm()
+
+Park_sf <- st_read("data/NParksParksandNatureReserves.geojson") %>%
+  st_transform(crs = 3414)%>%
+  st_zm()
+
+Busstop <- st_read(dsn = "data", layer = "BusStop")  %>%
+  st_transform(crs = 3414)
+
+MRT <- st_read(dsn = "data", layer = "RapidTransitSystemStation") %>%
+  st_transform(crs = 3414) %>% 
+  filter(TYP_CD_DES=="MRT" & 
+         !grepl("DEPOT|SUB STATION|BOCC", toupper(STN_NAM_DE)))
+
+Business_district <- st_read("data/JTCBusinessParkLandGEOJSON.geojson") %>%
+  st_transform(crs = 3414)%>%
+  st_zm()
+
+#Based on URA information, Planning area  Downtown core formed the central business district. 
+CBD <- st_read(dsn = "data", 
+                  layer = "MP14_SUBZONE_WEB_PL") %>%
+  st_transform (3414) %>%
+  filter(PLN_AREA_N=="DOWNTOWN CORE")
+
+CBD <- st_union(CBD)
+
+
+write_rds(childcare_sf, "data/rds/childcare_sf.rds")
+write_rds(eldercare, "data/rds/eldercare.rds")
+write_rds(Kindergartens_sf, "data/rds/Kindergartens_sf.rds")
+write_rds(Supermkt_sf, "data/rds/Supermkt_sf.rds")
+write_rds(HC_sf, "data/rds/HC_sf.rds")
+write_rds(Park_sf, "data/rds/Park_sf.rds")
+write_rds(Busstop, "data/rds/Busstop.rds")
+write_rds(MRT, "data/rds/MRT.rds")
+write_rds(Business_district, "data/rds/Business_district.rds")
+write_rds(CBD, "data/rds/CBD.rds")
+```
+
+Codes to read the any particular layers from rds folder.
+
+```{r}
+#| eval: false
+Busstop <-read_rds("data/rds/Busstop.rds")
+```
+
+## Codes to the dervie predictors
+
+The following section is to derive the predictors used for the predictive model.
+
+### Calculate the proximity to the nearest bu stop.
+
+```{r}
+#| eval: false
+
+# Calculate distances between each HDB flat and all bus stops
+dist_bustop<- st_distance(resale_tidy_geo, Busstop)
+
+# Find the nearest bus stop for each HDB flat
+n_dist_bustop <- apply(dist_bustop, 1, min)
+resale_tidy_geo$PROX_Busstop <- n_dist_bustop
+```
+
+#Calculate the proximity to the nearest MRT station
+
+```{r}
+#| eval: false
+
+# Calculate distances between each HDB flat and all MRT
+dist_MRT<- st_distance(resale_tidy_geo, MRT)
+
+# Find the nearest MRT for each HDB flat
+n_dist_MRT<- apply(dist_MRT, 1, min)
+resale_tidy_geo$PROX_MRT <- n_dist_MRT
+```
+
+#Calculate the proximity to the nearest elder-care
+
+```{r}
+#| eval: false
+
+# Calculate distances between each HDB flat and all Eldercare centers 
+dist_ecare<- st_distance(resale_tidy_geo,eldercare)
+
+# Find the nearest Eldercare for each HDB flat
+n_dist_ecare<- apply(dist_ecare, 1, min)
+resale_tidy_geo$PROX_eldercare <- n_dist_ecare
+```
+
+#Calculate the proximity to the nearest Food Centre/hawker centre
+
+```{r}
+#| eval: false
+
+# Calculate distances between each HDB flat and all hawker centre
+dist_hc<- st_distance(resale_tidy_geo,HC_sf)
+
+# Find the nearest Hawker centre for each HDB flat
+n_dist_HC_sf<- apply(dist_hc, 1, min)
+resale_tidy_geo$PROX_Hawker <- n_dist_HC_sf
+```
+
+#Calculate the proximity to the nearest Park
+
+```{r}
+#| eval: false
+
+# Calculate distances between each HDB flat and all Parks
+dist_PK<- st_distance(resale_tidy_geo,Park_sf)
+
+# Find the nearest Parks for each HDB flat
+n_dist_PK<- apply(dist_PK, 1, min)
+resale_tidy_geo$PROX_Park <- n_dist_PK
+```
+
+#Codes to get proximity to the nearest Supermarket
+
+```{r}
+#| eval: false
+
+# Calculate distances between each HDB flat and Supermarket
+dist_supermkt<- st_distance(resale_tidy_geo,Supermkt_sf)
+
+# Find the nearest Parks for each HDB flat
+n_dist_supermkt<- apply(dist_supermkt, 1, min)
+resale_tidy_geo$PROX_Supermarket <- n_dist_supermkt
+```
+
+#Codes to get proximity to the nearest shopping mall
+
+```{r}
+#| eval: false
+
+# Calculate distances between each HDB flat and shopping mall 
+dist_Mall<- st_distance(resale_tidy_geo,Mall_geo)
+
+# Find the nearest Parks for each HDB flat
+n_dist_Mall<- apply(dist_Mall, 1, min)
+resale_tidy_geo$PROX_Mall <- n_dist_Mall
+```
+
+#Codes to get proximity to the regional business districts
+
+In Singapore besides the central business districts there are other regional business districts, these area may have impact on local HDB resale prices.
+
+```{r}
+#| eval: false
+
+# Calculate distances between each HDB flat another business districts
+dist_OBD<- st_distance(resale_tidy_geo,Business_district)
+
+# Find the nearest Parks for each HDB flat
+n_dist_OBD<- apply(dist_OBD, 1, min)
+resale_tidy_geo$PROX_OtherBusinessdistricts <- n_dist_OBD
+```
+
+#Codes to get proximity to the CBD (Central Business District)
+
+Based on the URA data, the
+
+```{r}
+#| eval: false
+
+# Calculate distances between each HDB flat and Supermarket
+dist_CBD <- st_distance(resale_tidy_geo,CBD)
+
+resale_tidy_geo$PROX_CBD <- dist_CBD
+
+
+# Extract the numeric value from the string
+resale_tidy_geo$PROX_CBD <- as.numeric(gsub("[^0-9.]", "", resale_tidy_geo$PROX_CBD))
+
+```
+
+# Creation of buffer of 350m and 1 km from the HDB Resale flats.
+
+Re-creating the Resale Geo spatial layer without the proximity information.
+
+```{r}
+#| eval: false
+resale_tidy_geo_WP <-  st_as_sf(resale_tidy_sgeo,coords = c(
+    "longitude", "latitude"),crs = 4326) %>% #project to WGS 84
+  st_transform(3414) #convert to SVY21 
+```
+
+### Creation of 350m buffer using the following code chunk.
+
+```{r}
+#| eval: false
+resale_tidy_geo_b350 <- st_buffer(resale_tidy_geo_WP, dist = 350)
+```
+
+```{r}
+#| eval: false
+write_rds(resale_tidy_geo_b350, "data/rds/resale_tidy_geo_b350.rds")
+```
+
+```{r}
+#| eval: false
+resale_tidy_geo_b350 <-read_rds("data/rds/resale_tidy_geo_b350.rds")
+```
+
+### Creation of 1km buffer using the following code chunk.
+
+```{r}
+#| eval: false
+resale_tidy_geo_b1km <- st_buffer(resale_tidy_geo_WP, dist = 1000)
+```
+
+```{r}
+#| eval: false
+write_rds(resale_tidy_geo_b1km, "data/rds/resale_tidy_geo_b1km.rds")
+```
+
+```{r}
+#| eval: false
+resale_tidy_geo_b1km <-read_rds("data/rds/resale_tidy_geo_b1km.rds")
+```
+
+## Intersect to the find the number of facilities within the specified range.
+
+### Number of childcare centers within 350m
+
+```{r}
+#| eval: false
+
+# Spatial join to identify intersections
+intersections <- st_intersects(resale_tidy_geo_b350, childcare_sf)
+
+# Count the number of intersections for each buffer
+num_childcare <- lengths(intersections)
+
+# Add the count as a new column to the buffer layer
+resale_tidy_geo$num_childcare_350 <- num_childcare
+```
+
+#### Number of Kindergartens within 350m
+
+```{r}
+#| eval: false
+# Spatial join to identify intersections
+intersections <- st_intersects(resale_tidy_geo_b350, Kindergartens_sf)
+
+# Count the number of intersections for each buffer
+num_Kindergarten <- lengths(intersections)
+
+# Add the count as a new column to the buffer layer
+resale_tidy_geo$num_Kindergarten_350 <- num_Kindergarten
+```
+
+### Number of bus stops within 350m
+
+```{r}
+#| eval: false
+# Spatial join to identify intersections
+intersections <- st_intersects(resale_tidy_geo_b350,Busstop)
+
+# Count the number of intersections for each buffer
+
+num_Busstop <- lengths(intersections)
+
+# Add the count as a new column to the buffer layer
+resale_tidy_geo$num_Busstop_350 <- num_Busstop
+```
+
+### Number of Schools within 1 KM
+
+```{r}
+#| eval: false
+# Spatial join to identify intersections
+intersections <- st_intersects(resale_tidy_geo_b1km, Sch_geo)
+
+# Count the number of intersections for each buffer
+num_Sch<- lengths(intersections)
+
+# Add the count as a new column to the buffer layer
+resale_tidy_geo$num_Sch_1km <- num_Sch
+```
+
+### Number of good primary schools within 1 km
+
+```{r}
+#| eval: false
+Pop_prissch <- filter(Sch_geo, Sch_geo$`Popular School`== "yes")
+
+# Spatial join to identify intersections
+intersections <- st_intersects(resale_tidy_geo_b1km, Pop_prissch)
+
+# Count the number of intersections for each buffer
+num_popSch<- lengths(intersections)
+
+# Add the count as a new column to the buffer layer
+resale_tidy_geo$num_pop_priSch_1km <- num_popSch
+
+```
+
+### Number of primary school within 1 km
+
+```{r}
+#| eval: false
+
+Prisch <- filter(Sch_geo, Sch_geo$mainlevel_code == "PRIMARY" | 
+                   Sch_geo$school_name == "MARIS STELLA HIGH SCHOOL")
+
+# Spatial join to identify intersections
+intersections <- st_intersects(resale_tidy_geo_b1km, Prisch)
+
+# Count the number of intersections for each buffer
+num_Prisch<- lengths(intersections)
+
+# Add the count as a new column to the buffer layer
+resale_tidy_geo$num_Prisch <- num_Prisch
+
+```
+
+```{r}
+#| eval: false
+write_rds(resale_tidy_geo , "data/rds/resale_tidy_geo.rds")
+```
+
+```{r}
+#| eval: false
+resale_tidy_geo <-read_rds("data/rds/resale_tidy_geo.rds")
+```
+
+### Further data processing for the data used for building the predictive model.
+
+As mentioned in the earlier part at the start the predictive model will focus on 5-room transactions.
+
+```{r}
+#| eval: false
+resale_tidy_geo_5Rm <-filter(resale_tidy_geo,resale_tidy_geo$flat_type == "5 ROOM")
+```
+
+#### Handling overlapping points:
+
+After filtering the 5 room flats transaction details, the following code chunk is to jitters the overlapping points. This step is carried out after all the required distances were carried out.
+
+```{r}
+#| eval: false
+resale_tidy_geo_5Rm<- resale_tidy_geo_5Rm %>%
+  st_jitter(amount = 5)
+```
+
+Further handling of storey range, in the current database, it is categorical, we will need to convert it to dummy variables using the following code chunks.
+
+```{r}
+#| eval: false
+num_unique_story_orders <- unique(resale_tidy_geo_5Rm$storey_range)
+num_unique_story_orders
+```
+
+```{r}
+#| eval: false
+resale_tidy_geo_5Rm <- resale_tidy_geo_5Rm %>%
+  mutate(storey_order = case_when(
+    storey_range %in% c("01 TO 03") ~ 1,
+    storey_range %in% c("04 TO 06") ~ 2,
+    storey_range %in% c("07 TO 09") ~ 3,
+    storey_range %in% c("10 TO 12") ~ 4,
+    storey_range %in% c("13 TO 15") ~ 5,
+    storey_range %in% c("16 TO 18") ~ 6,
+    storey_range %in% c("19 TO 21") ~ 7,
+    storey_range %in% c("22 TO 24") ~ 8,
+    storey_range %in% c("25 TO 27") ~ 9,
+    storey_range %in% c("28 TO 30") ~ 10,
+   TRUE ~ 10
+  ))
+```
+
+#### Summary of the resale_tidy_geo_5Rm data
+
+The following code block is to summarise the resale_tidy_geo_5Rm to check for data structure issues which may interfere with the predictive model
+
+```{r}
+#| eval: false
+summary(resale_tidy_geo_5Rm)
+
+```
+
+The following code chunk is to convert the data from meters to kilometers.
+
+```{r}
+#| eval: false
+# Convert PROX_* variables to kilometers
+resale_tidy_geo_5Rm$PROX_Busstop <- resale_tidy_geo_5Rm$PROX_Busstop / 1000
+resale_tidy_geo_5Rm$PROX_MRT <- resale_tidy_geo_5Rm$PROX_MRT / 1000
+resale_tidy_geo_5Rm$PROX_eldercare <- resale_tidy_geo_5Rm$PROX_eldercare / 1000
+resale_tidy_geo_5Rm$PROX_Hawker <- resale_tidy_geo_5Rm$PROX_Hawker / 1000
+resale_tidy_geo_5Rm$PROX_Park <- resale_tidy_geo_5Rm$PROX_Park / 1000
+resale_tidy_geo_5Rm$PROX_Supermarket <- resale_tidy_geo_5Rm$PROX_Supermarket / 1000
+resale_tidy_geo_5Rm$PROX_OtherBusinessdistricts <- resale_tidy_geo_5Rm$PROX_OtherBusinessdistricts / 1000
+resale_tidy_geo_5Rm$PROX_CBD <- resale_tidy_geo_5Rm$PROX_CBD / 1000
+```
+
+```{r}
+#| eval: false
+write_rds(resale_tidy_geo_5Rm, "data/rds/resale_tidy_geo_5Rm.rds")
+```
+
+```{r}
+#| eval: false
+resale_tidy_geo_5Rm <-read_rds("data/rds/resale_tidy_geo_5Rm.rds")
+```
+
+Get the columns names of the required data.
+
+```{r}
+#| eval: false
+colnames(resale_tidy_geo_5Rm)
+```
+
+As the database still consist of other fields which will not be used in predictive model, hence they are removed to avoid issues.
+
+```{r}
+#| eval: false
+# Dropping columns by their index
+resale_tidy_geo_5Rm_trim <- resale_tidy_geo_5Rm[, -c(1, 3:12, 14:15, 32 )]
+
+```
+
+After trimming the the data, the summary function as used again to ensure that we are able to the data are proper.
+
+
+```{r}
+#| eval: false
+write_rds(resale_tidy_geo_5Rm_trim, "data/rds/resale_tidy_geo_5Rm_trim.rds")
+```
+
+```{r}
+resale_tidy_geo_5Rm_trim <-read_rds("data/rds/resale_tidy_geo_5Rm_trim.rds")
+summary (resale_tidy_geo_5Rm_trim)
+```
+
+### Final checks on overlapping points
+
+```{r}
+overlapping_points <- resale_tidy_geo_5Rm_trim %>%
+  mutate(overlap = lengths(st_equals(., .)) > 1)
+
+overlapping_Checks <- unique(overlapping_points$overlap)
+overlapping_Checks
+```
+
+### Reducing the sample size to a more manageable size for model building.
+
+```{r}
+#| eval: false
+set.seed(1234)
+mdata <- resale_tidy_geo_5Rm_trim[sample(nrow(resale_tidy_geo_5Rm_trim), 6500, replace = TRUE), ]
+
+write_rds(mdata, "data/rds/mdata.rds")
+```
+
+
+

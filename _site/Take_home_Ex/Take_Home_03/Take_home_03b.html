@@ -6,9 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Dr.&nbsp;Kam Tin Seong">
+<meta name="author" content="Dew Stella Chan">
+<meta name="dcterms.date" content="2024-10-27">
 
-<title>Preparing HDB data – ISSS622-GAA</title>
+<title>Data Prepration for Take Home Exercise 03b – ISSS622-GAA</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -214,6 +215,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../../Take_home_Ex/Take_home_03/Take_home_03b.html">
  <span class="dropdown-text">Take Home Exercise 3b</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../../Take_home_Ex/Take_home_03/Take_home_03b_Modelling.html">
+ <span class="dropdown-text">Take Home Exercise 3b Predictive Modelling</span></a>
+  </li>  
     </ul>
   </li>
 </ul>
@@ -237,15 +242,55 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#scope-of-this-analysis" id="toc-scope-of-this-analysis" class="nav-link active" data-scroll-target="#scope-of-this-analysis">Scope of this analysis:</a></li>
+  <li><a href="#r-packages-used-in-this-analysis" id="toc-r-packages-used-in-this-analysis" class="nav-link" data-scroll-target="#r-packages-used-in-this-analysis">R Packages used in this Analysis</a></li>
+  <li><a href="#data-preparation." id="toc-data-preparation." class="nav-link" data-scroll-target="#data-preparation.">Data Preparation.</a>
+  <ul class="collapse">
+  <li><a href="#loading-of-resale-hdb-data" id="toc-loading-of-resale-hdb-data" class="nav-link" data-scroll-target="#loading-of-resale-hdb-data">Loading of Resale HDB Data</a></li>
+  <li><a href="#loading-of-school-data" id="toc-loading-of-school-data" class="nav-link" data-scroll-target="#loading-of-school-data">Loading of School data</a></li>
+  <li><a href="#reverse-geo-coding-using-the-address-of-the-school." id="toc-reverse-geo-coding-using-the-address-of-the-school." class="nav-link" data-scroll-target="#reverse-geo-coding-using-the-address-of-the-school.">Reverse Geo-coding using the address of the school.</a></li>
+  <li><a href="#list-of-shopping-mall-in-singapore" id="toc-list-of-shopping-mall-in-singapore" class="nav-link" data-scroll-target="#list-of-shopping-mall-in-singapore">List of shopping mall in Singapore</a></li>
+  <li><a href="#reverse-geo-coding-using-one-map-api." id="toc-reverse-geo-coding-using-one-map-api." class="nav-link" data-scroll-target="#reverse-geo-coding-using-one-map-api.">Reverse Geo-coding using One Map API.</a></li>
+  <li><a href="#code-to-get-the-coordinates-from-one-map-api" id="toc-code-to-get-the-coordinates-from-one-map-api" class="nav-link" data-scroll-target="#code-to-get-the-coordinates-from-one-map-api">Code to get the coordinates from One Map API</a></li>
+  <li><a href="#codes-to-write-the-coordinates-to-rds-folder." id="toc-codes-to-write-the-coordinates-to-rds-folder." class="nav-link" data-scroll-target="#codes-to-write-the-coordinates-to-rds-folder.">Codes to write the coordinates to rds folder.</a></li>
+  <li><a href="#converting-the-school-data-to-spatial-data" id="toc-converting-the-school-data-to-spatial-data" class="nav-link" data-scroll-target="#converting-the-school-data-to-spatial-data">Converting the school data to spatial data</a></li>
+  <li><a href="#convert-shopping-mall-list-to-spatial-data" id="toc-convert-shopping-mall-list-to-spatial-data" class="nav-link" data-scroll-target="#convert-shopping-mall-list-to-spatial-data">Convert shopping mall list to spatial data</a></li>
+  <li><a href="#loading-spatial-data-layers" id="toc-loading-spatial-data-layers" class="nav-link" data-scroll-target="#loading-spatial-data-layers">Loading spatial data layers:</a></li>
+  <li><a href="#codes-to-the-dervie-predictors" id="toc-codes-to-the-dervie-predictors" class="nav-link" data-scroll-target="#codes-to-the-dervie-predictors">Codes to the dervie predictors</a>
+  <ul class="collapse">
+  <li><a href="#calculate-the-proximity-to-the-nearest-bu-stop." id="toc-calculate-the-proximity-to-the-nearest-bu-stop." class="nav-link" data-scroll-target="#calculate-the-proximity-to-the-nearest-bu-stop.">Calculate the proximity to the nearest bu stop.</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#creation-of-buffer-of-350m-and-1-km-from-the-hdb-resale-flats." id="toc-creation-of-buffer-of-350m-and-1-km-from-the-hdb-resale-flats." class="nav-link" data-scroll-target="#creation-of-buffer-of-350m-and-1-km-from-the-hdb-resale-flats.">Creation of buffer of 350m and 1 km from the HDB Resale flats.</a>
+  <ul class="collapse">
+  <li><a href="#creation-of-350m-buffer-using-the-following-code-chunk." id="toc-creation-of-350m-buffer-using-the-following-code-chunk." class="nav-link" data-scroll-target="#creation-of-350m-buffer-using-the-following-code-chunk.">Creation of 350m buffer using the following code chunk.</a></li>
+  <li><a href="#creation-of-1km-buffer-using-the-following-code-chunk." id="toc-creation-of-1km-buffer-using-the-following-code-chunk." class="nav-link" data-scroll-target="#creation-of-1km-buffer-using-the-following-code-chunk.">Creation of 1km buffer using the following code chunk.</a></li>
+  <li><a href="#intersect-to-the-find-the-number-of-facilities-within-the-specified-range." id="toc-intersect-to-the-find-the-number-of-facilities-within-the-specified-range." class="nav-link" data-scroll-target="#intersect-to-the-find-the-number-of-facilities-within-the-specified-range.">Intersect to the find the number of facilities within the specified range.</a>
+  <ul class="collapse">
+  <li><a href="#number-of-childcare-centers-within-350m" id="toc-number-of-childcare-centers-within-350m" class="nav-link" data-scroll-target="#number-of-childcare-centers-within-350m">Number of childcare centers within 350m</a></li>
+  <li><a href="#number-of-bus-stops-within-350m" id="toc-number-of-bus-stops-within-350m" class="nav-link" data-scroll-target="#number-of-bus-stops-within-350m">Number of bus stops within 350m</a></li>
+  <li><a href="#number-of-schools-within-1-km" id="toc-number-of-schools-within-1-km" class="nav-link" data-scroll-target="#number-of-schools-within-1-km">Number of Schools within 1 KM</a></li>
+  <li><a href="#number-of-good-primary-schools-within-1-km" id="toc-number-of-good-primary-schools-within-1-km" class="nav-link" data-scroll-target="#number-of-good-primary-schools-within-1-km">Number of good primary schools within 1 km</a></li>
+  <li><a href="#number-of-primary-school-within-1-km" id="toc-number-of-primary-school-within-1-km" class="nav-link" data-scroll-target="#number-of-primary-school-within-1-km">Number of primary school within 1 km</a></li>
+  <li><a href="#further-data-processing-for-the-data-used-for-building-the-predictive-model." id="toc-further-data-processing-for-the-data-used-for-building-the-predictive-model." class="nav-link" data-scroll-target="#further-data-processing-for-the-data-used-for-building-the-predictive-model.">Further data processing for the data used for building the predictive model.</a></li>
+  <li><a href="#final-checks-on-overlapping-points" id="toc-final-checks-on-overlapping-points" class="nav-link" data-scroll-target="#final-checks-on-overlapping-points">Final checks on overlapping points</a></li>
+  <li><a href="#reducing-the-sample-size-to-a-more-manageable-size-for-model-building." id="toc-reducing-the-sample-size-to-a-more-manageable-size-for-model-building." class="nav-link" data-scroll-target="#reducing-the-sample-size-to-a-more-manageable-size-for-model-building.">Reducing the sample size to a more manageable size for model building.</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Preparing HDB data</h1>
+<h1 class="title">Data Prepration for Take Home Exercise 03b</h1>
 </div>
 
 
@@ -255,11 +300,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Author</div>
     <div class="quarto-title-meta-contents">
-             <p>Dr.&nbsp;Kam Tin Seong </p>
+             <p>Dew Stella Chan </p>
           </div>
   </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">October 27, 2024</p>
+    </div>
+  </div>
   
+    <div>
+    <div class="quarto-title-meta-heading">Modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date-modified">November 9, 2024</p>
+    </div>
+  </div>
     
   </div>
   
@@ -268,133 +325,669 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div style="font-size: 1.50em">
+<section id="scope-of-this-analysis" class="level1">
+<h1>Scope of this analysis:</h1>
+<p>The scope of this analysis is to focus on building predictive model for predicting the 5- room HDB resale price in Singapore.</p>
+<p>The model is calibrated using the 5-room flat transactions from January 2023 to September 2024, and then random select of sample 6,500 were extracted to form the part of the training and test data.</p>
+<p>The process of data preparation was carried out using all the HDB transactions from January 2023 to September 2024.</p>
+</section>
+<section id="r-packages-used-in-this-analysis" class="level1">
+<h1>R Packages used in this Analysis</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, sf, httr, jsonlite, rvest)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#rvest is used to harvest data.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sf, spdep, GWmodel, tmap, rsample, Metrics, tidyverse, sf, httr, jsonlite, rvest, xml2, SpatialML, knitr, kableExtra)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#rvest is used to harvest data from OneMap API</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<section id="data-preparation." class="level2">
-<h2 class="anchored" data-anchor-id="data-preparation.">Data Preparation.</h2>
+</section>
+<section id="data-preparation." class="level1">
+<h1>Data Preparation.</h1>
+<section id="loading-of-resale-hdb-data" class="level3">
+<h3 class="anchored" data-anchor-id="loading-of-resale-hdb-data">Loading of Resale HDB Data</h3>
 <p>This is the subset of the resales data from 2023 Jan to Sep 2024.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>resale <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/resale.csv"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(month <span class="sc">&gt;=</span> <span class="st">"2023-01"</span> <span class="sc">&amp;</span> month <span class="sc">&lt;=</span> <span class="st">"2024-09"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Rows: 192234 Columns: 11
-── Column specification ────────────────────────────────────────────────────────
-Delimiter: ","
-chr (8): month, town, flat_type, block, street_name, storey_range, flat_mode...
-dbl (3): floor_area_sqm, lease_commence_date, resale_price
-
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>resale <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/resale.csv"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</div>
-<p>Combine the block and street names together to form address. and change the remaining lease in years and months.</p>
+<p>The following code block is to:</p>
+<ul>
+<li><p>combine the block and street names together to form address field.</p></li>
+<li><p>Extract out the the remaining lease in years and months.</p></li>
+<li><p>calculate the remaining lease in the months.</p></li>
+</ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>resale_tidy <span class="ot">&lt;-</span> resale <span class="sc">%&gt;%</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">address =</span> <span class="fu">paste</span>(block,street_name)) <span class="sc">%&gt;%</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">remaining_lease_yr =</span> <span class="fu">as.integer</span>(</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_sub</span>(remaining_lease, <span class="dv">0</span>, <span class="dv">2</span>)))<span class="sc">%&gt;%</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">remaining_lease_mth =</span> <span class="fu">as.integer</span>(</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_sub</span>(remaining_lease, <span class="dv">9</span>, <span class="dv">11</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>This is to keep the class size small for in class is not needed</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>resale_selected <span class="ot">&lt;-</span> resale_tidy <span class="sc">%&gt;%</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(month <span class="sc">==</span> <span class="st">"2024-09"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>This is to create a list.to sort them and pass it as a list.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>add_list <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">unique</span>(resale_selected<span class="sc">$</span>address))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>to reduce the number of data to through the portal</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#creation of functions. </span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>get_coords <span class="ot">&lt;-</span> <span class="cf">function</span>(add_list){</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create a data frame to store all retrieved coordinates</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  postal_coords <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> add_list){</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">#print(i)</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    r <span class="ot">&lt;-</span> <span class="fu">GET</span>(<span class="st">'https://www.onemap.gov.sg/api/common/elastic/search?'</span>,</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>           <span class="at">query=</span><span class="fu">list</span>(<span class="at">searchVal=</span>i,</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>                     <span class="at">returnGeom=</span><span class="st">'Y'</span>,</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>                     <span class="at">getAddrDetails=</span><span class="st">'Y'</span>))</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    data <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(<span class="fu">rawToChar</span>(r<span class="sc">$</span>content))</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    found <span class="ot">&lt;-</span> data<span class="sc">$</span>found</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    res <span class="ot">&lt;-</span> data<span class="sc">$</span>results</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create a new data frame for each address</span></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    new_row <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># If single result, append, can be change to x and y, and it will be projected coordinate system. </span></span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (found <span class="sc">==</span> <span class="dv">1</span>){</span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>      postal <span class="ot">&lt;-</span> res<span class="sc">$</span>POSTAL </span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>      lat <span class="ot">&lt;-</span> res<span class="sc">$</span>LATITUDE</span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>      lng <span class="ot">&lt;-</span> res<span class="sc">$</span>LONGITUDE</span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>      new_row <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">address=</span> i, </span>
-<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>                            <span class="at">postal =</span> postal, </span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>                            <span class="at">latitude =</span> lat, </span>
-<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>                            <span class="at">longitude =</span> lng)</span>
-<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># If multiple results, drop NIL and append top 1</span></span>
-<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span> <span class="cf">if</span> (found <span class="sc">&gt;</span> <span class="dv">1</span>){</span>
-<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Remove those with NIL as postal</span></span>
-<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>      res_sub <span class="ot">&lt;-</span> res[res<span class="sc">$</span>POSTAL <span class="sc">!=</span> <span class="st">"NIL"</span>, ]</span>
-<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Set as NA first if no Postal, this is to accept failed geocoding. </span></span>
-<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">nrow</span>(res_sub) <span class="sc">==</span> <span class="dv">0</span>) {</span>
-<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>          new_row <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">address=</span> i, </span>
-<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>                                <span class="at">postal =</span> <span class="cn">NA</span>, </span>
-<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>                                <span class="at">latitude =</span> <span class="cn">NA</span>, </span>
-<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>                                <span class="at">longitude =</span> <span class="cn">NA</span>)</span>
-<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>      }</span>
-<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>      <span class="cf">else</span>{</span>
-<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>        top1 <span class="ot">&lt;-</span> <span class="fu">head</span>(res_sub, <span class="at">n =</span> <span class="dv">1</span>)</span>
-<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>        postal <span class="ot">&lt;-</span> top1<span class="sc">$</span>POSTAL </span>
-<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>        lat <span class="ot">&lt;-</span> top1<span class="sc">$</span>LATITUDE</span>
-<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>        lng <span class="ot">&lt;-</span> top1<span class="sc">$</span>LONGITUDE</span>
-<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a>        new_row <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">address=</span> i, </span>
-<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a>                              <span class="at">postal =</span> postal, </span>
-<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a>                              <span class="at">latitude =</span> lat, </span>
-<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a>                              <span class="at">longitude =</span> lng)</span>
-<span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a>      }</span>
-<span id="cb7-56"><a href="#cb7-56" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb7-57"><a href="#cb7-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-58"><a href="#cb7-58" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span> {</span>
-<span id="cb7-59"><a href="#cb7-59" aria-hidden="true" tabindex="-1"></a>      new_row <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">address=</span> i, </span>
-<span id="cb7-60"><a href="#cb7-60" aria-hidden="true" tabindex="-1"></a>                            <span class="at">postal =</span> <span class="cn">NA</span>, </span>
-<span id="cb7-61"><a href="#cb7-61" aria-hidden="true" tabindex="-1"></a>                            <span class="at">latitude =</span> <span class="cn">NA</span>, </span>
-<span id="cb7-62"><a href="#cb7-62" aria-hidden="true" tabindex="-1"></a>                            <span class="at">longitude =</span> <span class="cn">NA</span>)</span>
-<span id="cb7-63"><a href="#cb7-63" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb7-64"><a href="#cb7-64" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb7-65"><a href="#cb7-65" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add the row</span></span>
-<span id="cb7-66"><a href="#cb7-66" aria-hidden="true" tabindex="-1"></a>    postal_coords <span class="ot">&lt;-</span> <span class="fu">rbind</span>(postal_coords, new_row)</span>
-<span id="cb7-67"><a href="#cb7-67" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb7-68"><a href="#cb7-68" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(postal_coords)</span>
-<span id="cb7-69"><a href="#cb7-69" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>resale_tidy <span class="ot">&lt;-</span> resale <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(month <span class="sc">&gt;=</span> <span class="st">"2023-01"</span> <span class="sc">&amp;</span> month <span class="sc">&lt;=</span> <span class="st">"2024-09"</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">address =</span> <span class="fu">paste</span>(block, street_name)) <span class="sc">%&gt;%</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">remaining_lease_yr =</span> <span class="fu">as.integer</span>(<span class="fu">str_sub</span>(remaining_lease, <span class="dv">0</span>, <span class="dv">2</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">remaining_lease_mth =</span> <span class="fu">as.integer</span>(<span class="fu">str_sub</span>(remaining_lease, <span class="dv">9</span>, <span class="dv">11</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">replace_na</span>(<span class="fu">list</span>(<span class="at">remaining_lease_mth =</span> <span class="dv">0</span>)) <span class="sc">%&gt;%</span>  <span class="co"># Replace NA in remaining_lease_mth with 0</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">rem_lease_inMths =</span> remaining_lease_yr <span class="sc">*</span> <span class="dv">12</span> <span class="sc">+</span> remaining_lease_mth)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(resale_tidy, <span class="st">"data/rds/resale_tidy.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>coords <span class="ot">&lt;-</span> <span class="fu">get_coords</span>(add_list)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">#read the list.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>resale_tidy <span class="ot">&lt;-</span><span class="fu">read_rds</span>(<span class="st">"data/rds/resale_tidy.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="reverse-geo-coding-using-the-address-of-the-resale-hdb-data" class="level4">
+<h4 class="anchored" data-anchor-id="reverse-geo-coding-using-the-address-of-the-resale-hdb-data">Reverse Geo-coding using the address of the resale HDB data</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>add_list <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">unique</span>(resale_tidy<span class="sc">$</span>address))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="loading-of-school-data" class="level3">
+<h3 class="anchored" data-anchor-id="loading-of-school-data">Loading of School data</h3>
+<p>The general information of the school data downloaded from data.gov.sg. The popular primary school is determined by over subscription at phrase 2B and 2C of 2023 and 2024 primary one school registration exercise. The outcome of the registration are from the following website:</p>
+<ul>
+<li><p>https://www.creativecampus.com.sg/best-primary-schools-in-Singapore-2024</p></li>
+<li><p>https://elite.com.sg/primary-schools</p></li>
+</ul>
+<p>The schools which are oversubscribed at either of the phases are assessed as popular primary.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>Sch <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/School.csv"</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(Sch, <span class="st">"data/rds/sch.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="reverse-geo-coding-using-the-address-of-the-school." class="level3">
+<h3 class="anchored" data-anchor-id="reverse-geo-coding-using-the-address-of-the-school.">Reverse Geo-coding using the address of the school.</h3>
+<p>To group the list of unique addresses for reverse Geo-coding</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>add_list <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">unique</span>(Sch<span class="sc">$</span>address))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="list-of-shopping-mall-in-singapore" class="level3">
+<h3 class="anchored" data-anchor-id="list-of-shopping-mall-in-singapore">List of shopping mall in Singapore</h3>
+<p>The following list of shopping malls was extracted from Wikipedia.</p>
+<ul>
+<li>https://en.wikipedia.org/wiki/List_of_shopping_malls_in_Singapore</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>mall_list <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"100 AM"</span>, <span class="st">"313@Somerset"</span>, <span class="st">"Aperia"</span>, <span class="st">"Balestier Hill Shopping Centre"</span>,<span class="st">"Bugis Cube"</span>, <span class="st">"Bugis Junction"</span>, <span class="st">"Bugis+"</span>, <span class="st">"Capitol Piazza"</span>, <span class="st">"Cathay Cineleisure Orchard"</span>, <span class="st">"Clarke Quay Central"</span>, <span class="st">"The Centrepoint"</span>, <span class="st">"City Square Mall"</span>, <span class="st">"City Gate Mall"</span>, <span class="st">"CityLink Mall"</span>, <span class="st">"Duo"</span>, <span class="st">"Far East Plaza"</span>, <span class="st">"Funan"</span>, <span class="st">"Great World City"</span>, <span class="st">"HDB Hub"</span>, <span class="st">"Holland Village Shopping Mall"</span>, <span class="st">"ION Orchard"</span>, <span class="st">"Junction 8"</span>, <span class="st">"Knightsbridge"</span>, <span class="st">"Liat Towers"</span>, <span class="st">"Lucky Plaza"</span>, <span class="st">"Marina Bay Sands"</span>, </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="st">"The Shoppes at Marina Bay Sands"</span>, <span class="st">"Marina Bay Link Mall"</span>, </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="st">"Marina Square"</span>, <span class="st">"Millenia Walk"</span>, <span class="st">"Mustafa 1 entre"</span>, <span class="st">"Ngee Ann City"</span>, <span class="st">"One Holland Village"</span>, <span class="st">"Orchard Central"</span>, <span class="st">"Orchard Gateway"</span>, </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="st">"Orchard Plaza"</span>, <span class="st">"Midpoint Orchard"</span>, <span class="st">"Palais Renaissance"</span>, <span class="st">"People's Park Centre"</span>, <span class="st">"People's Park Complex"</span>, <span class="st">"Plaza Singapura"</span>,<span class="st">"GRiD(pomo)"</span>, <span class="st">"Raffles City"</span>, <span class="st">"Scotts Square"</span>, <span class="st">"Shaw House and Centre"</span>, <span class="st">"Sim Lim Square"</span>, <span class="st">"Singapore Shopping Centre"</span>, <span class="st">"The South Beach"</span>, <span class="st">"Square 2"</span>, <span class="st">"Sunshine Plaza"</span>, <span class="st">"Suntec City"</span>, <span class="st">"Tanglin Mall"</span>, <span class="st">"Tanjong Pagar Centre"</span>, <span class="st">"Tekka Centre"</span>, <span class="st">"The Adelphi"</span>, <span class="st">"The Paragon"</span>,<span class="st">"Tiong Bahru Plaza"</span>, <span class="st">"The Poiz"</span>, <span class="st">"Thomson Plaza"</span>, <span class="st">"United Square"</span>, <span class="st">"Thomson V"</span>, <span class="st">"Velocity@Novena Square"</span>, <span class="st">"Wheelock Place"</span>, <span class="st">"Wisma Atria"</span>,<span class="st">"Zhongshan Mall"</span>,<span class="st">"Bedok Mall"</span>, <span class="st">"Century Square"</span>, <span class="st">"City Plaza"</span>, <span class="st">"Changi City Point"</span>,<span class="st">"Downtown East"</span>, <span class="st">"Djitsun Mall Bedok"</span>, <span class="st">"Eastpoint Mall"</span>,<span class="st">"Jewel Changi Airport"</span>, <span class="st">"KINEX"</span>, <span class="st">"Katong Shopping Centre"</span>, <span class="st">"Katong Square"</span>, <span class="st">"Kallang Wave Mall"</span>, <span class="st">"Leisure Park Kallang"</span>, <span class="st">"i12 Katong"</span>,<span class="st">"Our Tampines Hub"</span>, <span class="st">"Parkway Parade"</span>, <span class="st">"Pasir Ris Mall"</span>, <span class="st">"Pasir Ris West Plaza"</span>,<span class="st">"Paya Lebar Square"</span>, <span class="st">"Paya Lebar Quarter"</span>, <span class="st">"Roxy Square"</span>, <span class="st">"Singpost Centre"</span>, <span class="st">"Tampines 1"</span>, <span class="st">"Tampines Mall"</span>, <span class="st">"White Sands"</span>, <span class="st">"Elias Mall"</span>, <span class="st">"Loyang Point"</span>, <span class="st">"888 Plaza"</span>, <span class="st">"Admiralty Place"</span>, <span class="st">"AMK Hub"</span>, <span class="st">"Canberra Plaza"</span>, <span class="st">"Causeway Point"</span>, <span class="st">"HDB Hub"</span>, <span class="st">"Broadway Plaza"</span>, <span class="st">"Jubilee Square"</span>, <span class="st">"Junction 8"</span>, <span class="st">"Junction Nine"</span>, <span class="st">"Marsiling Mall"</span>, <span class="st">"Northpoint City"</span>, <span class="st">"Sembawang Shopping Centre"</span>, <span class="st">"Sun Plaza"</span>, <span class="st">"Vista Point"</span>, <span class="st">"Wisteria Mall"</span>, <span class="st">"Woodlands Civic Centre"</span>, <span class="st">"Woodlands Mart"</span>, <span class="st">"Woodlands North Plaza"</span>,<span class="st">"Anchorvale Village"</span>, <span class="st">"Buangkok Square"</span>, <span class="st">"Compass One"</span>, <span class="st">"Greenwich V"</span>, <span class="st">"Heartland Mall"</span>, <span class="st">"Hougang 1"</span>, <span class="st">"Hougang Green Shopping Mall"</span>, <span class="st">"Hougang Mall"</span>, <span class="st">"NEX"</span>, <span class="st">"Northshore Plaza"</span>, <span class="st">"Oasis Terraces"</span>, <span class="st">"Punggol Coast Mall"</span>, <span class="st">"Punggol Plaza"</span>, <span class="st">"Rivervale Mall"</span>, <span class="st">"Rivervale Plaza"</span>, <span class="st">"Sengkang Grand Mall"</span>, <span class="st">"The Seletar Mall"</span>, <span class="st">"Upper Serangoon Shopping Centre"</span>, <span class="st">"Waterway Point"</span>, <span class="st">"myVillage At Serangoon Garden, shopping_malls"</span>, <span class="st">"Beauty World Centre"</span>, <span class="st">"Beauty World Plaza"</span>, <span class="st">"Bukit Panjang Plaza"</span>, <span class="st">"Bukit Timah Plaza"</span>, <span class="st">"Fajar Shopping Centre"</span>, <span class="st">"Greenridge Shopping Centre"</span>, <span class="st">"Hillion Mall"</span>, <span class="st">"HillV2"</span>, <span class="st">"Junction 10"</span>, <span class="st">"Keat Hong Shopping Centre"</span>, <span class="st">"Limbang Shopping Centre"</span>, <span class="st">"Lot One"</span>, <span class="st">"Rail Mall"</span>, <span class="st">"Sunshine Place"</span>, <span class="st">"Teck Whye Shopping Centre"</span>, <span class="st">"West Mall"</span>, <span class="st">"Yew Tee Point"</span>, <span class="st">"Yew Tee Square"</span>, <span class="st">"VivoCity"</span>, <span class="st">"HarbourFront Centre"</span>, <span class="st">"Alexandra Retail Centre"</span>, <span class="st">"321 Clementi"</span>, <span class="st">"The Clementi Mall"</span>, <span class="st">"IMM"</span>, <span class="st">"Jem"</span>, <span class="st">"Westgate"</span>, <span class="st">"Jurong Point"</span>, <span class="st">"Pioneer Mall"</span>, <span class="st">"The Star Vista"</span>, <span class="st">"Alexandra Central"</span>, <span class="st">"Anchorpoint"</span>, <span class="st">"OD Mall"</span>, <span class="st">"Boon Lay Shopping Centre"</span>, <span class="st">"Grantral Mall"</span>, <span class="st">"Fairprice Hub"</span>, <span class="st">"Gek Poh Shopping Centre"</span>, <span class="st">"Rochester Mall"</span>, <span class="st">"Taman Jurong Shopping Centre"</span>, <span class="st">"West Coast Plaza"</span>,<span class="st">"Plantation Plaza"</span>, <span class="st">"Tengah Mall (2027)"</span>, <span class="st">"Queensway Shopping Centre"</span>, <span class="st">"The Rail Mall"</span> )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="reverse-geo-coding-using-the-address-of-the-shopping-mall" class="level4">
+<h4 class="anchored" data-anchor-id="reverse-geo-coding-using-the-address-of-the-shopping-mall">Reverse Geo-coding using the address of the shopping mall</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>add_list <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">unique</span>(mall_list))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="reverse-geo-coding-using-one-map-api." class="level3">
+<h3 class="anchored" data-anchor-id="reverse-geo-coding-using-one-map-api.">Reverse Geo-coding using One Map API.</h3>
+<p>Function to get the address from SLA API via reverse geo-coding</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">#creation of functions. </span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>get_coords <span class="ot">&lt;-</span> <span class="cf">function</span>(add_list){</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create a data frame to store all retrieved coordinates</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  postal_coords <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> add_list){</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">#print(i)</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    r <span class="ot">&lt;-</span> <span class="fu">GET</span>(<span class="st">'https://www.onemap.gov.sg/api/common/elastic/search?'</span>,</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>           <span class="at">query=</span><span class="fu">list</span>(<span class="at">searchVal=</span>i,</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>                     <span class="at">returnGeom=</span><span class="st">'Y'</span>,</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>                     <span class="at">getAddrDetails=</span><span class="st">'Y'</span>))</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    data <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(<span class="fu">rawToChar</span>(r<span class="sc">$</span>content))</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    found <span class="ot">&lt;-</span> data<span class="sc">$</span>found</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    res <span class="ot">&lt;-</span> data<span class="sc">$</span>results</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create a new data frame for each address</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    new_row <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># If single result, append, can be change to x and y, and it will be projected coordinate system. </span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (found <span class="sc">==</span> <span class="dv">1</span>){</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>      postal <span class="ot">&lt;-</span> res<span class="sc">$</span>POSTAL </span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>      lat <span class="ot">&lt;-</span> res<span class="sc">$</span>LATITUDE</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>      lng <span class="ot">&lt;-</span> res<span class="sc">$</span>LONGITUDE</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>      new_row <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">address=</span> i, </span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>                            <span class="at">postal =</span> postal, </span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>                            <span class="at">latitude =</span> lat, </span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>                            <span class="at">longitude =</span> lng)</span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># If multiple results, drop NIL and append top 1</span></span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span> <span class="cf">if</span> (found <span class="sc">&gt;</span> <span class="dv">1</span>){</span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Remove those with NIL as postal</span></span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>      res_sub <span class="ot">&lt;-</span> res[res<span class="sc">$</span>POSTAL <span class="sc">!=</span> <span class="st">"NIL"</span>, ]</span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Set as NA first if no Postal, this is to accept failed geocoding. </span></span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">nrow</span>(res_sub) <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>          new_row <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">address=</span> i, </span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a>                                <span class="at">postal =</span> <span class="cn">NA</span>, </span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>                                <span class="at">latitude =</span> <span class="cn">NA</span>, </span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a>                                <span class="at">longitude =</span> <span class="cn">NA</span>)</span>
+<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a>      <span class="cf">else</span>{</span>
+<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a>        top1 <span class="ot">&lt;-</span> <span class="fu">head</span>(res_sub, <span class="at">n =</span> <span class="dv">1</span>)</span>
+<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a>        postal <span class="ot">&lt;-</span> top1<span class="sc">$</span>POSTAL </span>
+<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a>        lat <span class="ot">&lt;-</span> top1<span class="sc">$</span>LATITUDE</span>
+<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a>        lng <span class="ot">&lt;-</span> top1<span class="sc">$</span>LONGITUDE</span>
+<span id="cb10-51"><a href="#cb10-51" aria-hidden="true" tabindex="-1"></a>        new_row <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">address=</span> i, </span>
+<span id="cb10-52"><a href="#cb10-52" aria-hidden="true" tabindex="-1"></a>                              <span class="at">postal =</span> postal, </span>
+<span id="cb10-53"><a href="#cb10-53" aria-hidden="true" tabindex="-1"></a>                              <span class="at">latitude =</span> lat, </span>
+<span id="cb10-54"><a href="#cb10-54" aria-hidden="true" tabindex="-1"></a>                              <span class="at">longitude =</span> lng)</span>
+<span id="cb10-55"><a href="#cb10-55" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb10-56"><a href="#cb10-56" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb10-57"><a href="#cb10-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-58"><a href="#cb10-58" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span> {</span>
+<span id="cb10-59"><a href="#cb10-59" aria-hidden="true" tabindex="-1"></a>      new_row <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">address=</span> i, </span>
+<span id="cb10-60"><a href="#cb10-60" aria-hidden="true" tabindex="-1"></a>                            <span class="at">postal =</span> <span class="cn">NA</span>, </span>
+<span id="cb10-61"><a href="#cb10-61" aria-hidden="true" tabindex="-1"></a>                            <span class="at">latitude =</span> <span class="cn">NA</span>, </span>
+<span id="cb10-62"><a href="#cb10-62" aria-hidden="true" tabindex="-1"></a>                            <span class="at">longitude =</span> <span class="cn">NA</span>)</span>
+<span id="cb10-63"><a href="#cb10-63" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb10-64"><a href="#cb10-64" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb10-65"><a href="#cb10-65" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add the row</span></span>
+<span id="cb10-66"><a href="#cb10-66" aria-hidden="true" tabindex="-1"></a>    postal_coords <span class="ot">&lt;-</span> <span class="fu">rbind</span>(postal_coords, new_row)</span>
+<span id="cb10-67"><a href="#cb10-67" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb10-68"><a href="#cb10-68" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(postal_coords)</span>
+<span id="cb10-69"><a href="#cb10-69" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="code-to-get-the-coordinates-from-one-map-api" class="level3">
+<h3 class="anchored" data-anchor-id="code-to-get-the-coordinates-from-one-map-api">Code to get the coordinates from One Map API</h3>
+<p>The following code chunk will return with the coordinates of the HDB resales flats, school and shopping mall, depending what have been added to the add_list.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#last run is Shopping mall </span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>coords<span class="ot">&lt;-</span> <span class="fu">get_coords</span>(add_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="codes-to-write-the-coordinates-to-rds-folder." class="level3">
+<h3 class="anchored" data-anchor-id="codes-to-write-the-coordinates-to-rds-folder.">Codes to write the coordinates to rds folder.</h3>
+<p>The data frame coords in rds folder contains all the HDB transactions coordinates.</p>
+<p><strong><em>The following two code chunks should be not re-run, so the coordinates of HDB transaction will not be replaced.</em></strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(coords, <span class="st">"data/rds/coords.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(coords, <span class="st">"data/rds/coords.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>coords <span class="ot">&lt;-</span><span class="fu">read_rds</span>(<span class="st">"data/rds/coords.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>resale_sgeo <span class="ot">&lt;-</span> <span class="fu">merge</span>(coords,resale_selected)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>resale_tidy_sgeo <span class="ot">&lt;-</span> <span class="fu">merge</span>(coords,resale_tidy)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(resale_tidy_sgeo , <span class="st">"data/rds/resale_tidy_sgeo.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Then need to reset the data:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>resale_tidy_sgeo <span class="ot">&lt;-</span><span class="fu">read_rds</span>(<span class="st">"data/rds/resale_tidy_sgeo.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="converting-the-hdb-transaction-data-to-spatial-data." class="level4">
+<h4 class="anchored" data-anchor-id="converting-the-hdb-transaction-data-to-spatial-data.">Converting the HDB Transaction data to spatial data.</h4>
+<p>As mentioned in the earlier section, the codes are in lag-long, we will need to transform the geographical systems.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo <span class="ot">&lt;-</span>  <span class="fu">st_as_sf</span>(resale_tidy_sgeo,<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>),<span class="at">crs =</span> <span class="dv">4326</span>) <span class="sc">%&gt;%</span> <span class="co">#project to WGS 84</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="dv">3414</span>) <span class="co">#convert to SVY21</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(resale_tidy_geo, <span class="st">"data/rds/resale_tidy_geo.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo <span class="ot">&lt;-</span><span class="fu">read_rds</span>(<span class="st">"data/rds/resale_tidy_geo.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="converting-the-school-data-to-spatial-data" class="level3">
+<h3 class="anchored" data-anchor-id="converting-the-school-data-to-spatial-data">Converting the school data to spatial data</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>Sch_sgeo <span class="ot">&lt;-</span> <span class="fu">merge</span>(coords,Sch)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(Sch_sgeo , <span class="st">"data/rds/Sch_sgeo.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>Sch_sgeo <span class="ot">&lt;-</span><span class="fu">read_rds</span>(<span class="st">"data/rds/Sch_sgeo.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>Sch_geo <span class="ot">&lt;-</span>  <span class="fu">st_as_sf</span>(Sch_sgeo,<span class="at">coords =</span> <span class="fu">c</span>(</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"longitude"</span>, <span class="st">"latitude"</span>),<span class="at">crs =</span> <span class="dv">4326</span>) <span class="sc">%&gt;%</span> <span class="co">#project to WGS 84</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="dv">3414</span>) <span class="co">#convert to SVY21</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(Sch_geo , <span class="st">"data/rds/Sch_geo.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>Sch_geo <span class="ot">&lt;-</span><span class="fu">read_rds</span>(<span class="st">"data/rds/Sch_geo.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="convert-shopping-mall-list-to-spatial-data" class="level3">
+<h3 class="anchored" data-anchor-id="convert-shopping-mall-list-to-spatial-data">Convert shopping mall list to spatial data</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>Mall_sgeo <span class="ot">&lt;-</span> coords</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>Mall_sgeo<span class="ot">&lt;-</span> Mall_sgeo[Mall_sgeo<span class="sc">$</span>address <span class="sc">!=</span> <span class="st">"GRiD(pomo)"</span>, ]</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(Mall_sgeo , <span class="st">"data/rds/Mall_sgeo.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>Mall_geo <span class="ot">&lt;-</span>  <span class="fu">st_as_sf</span>(Mall_sgeo,<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>),<span class="at">crs =</span> <span class="dv">4326</span>) <span class="sc">%&gt;%</span> <span class="co">#project to WGS 84</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="dv">3414</span>) <span class="co">#convert to SVY21</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(Mall_geo , <span class="st">"data/rds/Mall_geo.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>####check the projection system The following code can be use to check the projection system.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_crs</span>(resale_tidy_geo)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="loading-spatial-data-layers" class="level2">
+<h2 class="anchored" data-anchor-id="loading-spatial-data-layers">Loading spatial data layers:</h2>
+<p>The following code are the load the required spatial data to derive the predictors.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>childcare_sf <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">"data/ChildCareServices.geojson"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">3414</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_zm</span>()</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>eldercare <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">"data"</span>, <span class="at">layer =</span> <span class="st">"ELDERCARE"</span>)  <span class="sc">%&gt;%</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">3414</span>)</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>Kindergartens_sf <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">"data/Kindergartens.geojson"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">3414</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_zm</span>()</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>Supermkt_sf <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">"data/SupermarketsGEOJSON.geojson"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">3414</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_zm</span>()</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>HC_sf <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">"data/HawkerCentresGEOJSON.geojson"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">3414</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_zm</span>()</span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>Park_sf <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">"data/NParksParksandNatureReserves.geojson"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">3414</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_zm</span>()</span>
+<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a>Busstop <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">"data"</span>, <span class="at">layer =</span> <span class="st">"BusStop"</span>)  <span class="sc">%&gt;%</span></span>
+<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">3414</span>)</span>
+<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a>MRT <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">"data"</span>, <span class="at">layer =</span> <span class="st">"RapidTransitSystemStation"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">3414</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(TYP_CD_DES<span class="sc">==</span><span class="st">"MRT"</span> <span class="sc">&amp;</span> </span>
+<span id="cb25-30"><a href="#cb25-30" aria-hidden="true" tabindex="-1"></a>         <span class="sc">!</span><span class="fu">grepl</span>(<span class="st">"DEPOT|SUB STATION|BOCC"</span>, <span class="fu">toupper</span>(STN_NAM_DE)))</span>
+<span id="cb25-31"><a href="#cb25-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-32"><a href="#cb25-32" aria-hidden="true" tabindex="-1"></a>Business_district <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">"data/JTCBusinessParkLandGEOJSON.geojson"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb25-33"><a href="#cb25-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">3414</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb25-34"><a href="#cb25-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_zm</span>()</span>
+<span id="cb25-35"><a href="#cb25-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-36"><a href="#cb25-36" aria-hidden="true" tabindex="-1"></a><span class="co">#Based on URA information, Planning area  Downtown core formed the central business district. </span></span>
+<span id="cb25-37"><a href="#cb25-37" aria-hidden="true" tabindex="-1"></a>CBD <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">"data"</span>, </span>
+<span id="cb25-38"><a href="#cb25-38" aria-hidden="true" tabindex="-1"></a>                  <span class="at">layer =</span> <span class="st">"MP14_SUBZONE_WEB_PL"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb25-39"><a href="#cb25-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span> (<span class="dv">3414</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb25-40"><a href="#cb25-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(PLN_AREA_N<span class="sc">==</span><span class="st">"DOWNTOWN CORE"</span>)</span>
+<span id="cb25-41"><a href="#cb25-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-42"><a href="#cb25-42" aria-hidden="true" tabindex="-1"></a>CBD <span class="ot">&lt;-</span> <span class="fu">st_union</span>(CBD)</span>
+<span id="cb25-43"><a href="#cb25-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-44"><a href="#cb25-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-45"><a href="#cb25-45" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(childcare_sf, <span class="st">"data/rds/childcare_sf.rds"</span>)</span>
+<span id="cb25-46"><a href="#cb25-46" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(eldercare, <span class="st">"data/rds/eldercare.rds"</span>)</span>
+<span id="cb25-47"><a href="#cb25-47" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(Kindergartens_sf, <span class="st">"data/rds/Kindergartens_sf.rds"</span>)</span>
+<span id="cb25-48"><a href="#cb25-48" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(Supermkt_sf, <span class="st">"data/rds/Supermkt_sf.rds"</span>)</span>
+<span id="cb25-49"><a href="#cb25-49" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(HC_sf, <span class="st">"data/rds/HC_sf.rds"</span>)</span>
+<span id="cb25-50"><a href="#cb25-50" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(Park_sf, <span class="st">"data/rds/Park_sf.rds"</span>)</span>
+<span id="cb25-51"><a href="#cb25-51" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(Busstop, <span class="st">"data/rds/Busstop.rds"</span>)</span>
+<span id="cb25-52"><a href="#cb25-52" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(MRT, <span class="st">"data/rds/MRT.rds"</span>)</span>
+<span id="cb25-53"><a href="#cb25-53" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(Business_district, <span class="st">"data/rds/Business_district.rds"</span>)</span>
+<span id="cb25-54"><a href="#cb25-54" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(CBD, <span class="st">"data/rds/CBD.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Codes to read the any particular layers from rds folder.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>Busstop <span class="ot">&lt;-</span><span class="fu">read_rds</span>(<span class="st">"data/rds/Busstop.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="codes-to-the-dervie-predictors" class="level2">
+<h2 class="anchored" data-anchor-id="codes-to-the-dervie-predictors">Codes to the dervie predictors</h2>
+<p>The following section is to derive the predictors used for the predictive model.</p>
+<section id="calculate-the-proximity-to-the-nearest-bu-stop." class="level3">
+<h3 class="anchored" data-anchor-id="calculate-the-proximity-to-the-nearest-bu-stop.">Calculate the proximity to the nearest bu stop.</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate distances between each HDB flat and all bus stops</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>dist_bustop<span class="ot">&lt;-</span> <span class="fu">st_distance</span>(resale_tidy_geo, Busstop)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Find the nearest bus stop for each HDB flat</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>n_dist_bustop <span class="ot">&lt;-</span> <span class="fu">apply</span>(dist_bustop, <span class="dv">1</span>, min)</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>PROX_Busstop <span class="ot">&lt;-</span> n_dist_bustop</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>#Calculate the proximity to the nearest MRT station</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate distances between each HDB flat and all MRT</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>dist_MRT<span class="ot">&lt;-</span> <span class="fu">st_distance</span>(resale_tidy_geo, MRT)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Find the nearest MRT for each HDB flat</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>n_dist_MRT<span class="ot">&lt;-</span> <span class="fu">apply</span>(dist_MRT, <span class="dv">1</span>, min)</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>PROX_MRT <span class="ot">&lt;-</span> n_dist_MRT</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>#Calculate the proximity to the nearest elder-care</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate distances between each HDB flat and all Eldercare centers </span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>dist_ecare<span class="ot">&lt;-</span> <span class="fu">st_distance</span>(resale_tidy_geo,eldercare)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Find the nearest Eldercare for each HDB flat</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>n_dist_ecare<span class="ot">&lt;-</span> <span class="fu">apply</span>(dist_ecare, <span class="dv">1</span>, min)</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>PROX_eldercare <span class="ot">&lt;-</span> n_dist_ecare</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>#Calculate the proximity to the nearest Food Centre/hawker centre</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate distances between each HDB flat and all hawker centre</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>dist_hc<span class="ot">&lt;-</span> <span class="fu">st_distance</span>(resale_tidy_geo,HC_sf)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Find the nearest Hawker centre for each HDB flat</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>n_dist_HC_sf<span class="ot">&lt;-</span> <span class="fu">apply</span>(dist_hc, <span class="dv">1</span>, min)</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>PROX_Hawker <span class="ot">&lt;-</span> n_dist_HC_sf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>#Calculate the proximity to the nearest Park</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate distances between each HDB flat and all Parks</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>dist_PK<span class="ot">&lt;-</span> <span class="fu">st_distance</span>(resale_tidy_geo,Park_sf)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Find the nearest Parks for each HDB flat</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>n_dist_PK<span class="ot">&lt;-</span> <span class="fu">apply</span>(dist_PK, <span class="dv">1</span>, min)</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>PROX_Park <span class="ot">&lt;-</span> n_dist_PK</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>#Codes to get proximity to the nearest Supermarket</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate distances between each HDB flat and Supermarket</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>dist_supermkt<span class="ot">&lt;-</span> <span class="fu">st_distance</span>(resale_tidy_geo,Supermkt_sf)</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Find the nearest Parks for each HDB flat</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>n_dist_supermkt<span class="ot">&lt;-</span> <span class="fu">apply</span>(dist_supermkt, <span class="dv">1</span>, min)</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>PROX_Supermarket <span class="ot">&lt;-</span> n_dist_supermkt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>#Codes to get proximity to the nearest shopping mall</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate distances between each HDB flat and shopping mall </span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>dist_Mall<span class="ot">&lt;-</span> <span class="fu">st_distance</span>(resale_tidy_geo,Mall_geo)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Find the nearest Parks for each HDB flat</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>n_dist_Mall<span class="ot">&lt;-</span> <span class="fu">apply</span>(dist_Mall, <span class="dv">1</span>, min)</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>PROX_Mall <span class="ot">&lt;-</span> n_dist_Mall</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>#Codes to get proximity to the regional business districts</p>
+<p>In Singapore besides the central business districts there are other regional business districts, these area may have impact on local HDB resale prices.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate distances between each HDB flat another business districts</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>dist_OBD<span class="ot">&lt;-</span> <span class="fu">st_distance</span>(resale_tidy_geo,Business_district)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Find the nearest Parks for each HDB flat</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>n_dist_OBD<span class="ot">&lt;-</span> <span class="fu">apply</span>(dist_OBD, <span class="dv">1</span>, min)</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>PROX_OtherBusinessdistricts <span class="ot">&lt;-</span> n_dist_OBD</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>#Codes to get proximity to the CBD (Central Business District)</p>
+<p>Based on the URA data, the</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate distances between each HDB flat and Supermarket</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>dist_CBD <span class="ot">&lt;-</span> <span class="fu">st_distance</span>(resale_tidy_geo,CBD)</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>PROX_CBD <span class="ot">&lt;-</span> dist_CBD</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the numeric value from the string</span></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>PROX_CBD <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">gsub</span>(<span class="st">"[^0-9.]"</span>, <span class="st">""</span>, resale_tidy_geo<span class="sc">$</span>PROX_CBD))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="creation-of-buffer-of-350m-and-1-km-from-the-hdb-resale-flats." class="level1">
+<h1>Creation of buffer of 350m and 1 km from the HDB Resale flats.</h1>
+<p>Re-creating the Resale Geo spatial layer without the proximity information.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo_WP <span class="ot">&lt;-</span>  <span class="fu">st_as_sf</span>(resale_tidy_sgeo,<span class="at">coords =</span> <span class="fu">c</span>(</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"longitude"</span>, <span class="st">"latitude"</span>),<span class="at">crs =</span> <span class="dv">4326</span>) <span class="sc">%&gt;%</span> <span class="co">#project to WGS 84</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="dv">3414</span>) <span class="co">#convert to SVY21 </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="creation-of-350m-buffer-using-the-following-code-chunk." class="level3">
+<h3 class="anchored" data-anchor-id="creation-of-350m-buffer-using-the-following-code-chunk.">Creation of 350m buffer using the following code chunk.</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo_b350 <span class="ot">&lt;-</span> <span class="fu">st_buffer</span>(resale_tidy_geo_WP, <span class="at">dist =</span> <span class="dv">350</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(resale_tidy_geo_b350, <span class="st">"data/rds/resale_tidy_geo_b350.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo_b350 <span class="ot">&lt;-</span><span class="fu">read_rds</span>(<span class="st">"data/rds/resale_tidy_geo_b350.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="creation-of-1km-buffer-using-the-following-code-chunk." class="level3">
+<h3 class="anchored" data-anchor-id="creation-of-1km-buffer-using-the-following-code-chunk.">Creation of 1km buffer using the following code chunk.</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo_b1km <span class="ot">&lt;-</span> <span class="fu">st_buffer</span>(resale_tidy_geo_WP, <span class="at">dist =</span> <span class="dv">1000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(resale_tidy_geo_b1km, <span class="st">"data/rds/resale_tidy_geo_b1km.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo_b1km <span class="ot">&lt;-</span><span class="fu">read_rds</span>(<span class="st">"data/rds/resale_tidy_geo_b1km.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="intersect-to-the-find-the-number-of-facilities-within-the-specified-range." class="level2">
+<h2 class="anchored" data-anchor-id="intersect-to-the-find-the-number-of-facilities-within-the-specified-range.">Intersect to the find the number of facilities within the specified range.</h2>
+<section id="number-of-childcare-centers-within-350m" class="level3">
+<h3 class="anchored" data-anchor-id="number-of-childcare-centers-within-350m">Number of childcare centers within 350m</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Spatial join to identify intersections</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>intersections <span class="ot">&lt;-</span> <span class="fu">st_intersects</span>(resale_tidy_geo_b350, childcare_sf)</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Count the number of intersections for each buffer</span></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>num_childcare <span class="ot">&lt;-</span> <span class="fu">lengths</span>(intersections)</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Add the count as a new column to the buffer layer</span></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>num_childcare_350 <span class="ot">&lt;-</span> num_childcare</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="number-of-kindergartens-within-350m" class="level4">
+<h4 class="anchored" data-anchor-id="number-of-kindergartens-within-350m">Number of Kindergartens within 350m</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Spatial join to identify intersections</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>intersections <span class="ot">&lt;-</span> <span class="fu">st_intersects</span>(resale_tidy_geo_b350, Kindergartens_sf)</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Count the number of intersections for each buffer</span></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>num_Kindergarten <span class="ot">&lt;-</span> <span class="fu">lengths</span>(intersections)</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Add the count as a new column to the buffer layer</span></span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>num_Kindergarten_350 <span class="ot">&lt;-</span> num_Kindergarten</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="number-of-bus-stops-within-350m" class="level3">
+<h3 class="anchored" data-anchor-id="number-of-bus-stops-within-350m">Number of bus stops within 350m</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Spatial join to identify intersections</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>intersections <span class="ot">&lt;-</span> <span class="fu">st_intersects</span>(resale_tidy_geo_b350,Busstop)</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Count the number of intersections for each buffer</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>num_Busstop <span class="ot">&lt;-</span> <span class="fu">lengths</span>(intersections)</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Add the count as a new column to the buffer layer</span></span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>num_Busstop_350 <span class="ot">&lt;-</span> num_Busstop</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="number-of-schools-within-1-km" class="level3">
+<h3 class="anchored" data-anchor-id="number-of-schools-within-1-km">Number of Schools within 1 KM</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Spatial join to identify intersections</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>intersections <span class="ot">&lt;-</span> <span class="fu">st_intersects</span>(resale_tidy_geo_b1km, Sch_geo)</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Count the number of intersections for each buffer</span></span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>num_Sch<span class="ot">&lt;-</span> <span class="fu">lengths</span>(intersections)</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Add the count as a new column to the buffer layer</span></span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>num_Sch_1km <span class="ot">&lt;-</span> num_Sch</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="number-of-good-primary-schools-within-1-km" class="level3">
+<h3 class="anchored" data-anchor-id="number-of-good-primary-schools-within-1-km">Number of good primary schools within 1 km</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>Pop_prissch <span class="ot">&lt;-</span> <span class="fu">filter</span>(Sch_geo, Sch_geo<span class="sc">$</span><span class="st">`</span><span class="at">Popular School</span><span class="st">`</span><span class="sc">==</span> <span class="st">"yes"</span>)</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Spatial join to identify intersections</span></span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>intersections <span class="ot">&lt;-</span> <span class="fu">st_intersects</span>(resale_tidy_geo_b1km, Pop_prissch)</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Count the number of intersections for each buffer</span></span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>num_popSch<span class="ot">&lt;-</span> <span class="fu">lengths</span>(intersections)</span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Add the count as a new column to the buffer layer</span></span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>num_pop_priSch_1km <span class="ot">&lt;-</span> num_popSch</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="number-of-primary-school-within-1-km" class="level3">
+<h3 class="anchored" data-anchor-id="number-of-primary-school-within-1-km">Number of primary school within 1 km</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>Prisch <span class="ot">&lt;-</span> <span class="fu">filter</span>(Sch_geo, Sch_geo<span class="sc">$</span>mainlevel_code <span class="sc">==</span> <span class="st">"PRIMARY"</span> <span class="sc">|</span> </span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>                   Sch_geo<span class="sc">$</span>school_name <span class="sc">==</span> <span class="st">"MARIS STELLA HIGH SCHOOL"</span>)</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Spatial join to identify intersections</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>intersections <span class="ot">&lt;-</span> <span class="fu">st_intersects</span>(resale_tidy_geo_b1km, Prisch)</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Count the number of intersections for each buffer</span></span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>num_Prisch<span class="ot">&lt;-</span> <span class="fu">lengths</span>(intersections)</span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Add the count as a new column to the buffer layer</span></span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>num_Prisch <span class="ot">&lt;-</span> num_Prisch</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(resale_tidy_geo , <span class="st">"data/rds/resale_tidy_geo.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo <span class="ot">&lt;-</span><span class="fu">read_rds</span>(<span class="st">"data/rds/resale_tidy_geo.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="further-data-processing-for-the-data-used-for-building-the-predictive-model." class="level3">
+<h3 class="anchored" data-anchor-id="further-data-processing-for-the-data-used-for-building-the-predictive-model.">Further data processing for the data used for building the predictive model.</h3>
+<p>As mentioned in the earlier part at the start the predictive model will focus on 5-room transactions.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo_5Rm <span class="ot">&lt;-</span><span class="fu">filter</span>(resale_tidy_geo,resale_tidy_geo<span class="sc">$</span>flat_type <span class="sc">==</span> <span class="st">"5 ROOM"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="handling-overlapping-points" class="level4">
+<h4 class="anchored" data-anchor-id="handling-overlapping-points">Handling overlapping points:</h4>
+<p>After filtering the 5 room flats transaction details, the following code chunk is to jitters the overlapping points. This step is carried out after all the required distances were carried out.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo_5Rm<span class="ot">&lt;-</span> resale_tidy_geo_5Rm <span class="sc">%&gt;%</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_jitter</span>(<span class="at">amount =</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Further handling of storey range, in the current database, it is categorical, we will need to convert it to dummy variables using the following code chunks.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>num_unique_story_orders <span class="ot">&lt;-</span> <span class="fu">unique</span>(resale_tidy_geo_5Rm<span class="sc">$</span>storey_range)</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>num_unique_story_orders</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo_5Rm <span class="ot">&lt;-</span> resale_tidy_geo_5Rm <span class="sc">%&gt;%</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">storey_order =</span> <span class="fu">case_when</span>(</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>    storey_range <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"01 TO 03"</span>) <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>    storey_range <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"04 TO 06"</span>) <span class="sc">~</span> <span class="dv">2</span>,</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>    storey_range <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"07 TO 09"</span>) <span class="sc">~</span> <span class="dv">3</span>,</span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>    storey_range <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"10 TO 12"</span>) <span class="sc">~</span> <span class="dv">4</span>,</span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>    storey_range <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"13 TO 15"</span>) <span class="sc">~</span> <span class="dv">5</span>,</span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>    storey_range <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"16 TO 18"</span>) <span class="sc">~</span> <span class="dv">6</span>,</span>
+<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a>    storey_range <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"19 TO 21"</span>) <span class="sc">~</span> <span class="dv">7</span>,</span>
+<span id="cb54-10"><a href="#cb54-10" aria-hidden="true" tabindex="-1"></a>    storey_range <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"22 TO 24"</span>) <span class="sc">~</span> <span class="dv">8</span>,</span>
+<span id="cb54-11"><a href="#cb54-11" aria-hidden="true" tabindex="-1"></a>    storey_range <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"25 TO 27"</span>) <span class="sc">~</span> <span class="dv">9</span>,</span>
+<span id="cb54-12"><a href="#cb54-12" aria-hidden="true" tabindex="-1"></a>    storey_range <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"28 TO 30"</span>) <span class="sc">~</span> <span class="dv">10</span>,</span>
+<span id="cb54-13"><a href="#cb54-13" aria-hidden="true" tabindex="-1"></a>   <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">10</span></span>
+<span id="cb54-14"><a href="#cb54-14" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="summary-of-the-resale_tidy_geo_5rm-data" class="level4">
+<h4 class="anchored" data-anchor-id="summary-of-the-resale_tidy_geo_5rm-data">Summary of the resale_tidy_geo_5Rm data</h4>
+<p>The following code block is to summarise the resale_tidy_geo_5Rm to check for data structure issues which may interfere with the predictive model</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(resale_tidy_geo_5Rm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The following code chunk is to convert the data from meters to kilometers.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert PROX_* variables to kilometers</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo_5Rm<span class="sc">$</span>PROX_Busstop <span class="ot">&lt;-</span> resale_tidy_geo_5Rm<span class="sc">$</span>PROX_Busstop <span class="sc">/</span> <span class="dv">1000</span></span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo_5Rm<span class="sc">$</span>PROX_MRT <span class="ot">&lt;-</span> resale_tidy_geo_5Rm<span class="sc">$</span>PROX_MRT <span class="sc">/</span> <span class="dv">1000</span></span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo_5Rm<span class="sc">$</span>PROX_eldercare <span class="ot">&lt;-</span> resale_tidy_geo_5Rm<span class="sc">$</span>PROX_eldercare <span class="sc">/</span> <span class="dv">1000</span></span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo_5Rm<span class="sc">$</span>PROX_Hawker <span class="ot">&lt;-</span> resale_tidy_geo_5Rm<span class="sc">$</span>PROX_Hawker <span class="sc">/</span> <span class="dv">1000</span></span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo_5Rm<span class="sc">$</span>PROX_Park <span class="ot">&lt;-</span> resale_tidy_geo_5Rm<span class="sc">$</span>PROX_Park <span class="sc">/</span> <span class="dv">1000</span></span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo_5Rm<span class="sc">$</span>PROX_Supermarket <span class="ot">&lt;-</span> resale_tidy_geo_5Rm<span class="sc">$</span>PROX_Supermarket <span class="sc">/</span> <span class="dv">1000</span></span>
+<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo_5Rm<span class="sc">$</span>PROX_OtherBusinessdistricts <span class="ot">&lt;-</span> resale_tidy_geo_5Rm<span class="sc">$</span>PROX_OtherBusinessdistricts <span class="sc">/</span> <span class="dv">1000</span></span>
+<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo_5Rm<span class="sc">$</span>PROX_CBD <span class="ot">&lt;-</span> resale_tidy_geo_5Rm<span class="sc">$</span>PROX_CBD <span class="sc">/</span> <span class="dv">1000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(resale_tidy_geo_5Rm, <span class="st">"data/rds/resale_tidy_geo_5Rm.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo_5Rm <span class="ot">&lt;-</span><span class="fu">read_rds</span>(<span class="st">"data/rds/resale_tidy_geo_5Rm.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Get the columns names of the required data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(resale_tidy_geo_5Rm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>As the database still consist of other fields which will not be used in predictive model, hence they are removed to avoid issues.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Dropping columns by their index</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo_5Rm_trim <span class="ot">&lt;-</span> resale_tidy_geo_5Rm[, <span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span><span class="sc">:</span><span class="dv">12</span>, <span class="dv">14</span><span class="sc">:</span><span class="dv">15</span>, <span class="dv">32</span> )]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>After trimming the the data, the summary function as used again to ensure that we are able to the data are proper.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(resale_tidy_geo_5Rm_trim, <span class="st">"data/rds/resale_tidy_geo_5Rm_trim.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo_5Rm_trim <span class="ot">&lt;-</span><span class="fu">read_rds</span>(<span class="st">"data/rds/resale_tidy_geo_5Rm_trim.rds"</span>)</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span> (resale_tidy_geo_5Rm_trim)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    postal           resale_price     rem_lease_inMths          geometry    
+ Length:10886       Min.   : 400000   Min.   : 551.0   POINT        :10886  
+ Class :character   1st Qu.: 600000   1st Qu.: 821.0   epsg:3414    :    0  
+ Mode  :character   Median : 665000   Median : 910.0   +proj=tmer...:    0  
+                    Mean   : 701989   Mean   : 913.1                        
+                    3rd Qu.: 760000   3rd Qu.:1052.0                        
+                    Max.   :1588000   Max.   :1145.0                        
+  PROX_Busstop        PROX_MRT       PROX_eldercare      PROX_Hawker     
+ Min.   :0.01585   Min.   :0.01959   Min.   :0.000001   Min.   :0.03452  
+ 1st Qu.:0.07369   1st Qu.:0.39389   1st Qu.:0.407733   1st Qu.:0.44071  
+ Median :0.10637   Median :0.64467   Median :0.695586   Median :0.76166  
+ Mean   :0.11563   Mean   :0.73144   Mean   :0.875661   Mean   :0.86737  
+ 3rd Qu.:0.14817   3rd Qu.:0.99857   3rd Qu.:1.190987   3rd Qu.:1.15554  
+ Max.   :0.36948   Max.   :2.36558   Max.   :3.282314   Max.   :2.86763  
+   PROX_Park        PROX_Supermarket      PROX_Mall     
+ Min.   :0.006711   Min.   :0.0000007   Min.   :   0.0  
+ 1st Qu.:0.331660   1st Qu.:0.1821765   1st Qu.: 349.6  
+ Median :0.550195   Median :0.2822669   Median : 516.8  
+ Mean   :0.621309   Mean   :0.3022022   Mean   : 597.5  
+ 3rd Qu.:0.802742   3rd Qu.:0.3969652   3rd Qu.: 761.7  
+ Max.   :2.066652   Max.   :1.4517447   Max.   :2238.2  
+ PROX_OtherBusinessdistricts    PROX_CBD        num_childcare_350
+ Min.   :0.0253              Min.   : 0.09263   Min.   : 0.000   
+ 1st Qu.:1.6293              1st Qu.: 9.90208   1st Qu.: 3.000   
+ Median :3.1223              Median :12.44247   Median : 5.000   
+ Mean   :3.6114              Mean   :11.88770   Mean   : 4.886   
+ 3rd Qu.:5.1547              3rd Qu.:15.02619   3rd Qu.: 6.000   
+ Max.   :9.2498              Max.   :18.86054   Max.   :22.000   
+ num_Kindergarten_350 num_Busstop_350   num_Sch_1km     num_pop_priSch_1km
+ Min.   :0.000        Min.   : 0.000   Min.   : 0.000   Min.   :0.000     
+ 1st Qu.:0.000        1st Qu.: 6.000   1st Qu.: 4.000   1st Qu.:1.000     
+ Median :1.000        Median : 8.000   Median : 5.000   Median :2.000     
+ Mean   :1.042        Mean   : 8.209   Mean   : 5.606   Mean   :1.542     
+ 3rd Qu.:1.000        3rd Qu.:10.000   3rd Qu.: 7.000   3rd Qu.:2.000     
+ Max.   :8.000        Max.   :19.000   Max.   :14.000   Max.   :6.000     
+  storey_order   
+ Min.   : 1.000  
+ 1st Qu.: 2.000  
+ Median : 3.000  
+ Mean   : 3.385  
+ 3rd Qu.: 4.000  
+ Max.   :10.000  </code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="final-checks-on-overlapping-points" class="level3">
+<h3 class="anchored" data-anchor-id="final-checks-on-overlapping-points">Final checks on overlapping points</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>overlapping_points <span class="ot">&lt;-</span> resale_tidy_geo_5Rm_trim <span class="sc">%&gt;%</span></span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">overlap =</span> <span class="fu">lengths</span>(<span class="fu">st_equals</span>(., .)) <span class="sc">&gt;</span> <span class="dv">1</span>)</span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a>overlapping_Checks <span class="ot">&lt;-</span> <span class="fu">unique</span>(overlapping_points<span class="sc">$</span>overlap)</span>
+<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a>overlapping_Checks</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+</div>
+</section>
+<section id="reducing-the-sample-size-to-a-more-manageable-size-for-model-building." class="level3">
+<h3 class="anchored" data-anchor-id="reducing-the-sample-size-to-a-more-manageable-size-for-model-building.">Reducing the sample size to a more manageable size for model building.</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>mdata <span class="ot">&lt;-</span> resale_tidy_geo_5Rm_trim[<span class="fu">sample</span>(<span class="fu">nrow</span>(resale_tidy_geo_5Rm_trim), <span class="dv">6500</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>), ]</span>
+<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(mdata, <span class="st">"data/rds/mdata.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 
 
 </section>
-</div>
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

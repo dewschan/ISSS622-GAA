@@ -1,0 +1,547 @@
+---
+title: "Predictive modelling for Take Home Exercise 03B"
+author: "Dew Stella Chan"
+
+date: "October 27, 2024"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  message: false
+  freeze: true
+  warning: false
+---
+
+This part of the document is to prepare for predictive modelling.
+
+```{r}
+pacman::p_load(sf, spdep, GWmodel, tmap, rsample, Metrics, tidyverse, sf, httr, jsonlite, rvest, xml2, SpatialML, knitr, kableExtra, ggplot2,cowplot)
+#rvest is used to harvest data from OneMap API
+```
+
+# Predictive modelling
+
+The following code chunk read the the random selected data used for modelling.
+
+```{r}
+mdata <-read_rds("data/rds/mdata.rds")
+```
+
+The data are being split randomly as the proportion below.
+
+```{r}
+#| eval: False
+set.seed(1234)
+resale_split <- initial_split(mdata, 
+                              prop = 6.67/10)
+train_data <- training(resale_split)
+test_data <- testing(resale_split)
+```
+
+To ensure that the data are reproducible, they are written to rds for saving and could read in again if re-running is required.
+
+```{r}
+#| eval: False
+write_rds(train_data, "data/rds/train_data.rds")
+write_rds(test_data, "data/rds/test_data.rds")
+```
+
+```{r}
+train_data <- read_rds("data/rds/train_data.rds")
+test_data <- read_rds("data/rds/test_data.rds")
+```
+
+## Training data summary
+
+The following code chunk summarise the training data. This will allow us to understand the data range before proceeding on with modelling.
+
+```{r}
+
+# Summarize the data
+summary_data <- summary(train_data)
+
+# Convert summary to a data frame for better formatting
+summary_df <- as.data.frame(matrix(unlist(summary_data), ncol = 6, byrow = TRUE))
+
+# Add variable names
+rownames(summary_df) <- names(train_data)
+
+# Set column names
+colnames(summary_df) <- c("Min", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max")
+
+# Print the nicely formatted table
+kable(summary_df, caption = "Summary of Train Data")
+
+
+```
+
+## Multiple Linear Regression (MLR)
+
+The below code chunk is building of Multiple Linear Regression.
+
+```{r}
+price_mlr <- lm(resale_price ~ rem_lease_inMths +
+                  PROX_Busstop + PROX_MRT + PROX_eldercare +
+                  PROX_Hawker + PROX_Park + PROX_Supermarket +
+                  num_childcare_350 + num_Kindergarten_350 +
+                  num_Busstop_350 + 
+                  PROX_OtherBusinessdistricts + PROX_CBD +
+                  num_Sch_1km + num_pop_priSch_1km + storey_order,
+                data=train_data)
+olsrr::ols_regress(price_mlr)
+
+# summary(price_mlr)
+```
+
+### Interpretation of the multiple linear regression
+
+::: callout-note
+Based on the results of of above MLR model, the model is statistically significant, and the model is able to explain a significant portion of the (R-Square: 67.4%).
+
+The variables like "PROX_Busstop", "PROX_Park", "PROX_OtherBusinessdistricts" are not statistically significance with p-value less than 0.5. Although these variables are not significant at MRL method, it may still be of importance when using other modelling techniques. Hence the non-significant variables mentioned above will be included.
+:::
+
+## Collinearity Check
+
+Before the predictors are added to the model, we will check for collinearity among the variables.
+
+1.  We will use the **correlation heat map** to check if there are any of the variables which are highly correlated to each other (0.8 and above)
+
+```{r}
+#| fig-width: 12 #to widen the space
+#| fig-height: 8 #to lengthen the graph.
+mdata_sgeo <- mdata %>%
+  st_drop_geometry()
+ggstatsplot::ggcorrmat(mdata_sgeo  [, 3:17])
+```
+
+2.  We will use **Variance Inflation Factor (IVF)** to quantifies how much the variance of a regression coefficient is inflated due to collinearity with other variables.
+
+```{r}
+vif <- performance::check_collinearity(price_mlr)
+kable(vif, 
+      caption = "Variance Inflation Factor (VIF) Results") %>%
+  kable_styling(font_size = 14) 
+```
+
+```{r}
+plot(vif) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+### Interpretation on collinearity
+
+::: callout-note
+Based on the generated correlation heat map and IVP chart, none of the variables exhibit high collinearity.
+
+Before visualizing this correlation matrix and IVF charts, we may have assumed that variables related to schools (such as `num_pop_prisch_1km`, `num_sch_1km`, and `num_kindergarten`), bus stops (`num_Busstop_350` and `PROX_Busstop`), or preschool education variables (`num_kindergarten` and `num_childcare_350m`) would be closely correlated.
+
+However, the heat map outcome demonstrates that all variables have correlation coefficients below 0.8 . The highest observed correlation is 0.59, which occurs between `num_Busstop_350m` and `num_pop_prisch_1km`.
+
+Similar to the heat map, the IVF chart shows none of the variables are above 5, which indicate none of the variance of a regression coefficient is inflated due to collinearity with other variables.
+
+This analysis confirms that multicollinearity is not a significant issue within this set of variables, ensuring that the model's estimates remain reliable and the individual contributions of each variable can be accurately interpreted.
+:::
+
+## Computation the adaptive bandwidth
+
+In this section, the adaptive bandwidth will be computerised. There are two ways of doing so 1) through the gwr packages and 2) through the spatial ML packages
+
+### computation the adaptive bandwidth using the gwr package
+
+Due to the time constraint of this assignment, gwr package is used to compute adaptive bandwidth using the following code chunk.
+
+```{r}
+#| eval: False
+bw_adaptive <- bw.gwr(resale_price ~ rem_lease_inMths +
+                  PROX_Busstop + PROX_MRT + PROX_eldercare +
+                  PROX_Hawker + PROX_Park + PROX_Supermarket +
+                  num_childcare_350 + num_Kindergarten_350 +
+                  num_Busstop_350 + 
+                  PROX_OtherBusinessdistricts + PROX_CBD +
+                  num_Sch_1km + num_pop_priSch_1km + storey_order,
+                  data=train_data,
+                  approach="CV",
+                  kernel="gaussian",
+                  adaptive=TRUE,
+                  longlat=FALSE)
+```
+
+::: callout-note
+The derived adaptive bandwidth using the gwr packagfe is 32. This will be used for calibrating the predictive model.
+:::
+
+### Adaptive distance: using spatial ML,
+
+The following codes can be used to derive the bandwidth to use, but this is not used as it takes a very long computing time.
+
+```{r}
+#| eval: False
+bw_adaptive <- grf.bw(resale_price ~ rem_lease_inMths +
+                  PROX_Busstop + PROX_MRT + PROX_eldercare +
+                  PROX_Hawker + PROX_Park + PROX_Supermarket +
+                  num_childcare_350 + num_Kindergarten_350 +
+                  num_Busstop_350 + 
+                  PROX_OtherBusinessdistricts + PROX_CBD +
+                  num_Sch_1km + num_pop_priSch_1km + storey_order,
+                  data=train_data_nogeom,
+                  kernel="adaptive", 
+                  coords=coords_train,
+                  trees=50,
+                  importance="impurity")
+```
+
+After deriving the adaptive bandwidth, it is written to rds folder, so it does not need to be re-run.
+
+```{r}
+#| eval: False
+write_rds(bw_adaptive, "data/rds/bw_adaptive.rds")
+```
+
+## Building Predictive Model
+
+### Data prepration for the model
+
+The coordinates of the model, training and test data and they are written to rds folder.
+
+```{r}
+#| eval: False
+coords_mdata <- st_coordinates(mdata)
+coords_train <- st_coordinates(train_data)
+coords_test <- st_coordinates(test_data)
+```
+
+```{r}
+#| eval: False
+write_rds(coords_mdata, "data/rds/coords_mdata.rds")
+write_rds(coords_train, "data/rds/coords_train.rds")
+write_rds(coords_test, "data/rds/coords_test.rds" )
+```
+
+```{r}
+coords_mdata <-read_rds("data/rds/coords_mdata.rds")
+coords_train <-read_rds("data/rds/coords_train.rds")
+coords_test <-read_rds("data/rds/coords_test.rds")
+```
+
+# Predictive model using Aspatial Random Forest ( ranger package)
+
+The following code chunk is to drop geometry of the training data.
+
+```{r}
+#| eval: False
+train_data_nogeom <- train_data %>%
+  st_drop_geometry()
+```
+
+The following is to use random forest regression using the ranger package.
+
+```{r}
+#| eval: false
+set.seed(1234)
+rf <- ranger(resale_price ~ rem_lease_inMths +
+                  PROX_Busstop + PROX_MRT + PROX_eldercare +
+                  PROX_Hawker + PROX_Park + PROX_Supermarket +
+                  num_childcare_350 + num_Kindergarten_350 +
+                  num_Busstop_350 + 
+                  PROX_OtherBusinessdistricts + PROX_CBD +
+                  num_Sch_1km + num_pop_priSch_1km + storey_order,
+             data=train_data_nogeom, 
+             num.trees=50,
+             mtry=5,
+             importance="impurity")
+
+write_rds(rf, "data/rds/rf.rds" )
+```
+
+```{r}
+rf<-read_rds("data/rds/rf.rds")
+rf
+```
+
+::: callout-note
+The R squared value of 0.911 indicates that model explains approximately 91.1% of the variance of the resale price. This suggest a very good fit of the model of the data. It is noted that MSE of the model is at 1903931294, this could be used to compare with the geospatial version.
+:::
+
+## Geographically Weighted Regression (GWR) model using spatial ML package
+
+The following code are used to build the GRW model using random forest
+
+```{r}
+#| eval: false
+set.seed(1234)
+gwRF_adaptive <- grf(formula = resale_price ~ rem_lease_inMths +
+                  PROX_Busstop + PROX_MRT + PROX_eldercare +
+                  PROX_Hawker + PROX_Park + PROX_Supermarket +
+                  num_childcare_350 + num_Kindergarten_350 +
+                  num_Busstop_350 + 
+                  PROX_OtherBusinessdistricts + PROX_CBD +
+                  num_Sch_1km + num_pop_priSch_1km + storey_order,
+                     dframe=train_data_nogeom, 
+                     bw=bw_adaptive,
+                     kernel="adaptive",
+                     coords=coords_train, 
+                     ntree = 50 )
+```
+
+```{r}
+#| eval: false
+write_rds(gwRF_adaptive, "data/rds/gwRF_adaptive.rds" )
+```
+
+```{r}
+gwRF_adaptive<-read_rds("data/rds/gwRF_adaptive.rds")
+```
+
+### Data Preparation of the test data
+
+```{r}
+#| eval: false
+test_data_nogeom <- cbind(
+  test_data, coords_test) %>%
+  st_drop_geometry()
+```
+
+### Predicting resales values using the test data.
+
+After fitting the geographically weighted model using the random forest method, we move on to use the model to predict the resale price using the test data set using the following code block.
+
+```{r}
+#| eval: false
+gwRF_pred <- predict.grf(gwRF_adaptive, 
+                           test_data_nogeom, 
+                           x.var.name="X",
+                           y.var.name="Y", 
+                           local.w=1,
+                           global.w=0)
+
+write_rds(gwRF_pred, "data/rds/gwRF_pred.rds")
+```
+
+After deriving the output, the derived predicted price of the model back to the test data, so that comparison could be carried out.
+
+```{r}
+#| eval: false
+GRF_pred_df <- as.data.frame(gwRF_pred)
+test_data_pred <- cbind(test_data, 
+                        GRF_pred_df)
+write_rds(GRF_pred_df, "data/rds/GRF_pred_df.rds")
+write_rds(test_data_pred, "data/rds/test_data_pred.rds")
+```
+
+```{r}
+GRF_pred_df <-read_rds("data/rds/GRF_pred_df.rds")
+test_data_pred <-read_rds("data/rds/test_data_pred.rds")
+```
+
+```{r}
+ggplot(data = test_data_pred,
+       aes(x = gwRF_pred,
+           y = resale_price)) +
+  geom_point()
+```
+
+::: Callout-note
+Based on the above plot, the model is able predict the selling price of HDB flats relatively closely. This is supported by the number of plots forming the diagonal line of the scatter plot.
+
+The differences of points could be other factors which are not included as the predictors such as traveling time to the one's workplace.
+:::
+
+## visualisation the GWR Model
+
+#### Variables importance.
+
+The following code shows the variables importance.
+
+```{r}
+# Access variable importance from the Global.Model object
+var_importance <- gwRF_adaptive[["Global.Model"]][["variable.importance"]]
+
+# Convert to data frame
+var_importance_df <- as.data.frame(var_importance)
+
+# Optional: If you want to add variable names as a column
+var_importance_df$Variable <- rownames(var_importance_df)
+rownames(var_importance_df) <- NULL
+
+# View the data frame
+head(var_importance_df)
+
+```
+
+Plotting the variables
+
+```{r}
+
+# Create a data frame with variable importance
+var_importance <- gwRF_adaptive[["Global.Model"]][["variable.importance"]]
+var_importance_df <- data.frame(
+  Variable = names(var_importance),
+  Importance = as.numeric(var_importance)
+)
+
+# Plot the variable importance as a bar chart
+ggplot(var_importance_df, aes(x = reorder(Variable, Importance), y = Importance)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  coord_flip() +  # Flip coordinates for horizontal bars
+  labs(title = "Variable Importance", x = "Variables", y = "Importance") +
+  theme_minimal()
+
+```
+
+::: call-outnote
+Based on the above we can note that the proximity to central business district (PROX_CBD), remaining number lease in months (rem_lease_inMths) and the storey which the flat is on (storey_order) are the 3 main important predictors for predicting HDB resale price.
+:::
+
+### Differences between predicted price and resale prices
+
+The following code chunk is to derive the differences between predicted price and resale price. As there will transaction which we may be under predict or over predict hence abs() function is used to absolute the values.
+
+```{r}
+test_data_pred$diff_pre_actual <- abs(test_data_pred$gwRF_pred - test_data_pred$resale_price)
+```
+
+```{r}
+#| eval: false
+write_rds (test_data_pred, "data/rds/test_data_pred.rds")
+```
+
+Differences in prices are visualize using the following code chunk in tmap.
+
+```{r}
+# Set tmap mode to "view"
+tmap_mode("view")
+
+# Plotting the map
+tm_shape(test_data_pred) +
+  tm_dots("diff_pre_actual", 
+          style = "jenks",       # Apply Jenks classification
+          n = 5,                 # Number of classification intervals
+          palette = "RdYlBu",    # Color palette 
+          title = "Price Difference (Predicted - Actual)") +
+  tm_layout(main.title = "Resale Price Difference", 
+            main.title.size = 1.2) +
+  tm_legend(outside = TRUE)
+
+```
+
+::: call-out note
+
+From the map above, we can visualize the geographical distribution of the differences between predicted resale prices and actual transaction prices.
+
+Overall, the model accurately predicts resale prices across the island, with an R-squared value of 91%. However, we are particularly interested in identifying locations with significant transaction price differences. The map highlights that areas with greater price differences are predominantly situated near the central region of Singapore.
+
+There may be other factors not accounted for in this model, such as the availability of 5-room flats in these areas or government policies in effect at the time of transaction. Examples include cooling measures or changes in the classification of Built-To-Order (BTO) flats, which allow Singaporeans two opportunities to purchase HDB flats at significantly subsidized rates. :::
+
+```{r}
+
+# Create the box plot
+boxplot_diff <- boxplot(test_data_pred$diff_pre_actual,
+                        main = "Box Plot of Price Differences",
+                        ylab = "Price Difference (Predicted - Actual)",
+                        col = "lightblue",  # Fill color
+                        border = "darkblue")  # Border color
+
+# Create the histogram
+histogram_diff <- ggplot(test_data_pred, aes(x = diff_pre_actual)) +
+                  geom_histogram(bins = 30, fill = "blue", color = "black", alpha = 0.7) +
+                  labs(title = "Histogram of Price Differences (Predicted - Actual)",
+                       x = "Price Difference",
+                       y = "Frequency") +
+                  theme_minimal()
+
+# Convert the base R plot to a ggplot object
+boxplot_gg <- ggdraw() + draw_plot(boxplot_diff)
+
+# Combine the plots side by side
+combined_plot <- plot_grid(histogram_diff, boxplot_gg, ncol = 2)
+
+combined_plot
+
+```
+
+The below codes shows a summary of information.
+
+```{r}
+# Calculate summaries
+summary_diff <- summary(test_data_pred$diff_pre_actual)
+summary_resale <- summary(test_data_pred$resale_price)
+
+# Convert summaries to data frames
+summary_diff_df <- as.data.frame(t(as.matrix(summary_diff)))
+summary_resale_df <- as.data.frame(t(as.matrix(summary_resale)))
+
+# Combine summaries into one data frame
+summary_combined <- rbind(summary_diff_df, summary_resale_df)
+rownames(summary_combined) <- c("diff_pre_actual", "resale_price")
+
+# Display the table
+kable(summary_combined, caption = "Summary Statistics of Price Differences and Resale Prices")
+
+```
+
+::: callout
+The above histogram and box plot illustrate the differences between predicted prices and actual transaction prices.
+
+It is observed that the histogram is skewed to the right with a long tail. This observation supports the model statistic, indicating that the model can predict resale prices with an accuracy of approximately 91%.
+
+The box plot chart shows that the majority of the differences are equal to or less than \$50,000.
+
+The summary of price differences and resale values are shown in the table below. It is noted that the median resale price of the HDB 5-room flat is \$660,000, and the median price difference between predicted prices and actual prices is \$15,531.14. Hence, using the median, we can roughly gauge that the model has an error margin of about 2%.
+:::
+
+```{r}
+# Calculate the difference and ensure it's positive
+test_data_pred$diff_pre_actual <- abs(test_data_pred$gwRF_pred - test_data_pred$resale_price)
+
+# Get the indices of the top 5 price differences
+top_5_indices <- order(test_data_pred$diff_pre_actual, decreasing = TRUE)[1:5]
+
+# Extract the rows corresponding to the top 5 indices
+top_5_diff <- test_data_pred[top_5_indices, ]
+
+# Print the top 5 price differences
+print(top_5_diff)
+```
+
+## Local variable importance
+
+The code below are to extract the local variables for each of the training data.
+
+```{r}
+# Access variable importance from the Global.Model object
+var_importance_local <- gwRF_adaptive[["Local.Variable.Importance"]]
+
+# Convert to data frame
+var_importance_df_local <- as.data.frame(var_importance_local)
+
+# Optional: If you want to add variable names as a column
+var_importance_df_local$Variable <- rownames(var_importance_df_local)
+rownames(var_importance_df_local) <- NULL
+
+# View the data frame
+head(var_importance_df_local)
+```
+
+The following code is to join them back to training data.
+
+```{r}
+train_data_vimpt <- cbind(train_data, 
+                        var_importance_df_local)
+
+write_rds (train_data_vimpt, "data/rds/train_data_vimpt.rds")
+```
+
+::: callout-note
+The beauty of the geographically weighted random forest model lies in its ability to predict each transaction by considering the varying levels of importance of the available variables. Each transaction is modeled with respect to its surrounding neighbors, which allows for a more localized and relevant analysis of HDB transaction trends.
+
+Due to time constraints, further analysis at the local level has not been conducted for this assignment. However, this could be a valuable area for future work.
+:::
+
+### Conclusion
+
+The geographically weighted random forest model has performed well in predicting resale transactions compared to the Multiple Linear Regression (MLR) model. The model achieved a global R-squared value of 91% where the MLR model's R square is at 67%, indicating high accuracy in predicting prices.
+
+As evidenced by the scatter plot, the predicted prices closely align with the actual transaction prices, forming a diagonal line, which further validates the model's effectiveness.
+
+Future work could delve into more localized analyses, leveraging the model's ability to consider varying levels of importance of the variables based on geographical locations. This could provide even deeper insights into HDB transaction trends at a local level

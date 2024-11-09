@@ -1,0 +1,23 @@
+---
+title: "In-Class Exercise 9"
+author: "Dew Stella Chan"
+date: "October 26, 2024"
+date-modified: "last-modified"
+execute: 
+  eval: false
+  echo: true
+  message: false
+  freeze: true
+  warning: false
+---
+
+```{r}
+pacman::p_load(tmap, SpatialAcc, sf, ggstatsplot, reshape2, tidyverse)
+```
+
+```{r}
+mpsz <- st_read(dsn = "data/geospatial", layer = "MP14_SUBZONE_NO_SEA_PL")
+hexagons <- st_read(dsn = "data/geospatial", layer = "hexagons")
+eldercare <- st_read(dsn = "data/geospatial", layer = "ELDERCARE")
+
+```

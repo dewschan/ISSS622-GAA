@@ -1,0 +1,15 @@
+{
+  "hash": "21f9a3853be4686f683d3d6ce7859b15",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"In-Class Exercise 9\"\nauthor: \"Dew Stella Chan\"\ndate: \"October 26, 2024\"\ndate-modified: \"last-modified\"\nexecute: \n  eval: false\n  echo: true\n  message: false\n  freeze: true\n  warning: false\n---\n\n::: {.cell}\n\n```{.r .cell-code}\npacman::p_load(tmap, SpatialAcc, sf, ggstatsplot, reshape2, tidyverse)\n```\n:::\n\n::: {.cell}\n\n```{.r .cell-code}\nmpsz <- st_read(dsn = \"data/geospatial\", layer = \"MP14_SUBZONE_NO_SEA_PL\")\nhexagons <- st_read(dsn = \"data/geospatial\", layer = \"hexagons\")\neldercare <- st_read(dsn = \"data/geospatial\", layer = \"ELDERCARE\")\n```\n:::\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

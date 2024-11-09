@@ -28,9 +28,9 @@ st_write(mpsz_shp , "data/geospatial/MasterPlan2014SubzoneBoundary.kml",
 
 ```
 
-#Importing the data to and compare the diffences between the shapefile or kml file format.
+#Importing the data to and compare the differences between the shapefile or kml file format.
 
-#If the data useing
+#If the data using
 
 ```{r}
 mpsz_2019_shp <- st_read(dsn = "data/geospatial/MPSZ-2019", 

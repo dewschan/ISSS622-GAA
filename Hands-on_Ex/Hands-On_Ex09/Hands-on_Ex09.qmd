@@ -11,29 +11,31 @@ execute:
   warning: false
 ---
 
-
-
 ```{r}
 pacman::p_load(tmap, SpatialAcc, sf, ggstatsplot, reshape2, tidyverse)
 ```
 
 1 Importing geospatial data
+
 ```{r}
 mpsz <- st_read(dsn = "data/geospatial", layer = "MP14_SUBZONE_NO_SEA_PL")
 ```
+
 ```{r}
 hexagons <- st_read(dsn = "data/geospatial", layer = "hexagons")
 eldercare <- st_read(dsn = "data/geospatial", layer = "ELDERCARE")
 ```
+
 Updating CRS information
+
 ```{r}
 mpsz <- st_transform(mpsz, 3414)
 eldercare <- st_transform(eldercare, 3414)
 hexagons <- st_transform(hexagons, 3414)
 ```
 
-
 Cleaning and updating attribute fields of the geospatial data
+
 ```{r}
 eldercare <- eldercare %>%
   select(fid, ADDRESSPOS) %>%
@@ -44,13 +46,14 @@ hexagons <- hexagons %>%
   mutate(demand = 100)
 ```
 
-
 ```{r}
 ODMatrix <- read_csv("data/aspatial/OD_Matrix.csv", skip = 0)
 ```
+
 Tidying distance matrix
 
 Using the pivot_wider to transform the data from long format to fat format
+
 ```{r}
 distmat <- ODMatrix %>%
   select(origin_id, destination_id, total_cost) %>% #selection of the required columns
@@ -61,20 +64,17 @@ distmat <- ODMatrix %>%
   )
 ```
 
-
 ```{r}
 distmat_km <- as.matrix(distmat/1000)
 ```
 
+Modelling and Visualizing Accessibility using Hansen Method
 
-
- Modelling and Visualizing Accessibility using Hansen Method
- 
 ```{r}
 acc_Hansen <- data.frame(ac(hexagons$demand,
                             eldercare$capacity,
                             distmat_km, 
-                            d0 = 50,
+                            d0 = 50, #set the limit. it was comment it out
                             power = 0.5, 
                             family = "Hansen"))
 
@@ -82,7 +82,6 @@ colnames(acc_Hansen) <- "accHansen"
 acc_Hansen <- tbl_df(acc_Hansen)
 hexagon_Hansen <- bind_cols(hexagons, acc_Hansen)
 ```
-
 
 ```{r}
 mapex <- st_bbox(hexagons)
@@ -143,6 +142,7 @@ colnames(acc_KD2SFCA) <- "accKD2SFCA"
 acc_KD2SFCA <- tbl_df(acc_KD2SFCA)
 hexagon_KD2SFCA <- bind_cols(hexagons, acc_KD2SFCA)
 ```
+
 Visualising KD2SFCA’s accessibility
 
 ```{r}
@@ -171,11 +171,11 @@ tm_shape(eldercare) +
 ```
 
 Statistical graphic visualisation
+
 ```{r}
 hexagon_KD2SFCA <- st_join(hexagon_KD2SFCA, mpsz, 
                           join = st_intersects)
 ```
-
 
 ```{r}
 ggplot(data=hexagon_KD2SFCA, 
@@ -228,13 +228,12 @@ tm_shape(eldercare) +
   tm_grid(lwd = 0.1, alpha = 0.5)
 ```
 
- Statistical graphic visualisation
- 
+Statistical graphic visualisation
+
 ```{r}
 hexagon_SAM <- st_join(hexagon_SAM, mpsz, 
                        join = st_intersects)
 ```
-
 
 ```{r}
 ggplot(data=hexagon_SAM, 
@@ -246,4 +245,3 @@ ggplot(data=hexagon_SAM,
              colour ="red", 
              size=2)
 ```
-
