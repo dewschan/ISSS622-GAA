@@ -18,7 +18,6 @@ pacman::p_load(olsrr, ggstatsplot, ggpubr,
                see, sfdep)
 ```
 
-
 ```{r}
 mpsz = st_read(dsn = "data/geospatial", layer = "MP14_SUBZONE_WEB_PL")
 mpsz_svy21 <- st_transform(mpsz, 3414)
@@ -61,7 +60,6 @@ summary(condo_mlr)
 ```{r}
 ols_regress(condo_mlr)
 ```
-
 
 ```{r}
 ols_vif_tol(condo_mlr)
@@ -163,11 +161,9 @@ gwr_fixed <- gwr.basic(formula = SELLING_PRICE ~ AREA_SQM +
                        longlat = FALSE)
 ```
 
-
 ```{r}
 gwr_fixed
 ```
-
 
 ```{r}
 bw_adaptive <- bw.gwr(formula = SELLING_PRICE ~ AREA_SQM + AGE  + 
@@ -181,6 +177,7 @@ bw_adaptive <- bw.gwr(formula = SELLING_PRICE ~ AREA_SQM + AGE  +
                       adaptive=TRUE, 
                       longlat=FALSE)
 ```
+
 ```{r}
 gwr_adaptive <- gwr.basic(formula = SELLING_PRICE ~ AREA_SQM + AGE + 
                             PROX_CBD + PROX_CHILDCARE + PROX_ELDERLYCARE + 
@@ -204,7 +201,6 @@ gwr_adaptive_output <- as.data.frame(
   select(-c(2:15))
 ```
 
-
 ```{r}
 gwr_sf_adaptive <- cbind(condo_resale_sf,
                          gwr_adaptive_output)
@@ -217,7 +213,6 @@ glimpse(gwr_sf_adaptive)
 ```{r}
 summary(gwr_adaptive$SDF$yhat)
 ```
-
 
 ```{r}
 tmap_mode("plot")
@@ -256,7 +251,6 @@ tmap_arrange(AREA_SQM_SE, AREA_SQM_TV,
 
 ```
 
-
 ```{r}
 tm_shape(mpsz[mpsz$REGION_N=="CENTRAL REGION", ])+
   tm_polygons()+
@@ -266,4 +260,3 @@ tm_shape(gwr_sf_adaptive) +
            border.col = "gray60",
            border.lwd = 1)
 ```
-
