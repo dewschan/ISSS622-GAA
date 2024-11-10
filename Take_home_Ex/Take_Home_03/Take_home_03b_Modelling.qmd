@@ -263,7 +263,7 @@ rf
 The R squared value of 0.911 indicates that model explains approximately 91.1% of the variance of the resale price. This suggest a very good fit of the model of the data. It is noted that MSE of the model is at 1903931294.
 :::
 
-## Geographically Weighted Regression (GWR) model using spatial ML package
+# Geographically Weighted Regression (GWR) model using spatial ML package
 
 The following code are used to build the GRW model using random forest.
 
@@ -333,6 +333,16 @@ write_rds(test_data_pred, "data/rds/test_data_pred.rds")
 GRF_pred_df <-read_rds("data/rds/GRF_pred_df.rds")
 test_data_pred <-read_rds("data/rds/test_data_pred.rds")
 ```
+
+### Calculating Root Mean Square Error
+```{r}
+rmse(test_data_pred$resale_price, 
+     test_data_pred$gwRF_pred)
+```
+::: Callout-note
+Based on the root mean square error (RMSE) shows that our predicted values are about $44,894.94 from the actual reslae price. Considering the median transaction price of $660,000 (shown in the later section), this is about 6% away from the actual values. 
+:::
+
 
 ```{r}
 ggplot(data = test_data_pred,
@@ -488,6 +498,8 @@ It is observed that the histogram is skewed to the right with a long tail. This 
 The box plot chart shows that the majority of the differences are equal to or less than \$50,000.
 
 The summary of price differences and resale values are shown in the table below. It is noted that the median resale price of the HDB 5-room flat is \$660,000, and the median price difference between predicted prices and actual prices is \$15,531.14. Hence, using the median, we can roughly gauge that the model has an error margin of about 2%.
+
+a
 :::
 
 The code below shows the top 5 differences based on the predicted and transacted price.
@@ -538,6 +550,10 @@ write_rds (train_data_vimpt, "data/rds/train_data_vimpt.rds")
 The beauty of the geographically weighted random forest model lies in its ability to predict each transaction by considering the varying levels of importance of the available variables. Each transaction is modeled with respect to its surrounding neighbors, which allows for a more localized and relevant analysis of HDB transaction trends.
 
 Due to time constraints, further analysis at the local level has not been conducted for this assignment. However, this could be a valuable area for future work.
+
+Based on the root mean square error (RMSE) shows that our predicted values are about $44,894.94 from the actual reslae price. Considering the median transaction price of $660,000, this is about 6% away from the actual values. 
+
+The future work could calibrate the model further to reduce RMSE. 
 :::
 
 ### Conclusion

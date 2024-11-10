@@ -18,15 +18,31 @@ pacman::p_load(sf, spdep, GWmodel, SpatialML,
                tmap, rsample, Metrics, tidyverse)
 ```
 
-## Reading data
+## Data Preparation
+
+```{r}
+#| eval: false
+mdata <- read_rds("data/rds/mdata.rds")
+```
+
+Reducing the number of data to 100 for faster computation
+```{r}
+#| eval: false
+set.seed(1234)
+mdata <- mdata[sample(nrow(mdata), 100, replace = TRUE), ]
+
+write_rds(mdata, "data/rds/mdata.rds")
+```
 
 ```{r}
 mdata <- read_rds("data/rds/mdata.rds")
 ```
 
+
 ## Partitioning Dataset
 
 ```{r}
+#| eval: false
 set.seed(1234)
 resale_split <- initial_split(mdata, 
                               prop = 6.5/10,)
@@ -38,6 +54,13 @@ write_rds(test_data, "data/rds/test_data.rds")
 ```
 
 ## Computing correlation Matrix
+Retrieving stored Data
+
+```{r}
+train_data <- read_rds("data/rds/train_data.rds")
+test_data <- read_rds("data/rds/test_data.rds")
+```
+
 
 ```{r}
 mdata_nogeo <- mdata%>%
@@ -51,12 +74,6 @@ corrplot::corrplot(cor(mdata_nogeo[, 2:17]),
                    type = "upper")
 ```
 
-Retrieving stored Data
-
-```{r}
-train_data <- read_rds("data/rds/train_data.rds")
-test_data <- read_rds("data/rds/test_data.rds")
-```
 
 Building a non-spatial multiple linear regression
 
@@ -79,6 +96,7 @@ write_rds(price_mlr, "data/rds/price_mlr.rds" )
 ## gwr predictive method
 
 ```{r}
+#| eval: false
 train_data_sp <- as_Spatial(train_data)
 train_data_sp
 ```
@@ -86,6 +104,7 @@ train_data_sp
 ### Computing adaptive bandwidth
 
 ```{r}
+#| eval: false
 bw_adaptive <- bw.gwr(resale_price ~ floor_area_sqm +
                   storey_order + remaining_lease_mths +
                   PROX_CBD + PROX_ELDERLYCARE + PROX_HAWKER +
@@ -103,6 +122,7 @@ bw_adaptive <- bw.gwr(resale_price ~ floor_area_sqm +
 Writing to rds folder so it will not need ot be re-run
 
 ```{r}
+#| eval: false
 write_rds(bw_adaptive, "data/rds/bw_adaptive.rds")
 ```
 
@@ -113,6 +133,7 @@ bw_adaptive <- read_rds("data/rds/bw_adaptive.rds")
 ### Constructing the adaptive bandwidth gwr model
 
 ```{r}
+#| eval: false
 gwr_adaptive <- gwr.basic(formula = resale_price ~
                             floor_area_sqm + storey_order +
                             remaining_lease_mths + PROX_CBD + 
@@ -138,12 +159,14 @@ gwr_adaptive
 ### Converting the test data from sf data.frame to SpatialPointDataFrame
 
 ```{r}
+#| eval: false
 test_data_sp <- test_data %>%
   as_Spatial()
 test_data_sp
 ```
 
 ```{r}
+#| eval: false
 gwr_bw_test_adaptive <- bw.gwr(resale_price ~ floor_area_sqm +
                   storey_order + remaining_lease_mths +
                   PROX_CBD + PROX_ELDERLYCARE + PROX_HAWKER +
@@ -158,9 +181,10 @@ gwr_bw_test_adaptive <- bw.gwr(resale_price ~ floor_area_sqm +
                   longlat=FALSE)
 ```
 
-The result shows that 25 neighbour points will be the optimal bandwidth for the test data. We will use the optimal data for the bandwidth.
+The result shows that 34 neighbour points will be the optimal bandwidth for the test data. We will use the optimal data for the bandwidth.
 
 ```{r}
+#| eval: false
 write_rds(gwr_bw_test_adaptive, "data/rds/gwr_bw_test_adaptive.rds")
 ```
 
@@ -171,6 +195,7 @@ gwr_bw_test_adaptive <- read_rds("data/rds/gwr_bw_test_adaptive.rds")
 14.8.7 Computing predicted values of the test data
 
 ```{r}
+#| eval: false
 gwr_pred <- gwr.predict(formula = resale_price ~
                           floor_area_sqm + storey_order +
                           remaining_lease_mths + PROX_CBD + 
@@ -185,6 +210,16 @@ gwr_pred <- gwr.predict(formula = resale_price ~
                         kernel = 'gaussian', 
                         adaptive=TRUE, 
                         longlat = FALSE)
+```
+
+
+```{r}
+#| eval: false
+write_rds(gwr_pred, "data/rds/gwr_pred.rds")
+```
+
+```{r}
+gwr_prede <- read_rds("data/rds/gwr_pred.rds")
 ```
 
 ## Preparing coordinates data
@@ -208,7 +243,7 @@ train_data <- train_data %>%
 ## Calibrating Random Forest Model
 
 ```{r}
-#eval|False 
+#| eval: false 
 set.seed(1234)
 rf <- ranger(resale_price ~ floor_area_sqm + storey_order + 
                remaining_lease_mths + PROX_CBD + PROX_ELDERLYCARE + 
@@ -219,16 +254,16 @@ rf <- ranger(resale_price ~ floor_area_sqm + storey_order +
              data=train_data)
 write_rds(rf, "data/rds/rf.rds")
 
-rf
 ```
 
 ```{r}
-#eval|False
+
 rf <- read_rds("data/rds/rf.rds")
 rf
 ```
 
 ```{r}
+#| eval: false
 set.seed(1234)
 gwRF_adaptive <- grf(formula = resale_price ~ floor_area_sqm + storey_order +
                        remaining_lease_mths + PROX_CBD + PROX_ELDERLYCARE +
@@ -243,6 +278,7 @@ gwRF_adaptive <- grf(formula = resale_price ~ floor_area_sqm + storey_order +
 ```
 
 ```{r}
+#| eval: false
 write_rds(gwRF_adaptive, "data/rds/gwRF_adaptive.rds")
 ```
 
@@ -258,7 +294,8 @@ test_data <- cbind(test_data, coords_test) %>%
 Predicting with test data
 
 ```{r}
-gwRF_pred <- predict.grf(, 
+#| eval: false
+gwRF_pred <- predict.grf(gwRF_adaptive, 
                            test_data, 
                            x.var.name="X",
                            y.var.name="Y", 
@@ -266,13 +303,11 @@ gwRF_pred <- predict.grf(,
                            global.w=0)
 
 
-
-GRF_pred <- write_rds(gwRF_pred, "data/model/GRF_pred.rds")
+write_rds(gwRF_pred, "data/rds/gwRF_pred.rds")
 ```
 
-
 ```{r}
-GRF_pred <- read_rds("data/model/GRF_pred.rds")
+GRF_pred <- read_rds("data/rds/gwRF_pred.rds")
 GRF_pred_df <- as.data.frame(GRF_pred)
 
 
@@ -289,13 +324,11 @@ rmse(test_data_p$resale_price,
      test_data_p$GRF_pred)
 ```
 
-
 ### Visualising the predicted values
 
-````{r}
+```{r}
 ggplot(data = test_data_p,
        aes(x = GRF_pred,
            y = resale_price)) +
   geom_point()
 ```
-
