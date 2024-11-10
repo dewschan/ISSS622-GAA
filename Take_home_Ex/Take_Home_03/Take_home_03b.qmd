@@ -15,9 +15,17 @@ execute:
 
 The scope of this analysis is to focus on building predictive model for predicting the 5- room HDB resale price in Singapore.
 
-The model is calibrated using the 5-room flat transactions from January 2023 to September 2024, and then random select of sample 6,500 were extracted to form the part of the training and test data.
+The model is calibrated using the 5-room flat transactions from January 2023 to September 2024, and then randomly selected sample of 6,500 were extracted to form the part of the training and test data to calibrate and build the model.
 
 The process of data preparation was carried out using all the HDB transactions from January 2023 to September 2024.
+
+# Overview
+
+The following section of the documents is on the data preparation process for the model.
+
+For the modelling component, please refer to the the following link:
+
+<https://isss626-dewstella.netlify.app/take_home_ex/take_home_03/take_home_03b_modelling>
 
 # R Packages used in this Analysis
 
@@ -30,14 +38,14 @@ pacman::p_load(sf, spdep, GWmodel, tmap, rsample, Metrics, tidyverse, sf, httr, 
 
 ### Loading of Resale HDB Data
 
-This is the subset of the resales data from 2023 Jan to Sep 2024.
+Reading of the HDB resale csv file downloaded from data.gov.sg
 
 ```{r}
 #| eval: false
 resale <- read_csv("data/resale.csv") 
 ```
 
-The following code block is to:
+The following code chunk is to:
 
 -   combine the block and street names together to form address field.
 
@@ -206,7 +214,7 @@ coords<- get_coords(add_list)
 
 ### Codes to write the coordinates to rds folder.
 
-The data frame coords in rds folder contains all the HDB transactions coordinates.
+The data frame "coords" in rds folder contains all the HDB transactions coordinates.
 
 ***The following two code chunks should be not re-run, so the coordinates of HDB transaction will not be replaced.***
 
@@ -233,7 +241,7 @@ resale_tidy_sgeo <-read_rds("data/rds/resale_tidy_sgeo.rds")
 
 #### Converting the HDB Transaction data to spatial data.
 
-As mentioned in the earlier section, the codes are in lag-long, we will need to transform the geographical systems.
+As mentioned in the earlier section, the codes are in lag-long, we will need to transform the geographical system to SVY 21.
 
 ```{r}
 #| eval: false
@@ -290,7 +298,9 @@ Mall_geo <-  st_as_sf(Mall_sgeo,coords = c("longitude", "latitude"),crs = 4326) 
 write_rds(Mall_geo , "data/rds/Mall_geo.rds")
 ```
 
-####check the projection system The following code can be use to check the projection system.
+#### Check the projection system
+
+The following code can be use to check the projection system.
 
 ```{r}
 #| eval: false
@@ -299,7 +309,7 @@ st_crs(resale_tidy_geo)
 
 ## Loading spatial data layers:
 
-The following code are the load the required spatial data to derive the predictors.
+The following code are to load the required spatial data to derive the predictors.
 
 ```{r}
 #| eval: false
@@ -366,11 +376,11 @@ Codes to read the any particular layers from rds folder.
 Busstop <-read_rds("data/rds/Busstop.rds")
 ```
 
-## Codes to the dervie predictors
+## Codes to the derive predictors
 
 The following section is to derive the predictors used for the predictive model.
 
-### Calculate the proximity to the nearest bu stop.
+### Calculate the proximity to the nearest bus stop.
 
 ```{r}
 #| eval: false
@@ -383,7 +393,7 @@ n_dist_bustop <- apply(dist_bustop, 1, min)
 resale_tidy_geo$PROX_Busstop <- n_dist_bustop
 ```
 
-#Calculate the proximity to the nearest MRT station
+### Calculate the proximity to the nearest MRT station
 
 ```{r}
 #| eval: false
@@ -396,7 +406,7 @@ n_dist_MRT<- apply(dist_MRT, 1, min)
 resale_tidy_geo$PROX_MRT <- n_dist_MRT
 ```
 
-#Calculate the proximity to the nearest elder-care
+### Calculate the proximity to the nearest elder-care
 
 ```{r}
 #| eval: false
@@ -409,7 +419,7 @@ n_dist_ecare<- apply(dist_ecare, 1, min)
 resale_tidy_geo$PROX_eldercare <- n_dist_ecare
 ```
 
-#Calculate the proximity to the nearest Food Centre/hawker centre
+### Calculate the proximity to the nearest Makert and Hawker Centre
 
 ```{r}
 #| eval: false
@@ -422,7 +432,7 @@ n_dist_HC_sf<- apply(dist_hc, 1, min)
 resale_tidy_geo$PROX_Hawker <- n_dist_HC_sf
 ```
 
-#Calculate the proximity to the nearest Park
+### Calculate the proximity to the nearest Park
 
 ```{r}
 #| eval: false
@@ -435,7 +445,7 @@ n_dist_PK<- apply(dist_PK, 1, min)
 resale_tidy_geo$PROX_Park <- n_dist_PK
 ```
 
-#Codes to get proximity to the nearest Supermarket
+### Codes to get proximity to the nearest supermarket
 
 ```{r}
 #| eval: false
@@ -448,7 +458,7 @@ n_dist_supermkt<- apply(dist_supermkt, 1, min)
 resale_tidy_geo$PROX_Supermarket <- n_dist_supermkt
 ```
 
-#Codes to get proximity to the nearest shopping mall
+### Codes to get proximity to the nearest shopping mall
 
 ```{r}
 #| eval: false
@@ -461,9 +471,9 @@ n_dist_Mall<- apply(dist_Mall, 1, min)
 resale_tidy_geo$PROX_Mall <- n_dist_Mall
 ```
 
-#Codes to get proximity to the regional business districts
+### Codes to get proximity to the regional business districts
 
-In Singapore besides the central business districts there are other regional business districts, these area may have impact on local HDB resale prices.
+In Singapore besides the central business district, there are other regional business districts, these area may have impact on local HDB resale prices as it reduce the travelling time.
 
 ```{r}
 #| eval: false
@@ -476,20 +486,22 @@ n_dist_OBD<- apply(dist_OBD, 1, min)
 resale_tidy_geo$PROX_OtherBusinessdistricts <- n_dist_OBD
 ```
 
-#Codes to get proximity to the CBD (Central Business District)
+#### Codes to get proximity to the CBD (Central Business District)
 
-Based on the URA data, the
+Based on the information available on Wikipedia and URA (Urban Redevelopment Authority) website, CBD in Singapore lies within downtown core.
+
+<https://www.ura.gov.sg/Corporate/Guidelines/Urban-Design/Downtown-Core/Downtown-Core-Planning-Area>
 
 ```{r}
 #| eval: false
 
-# Calculate distances between each HDB flat and Supermarket
+# Calculate distances between each HDB flat and CDD
 dist_CBD <- st_distance(resale_tidy_geo,CBD)
 
 resale_tidy_geo$PROX_CBD <- dist_CBD
 
 
-# Extract the numeric value from the string
+# Extract the numeric value, as the derived field are in  sting, the number are extracted to make sure it is relevent. 
 resale_tidy_geo$PROX_CBD <- as.numeric(gsub("[^0-9.]", "", resale_tidy_geo$PROX_CBD))
 
 ```
@@ -585,7 +597,7 @@ num_Busstop <- lengths(intersections)
 resale_tidy_geo$num_Busstop_350 <- num_Busstop
 ```
 
-### Number of Schools within 1 KM
+### Number of Schools within 1km
 
 ```{r}
 #| eval: false
@@ -599,7 +611,7 @@ num_Sch<- lengths(intersections)
 resale_tidy_geo$num_Sch_1km <- num_Sch
 ```
 
-### Number of good primary schools within 1 km
+### Number of good primary schools within 1km
 
 ```{r}
 #| eval: false
@@ -616,7 +628,7 @@ resale_tidy_geo$num_pop_priSch_1km <- num_popSch
 
 ```
 
-### Number of primary school within 1 km
+### Number of primary school within 1km
 
 ```{r}
 #| eval: false
@@ -664,7 +676,9 @@ resale_tidy_geo_5Rm<- resale_tidy_geo_5Rm %>%
   st_jitter(amount = 5)
 ```
 
-Further handling of storey range, in the current database, it is categorical, we will need to convert it to dummy variables using the following code chunks.
+#### Handling Storey Range:
+
+In the current database, storey level are categorical, we will need to convert it to dummy variables using the following code chunks.
 
 ```{r}
 #| eval: false
@@ -690,7 +704,7 @@ resale_tidy_geo_5Rm <- resale_tidy_geo_5Rm %>%
   ))
 ```
 
-#### Summary of the resale_tidy_geo_5Rm data
+#### Summary of the "resale_tidy_geo_5Rm" data
 
 The following code block is to summarise the resale_tidy_geo_5Rm to check for data structure issues which may interfere with the predictive model
 
@@ -699,6 +713,8 @@ The following code block is to summarise the resale_tidy_geo_5Rm to check for da
 summary(resale_tidy_geo_5Rm)
 
 ```
+
+#### Convert the distance to from meters to kilometers
 
 The following code chunk is to convert the data from meters to kilometers.
 
@@ -725,6 +741,8 @@ write_rds(resale_tidy_geo_5Rm, "data/rds/resale_tidy_geo_5Rm.rds")
 resale_tidy_geo_5Rm <-read_rds("data/rds/resale_tidy_geo_5Rm.rds")
 ```
 
+### Removing the extra columns which are not needed for modelling. 
+
 Get the columns names of the required data.
 
 ```{r}
@@ -742,7 +760,6 @@ resale_tidy_geo_5Rm_trim <- resale_tidy_geo_5Rm[, -c(1, 3:12, 14:15, 32 )]
 ```
 
 After trimming the the data, the summary function as used again to ensure that we are able to the data are proper.
-
 
 ```{r}
 #| eval: false
@@ -773,6 +790,3 @@ mdata <- resale_tidy_geo_5Rm_trim[sample(nrow(resale_tidy_geo_5Rm_trim), 6500, r
 
 write_rds(mdata, "data/rds/mdata.rds")
 ```
-
-
-

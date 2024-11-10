@@ -9,7 +9,7 @@
 <meta name="author" content="Dew Stella Chan">
 <meta name="dcterms.date" content="2024-10-27">
 
-<title>Data Prepration for Take Home Exercise 03b – ISSS622-GAA</title>
+<title>Data Prepration for Take Home Exercise 03b – ISSS626-GAA</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -115,7 +115,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../../index.html">
-    <span class="navbar-title">ISSS622-GAA</span>
+    <span class="navbar-title">ISSS626-GAA</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -165,6 +165,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../../Hands-on_Ex/hands-on_ex09/hands-on_ex09.html">
  <span class="dropdown-text">Hands-on Exercise 9</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/hands-on_ex09/hands-on_ex09.html">
+ <span class="dropdown-text">Hands-on Exercise 9</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/hands-on_ex10/hands-on_ex10.html">
+ <span class="dropdown-text">Hands-on Exercise 10</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -177,8 +185,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="dropdown-text">In Class Exercise 1</span></a>
   </li>  
         <li>
+    <a class="dropdown-item" href="../../In_Class_Ex/In_Class_Ex02/In_Class_Ex02.html">
+ <span class="dropdown-text">In Class Exercise 2</span></a>
+  </li>  
+        <li>
     <a class="dropdown-item" href="../../In_Class_Ex/In_Class_Ex03/In_Class_Ex03.html">
- <span class="dropdown-text">In Class Exercise 3</span></a>
+ <span class="dropdown-text">In Class Exercise 2</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../../In_Class_Ex/In_Class_Ex04/In_Class_Ex04.html">
@@ -195,6 +207,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li>
     <a class="dropdown-item" href="../../In_Class_Ex/In_Class_Ex07/In_Class_Ex07.html">
  <span class="dropdown-text">In Class Exercise 7</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../In_Class_Ex/In_Class_Ex08/In_Class_Ex08.html">
+ <span class="dropdown-text">In Class Exercise 8</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../In_Class_Ex/In_Class_Ex09/In_Class_Ex09.html">
+ <span class="dropdown-text">In Class Exercise 9</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../In_Class_Ex/In_Class_Ex10/In_Class_Ex10.html">
+ <span class="dropdown-text">In Class Exercise 10</span></a>
   </li>  
     </ul>
   </li>
@@ -213,7 +237,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
         <li>
     <a class="dropdown-item" href="../../Take_home_Ex/Take_home_03/Take_home_03b.html">
- <span class="dropdown-text">Take Home Exercise 3b</span></a>
+ <span class="dropdown-text">Take Home Exercise 3b Data Preparation</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../../Take_home_Ex/Take_home_03/Take_home_03b_Modelling.html">
@@ -248,6 +272,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#scope-of-this-analysis" id="toc-scope-of-this-analysis" class="nav-link active" data-scroll-target="#scope-of-this-analysis">Scope of this analysis:</a></li>
+  <li><a href="#overview" id="toc-overview" class="nav-link" data-scroll-target="#overview">Overview</a></li>
   <li><a href="#r-packages-used-in-this-analysis" id="toc-r-packages-used-in-this-analysis" class="nav-link" data-scroll-target="#r-packages-used-in-this-analysis">R Packages used in this Analysis</a></li>
   <li><a href="#data-preparation." id="toc-data-preparation." class="nav-link" data-scroll-target="#data-preparation.">Data Preparation.</a>
   <ul class="collapse">
@@ -261,9 +286,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#converting-the-school-data-to-spatial-data" id="toc-converting-the-school-data-to-spatial-data" class="nav-link" data-scroll-target="#converting-the-school-data-to-spatial-data">Converting the school data to spatial data</a></li>
   <li><a href="#convert-shopping-mall-list-to-spatial-data" id="toc-convert-shopping-mall-list-to-spatial-data" class="nav-link" data-scroll-target="#convert-shopping-mall-list-to-spatial-data">Convert shopping mall list to spatial data</a></li>
   <li><a href="#loading-spatial-data-layers" id="toc-loading-spatial-data-layers" class="nav-link" data-scroll-target="#loading-spatial-data-layers">Loading spatial data layers:</a></li>
-  <li><a href="#codes-to-the-dervie-predictors" id="toc-codes-to-the-dervie-predictors" class="nav-link" data-scroll-target="#codes-to-the-dervie-predictors">Codes to the dervie predictors</a>
+  <li><a href="#codes-to-the-derive-predictors" id="toc-codes-to-the-derive-predictors" class="nav-link" data-scroll-target="#codes-to-the-derive-predictors">Codes to the derive predictors</a>
   <ul class="collapse">
-  <li><a href="#calculate-the-proximity-to-the-nearest-bu-stop." id="toc-calculate-the-proximity-to-the-nearest-bu-stop." class="nav-link" data-scroll-target="#calculate-the-proximity-to-the-nearest-bu-stop.">Calculate the proximity to the nearest bu stop.</a></li>
+  <li><a href="#calculate-the-proximity-to-the-nearest-bus-stop." id="toc-calculate-the-proximity-to-the-nearest-bus-stop." class="nav-link" data-scroll-target="#calculate-the-proximity-to-the-nearest-bus-stop.">Calculate the proximity to the nearest bus stop.</a></li>
+  <li><a href="#calculate-the-proximity-to-the-nearest-mrt-station" id="toc-calculate-the-proximity-to-the-nearest-mrt-station" class="nav-link" data-scroll-target="#calculate-the-proximity-to-the-nearest-mrt-station">Calculate the proximity to the nearest MRT station</a></li>
+  <li><a href="#calculate-the-proximity-to-the-nearest-elder-care" id="toc-calculate-the-proximity-to-the-nearest-elder-care" class="nav-link" data-scroll-target="#calculate-the-proximity-to-the-nearest-elder-care">Calculate the proximity to the nearest elder-care</a></li>
+  <li><a href="#calculate-the-proximity-to-the-nearest-makert-and-hawker-centre" id="toc-calculate-the-proximity-to-the-nearest-makert-and-hawker-centre" class="nav-link" data-scroll-target="#calculate-the-proximity-to-the-nearest-makert-and-hawker-centre">Calculate the proximity to the nearest Makert and Hawker Centre</a></li>
+  <li><a href="#calculate-the-proximity-to-the-nearest-park" id="toc-calculate-the-proximity-to-the-nearest-park" class="nav-link" data-scroll-target="#calculate-the-proximity-to-the-nearest-park">Calculate the proximity to the nearest Park</a></li>
+  <li><a href="#codes-to-get-proximity-to-the-nearest-supermarket" id="toc-codes-to-get-proximity-to-the-nearest-supermarket" class="nav-link" data-scroll-target="#codes-to-get-proximity-to-the-nearest-supermarket">Codes to get proximity to the nearest supermarket</a></li>
+  <li><a href="#codes-to-get-proximity-to-the-nearest-shopping-mall" id="toc-codes-to-get-proximity-to-the-nearest-shopping-mall" class="nav-link" data-scroll-target="#codes-to-get-proximity-to-the-nearest-shopping-mall">Codes to get proximity to the nearest shopping mall</a></li>
+  <li><a href="#codes-to-get-proximity-to-the-regional-business-districts" id="toc-codes-to-get-proximity-to-the-regional-business-districts" class="nav-link" data-scroll-target="#codes-to-get-proximity-to-the-regional-business-districts">Codes to get proximity to the regional business districts</a></li>
   </ul></li>
   </ul></li>
   <li><a href="#creation-of-buffer-of-350m-and-1-km-from-the-hdb-resale-flats." id="toc-creation-of-buffer-of-350m-and-1-km-from-the-hdb-resale-flats." class="nav-link" data-scroll-target="#creation-of-buffer-of-350m-and-1-km-from-the-hdb-resale-flats.">Creation of buffer of 350m and 1 km from the HDB Resale flats.</a>
@@ -274,10 +306,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#number-of-childcare-centers-within-350m" id="toc-number-of-childcare-centers-within-350m" class="nav-link" data-scroll-target="#number-of-childcare-centers-within-350m">Number of childcare centers within 350m</a></li>
   <li><a href="#number-of-bus-stops-within-350m" id="toc-number-of-bus-stops-within-350m" class="nav-link" data-scroll-target="#number-of-bus-stops-within-350m">Number of bus stops within 350m</a></li>
-  <li><a href="#number-of-schools-within-1-km" id="toc-number-of-schools-within-1-km" class="nav-link" data-scroll-target="#number-of-schools-within-1-km">Number of Schools within 1 KM</a></li>
-  <li><a href="#number-of-good-primary-schools-within-1-km" id="toc-number-of-good-primary-schools-within-1-km" class="nav-link" data-scroll-target="#number-of-good-primary-schools-within-1-km">Number of good primary schools within 1 km</a></li>
-  <li><a href="#number-of-primary-school-within-1-km" id="toc-number-of-primary-school-within-1-km" class="nav-link" data-scroll-target="#number-of-primary-school-within-1-km">Number of primary school within 1 km</a></li>
+  <li><a href="#number-of-schools-within-1km" id="toc-number-of-schools-within-1km" class="nav-link" data-scroll-target="#number-of-schools-within-1km">Number of Schools within 1km</a></li>
+  <li><a href="#number-of-good-primary-schools-within-1km" id="toc-number-of-good-primary-schools-within-1km" class="nav-link" data-scroll-target="#number-of-good-primary-schools-within-1km">Number of good primary schools within 1km</a></li>
+  <li><a href="#number-of-primary-school-within-1km" id="toc-number-of-primary-school-within-1km" class="nav-link" data-scroll-target="#number-of-primary-school-within-1km">Number of primary school within 1km</a></li>
   <li><a href="#further-data-processing-for-the-data-used-for-building-the-predictive-model." id="toc-further-data-processing-for-the-data-used-for-building-the-predictive-model." class="nav-link" data-scroll-target="#further-data-processing-for-the-data-used-for-building-the-predictive-model.">Further data processing for the data used for building the predictive model.</a></li>
+  <li><a href="#removing-the-extra-columns-which-are-not-needed-for-modelling." id="toc-removing-the-extra-columns-which-are-not-needed-for-modelling." class="nav-link" data-scroll-target="#removing-the-extra-columns-which-are-not-needed-for-modelling.">Removing the extra columns which are not needed for modelling.</a></li>
   <li><a href="#final-checks-on-overlapping-points" id="toc-final-checks-on-overlapping-points" class="nav-link" data-scroll-target="#final-checks-on-overlapping-points">Final checks on overlapping points</a></li>
   <li><a href="#reducing-the-sample-size-to-a-more-manageable-size-for-model-building." id="toc-reducing-the-sample-size-to-a-more-manageable-size-for-model-building." class="nav-link" data-scroll-target="#reducing-the-sample-size-to-a-more-manageable-size-for-model-building.">Reducing the sample size to a more manageable size for model building.</a></li>
   </ul></li>
@@ -314,7 +347,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">November 9, 2024</p>
+      <p class="date-modified">November 10, 2024</p>
     </div>
   </div>
     
@@ -328,8 +361,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="scope-of-this-analysis" class="level1">
 <h1>Scope of this analysis:</h1>
 <p>The scope of this analysis is to focus on building predictive model for predicting the 5- room HDB resale price in Singapore.</p>
-<p>The model is calibrated using the 5-room flat transactions from January 2023 to September 2024, and then random select of sample 6,500 were extracted to form the part of the training and test data.</p>
+<p>The model is calibrated using the 5-room flat transactions from January 2023 to September 2024, and then randomly selected sample of 6,500 were extracted to form the part of the training and test data to calibrate and build the model.</p>
 <p>The process of data preparation was carried out using all the HDB transactions from January 2023 to September 2024.</p>
+</section>
+<section id="overview" class="level1">
+<h1>Overview</h1>
+<p>The following section of the documents is on the data preparation process for the model.</p>
+<p>For the modelling component, please refer to the the following link:</p>
+<p><a href="https://isss626-dewstella.netlify.app/take_home_ex/take_home_03/take_home_03b_modelling" class="uri">https://isss626-dewstella.netlify.app/take_home_ex/take_home_03/take_home_03b_modelling</a></p>
 </section>
 <section id="r-packages-used-in-this-analysis" class="level1">
 <h1>R Packages used in this Analysis</h1>
@@ -342,11 +381,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1>Data Preparation.</h1>
 <section id="loading-of-resale-hdb-data" class="level3">
 <h3 class="anchored" data-anchor-id="loading-of-resale-hdb-data">Loading of Resale HDB Data</h3>
-<p>This is the subset of the resales data from 2023 Jan to Sep 2024.</p>
+<p>Reading of the HDB resale csv file downloaded from data.gov.sg</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>resale <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/resale.csv"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>The following code block is to:</p>
+<p>The following code chunk is to:</p>
 <ul>
 <li><p>combine the block and street names together to form address field.</p></li>
 <li><p>Extract out the the remaining lease in years and months.</p></li>
@@ -496,7 +535,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="codes-to-write-the-coordinates-to-rds-folder." class="level3">
 <h3 class="anchored" data-anchor-id="codes-to-write-the-coordinates-to-rds-folder.">Codes to write the coordinates to rds folder.</h3>
-<p>The data frame coords in rds folder contains all the HDB transactions coordinates.</p>
+<p>The data frame “coords” in rds folder contains all the HDB transactions coordinates.</p>
 <p><strong><em>The following two code chunks should be not re-run, so the coordinates of HDB transaction will not be replaced.</em></strong></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(coords, <span class="st">"data/rds/coords.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -513,7 +552,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <section id="converting-the-hdb-transaction-data-to-spatial-data." class="level4">
 <h4 class="anchored" data-anchor-id="converting-the-hdb-transaction-data-to-spatial-data.">Converting the HDB Transaction data to spatial data.</h4>
-<p>As mentioned in the earlier section, the codes are in lag-long, we will need to transform the geographical systems.</p>
+<p>As mentioned in the earlier section, the codes are in lag-long, we will need to transform the geographical system to SVY 21.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo <span class="ot">&lt;-</span>  <span class="fu">st_as_sf</span>(resale_tidy_sgeo,<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>),<span class="at">crs =</span> <span class="dv">4326</span>) <span class="sc">%&gt;%</span> <span class="co">#project to WGS 84</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="dv">3414</span>) <span class="co">#convert to SVY21</span></span>
@@ -555,14 +594,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="dv">3414</span>) <span class="co">#convert to SVY21</span></span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(Mall_geo , <span class="st">"data/rds/Mall_geo.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>####check the projection system The following code can be use to check the projection system.</p>
+<section id="check-the-projection-system" class="level4">
+<h4 class="anchored" data-anchor-id="check-the-projection-system">Check the projection system</h4>
+<p>The following code can be use to check the projection system.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_crs</span>(resale_tidy_geo)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
+</section>
 <section id="loading-spatial-data-layers" class="level2">
 <h2 class="anchored" data-anchor-id="loading-spatial-data-layers">Loading spatial data layers:</h2>
-<p>The following code are the load the required spatial data to derive the predictors.</p>
+<p>The following code are to load the required spatial data to derive the predictors.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>childcare_sf <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">"data/ChildCareServices.geojson"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">3414</span>) <span class="sc">%&gt;%</span> </span>
@@ -624,11 +666,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>Busstop <span class="ot">&lt;-</span><span class="fu">read_rds</span>(<span class="st">"data/rds/Busstop.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="codes-to-the-dervie-predictors" class="level2">
-<h2 class="anchored" data-anchor-id="codes-to-the-dervie-predictors">Codes to the dervie predictors</h2>
+<section id="codes-to-the-derive-predictors" class="level2">
+<h2 class="anchored" data-anchor-id="codes-to-the-derive-predictors">Codes to the derive predictors</h2>
 <p>The following section is to derive the predictors used for the predictive model.</p>
-<section id="calculate-the-proximity-to-the-nearest-bu-stop." class="level3">
-<h3 class="anchored" data-anchor-id="calculate-the-proximity-to-the-nearest-bu-stop.">Calculate the proximity to the nearest bu stop.</h3>
+<section id="calculate-the-proximity-to-the-nearest-bus-stop." class="level3">
+<h3 class="anchored" data-anchor-id="calculate-the-proximity-to-the-nearest-bus-stop.">Calculate the proximity to the nearest bus stop.</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate distances between each HDB flat and all bus stops</span></span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>dist_bustop<span class="ot">&lt;-</span> <span class="fu">st_distance</span>(resale_tidy_geo, Busstop)</span>
@@ -637,7 +679,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>n_dist_bustop <span class="ot">&lt;-</span> <span class="fu">apply</span>(dist_bustop, <span class="dv">1</span>, min)</span>
 <span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>PROX_Busstop <span class="ot">&lt;-</span> n_dist_bustop</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>#Calculate the proximity to the nearest MRT station</p>
+</section>
+<section id="calculate-the-proximity-to-the-nearest-mrt-station" class="level3">
+<h3 class="anchored" data-anchor-id="calculate-the-proximity-to-the-nearest-mrt-station">Calculate the proximity to the nearest MRT station</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate distances between each HDB flat and all MRT</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>dist_MRT<span class="ot">&lt;-</span> <span class="fu">st_distance</span>(resale_tidy_geo, MRT)</span>
@@ -646,7 +690,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>n_dist_MRT<span class="ot">&lt;-</span> <span class="fu">apply</span>(dist_MRT, <span class="dv">1</span>, min)</span>
 <span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>PROX_MRT <span class="ot">&lt;-</span> n_dist_MRT</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>#Calculate the proximity to the nearest elder-care</p>
+</section>
+<section id="calculate-the-proximity-to-the-nearest-elder-care" class="level3">
+<h3 class="anchored" data-anchor-id="calculate-the-proximity-to-the-nearest-elder-care">Calculate the proximity to the nearest elder-care</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate distances between each HDB flat and all Eldercare centers </span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>dist_ecare<span class="ot">&lt;-</span> <span class="fu">st_distance</span>(resale_tidy_geo,eldercare)</span>
@@ -655,7 +701,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>n_dist_ecare<span class="ot">&lt;-</span> <span class="fu">apply</span>(dist_ecare, <span class="dv">1</span>, min)</span>
 <span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>PROX_eldercare <span class="ot">&lt;-</span> n_dist_ecare</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>#Calculate the proximity to the nearest Food Centre/hawker centre</p>
+</section>
+<section id="calculate-the-proximity-to-the-nearest-makert-and-hawker-centre" class="level3">
+<h3 class="anchored" data-anchor-id="calculate-the-proximity-to-the-nearest-makert-and-hawker-centre">Calculate the proximity to the nearest Makert and Hawker Centre</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate distances between each HDB flat and all hawker centre</span></span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>dist_hc<span class="ot">&lt;-</span> <span class="fu">st_distance</span>(resale_tidy_geo,HC_sf)</span>
@@ -664,7 +712,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>n_dist_HC_sf<span class="ot">&lt;-</span> <span class="fu">apply</span>(dist_hc, <span class="dv">1</span>, min)</span>
 <span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>PROX_Hawker <span class="ot">&lt;-</span> n_dist_HC_sf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>#Calculate the proximity to the nearest Park</p>
+</section>
+<section id="calculate-the-proximity-to-the-nearest-park" class="level3">
+<h3 class="anchored" data-anchor-id="calculate-the-proximity-to-the-nearest-park">Calculate the proximity to the nearest Park</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate distances between each HDB flat and all Parks</span></span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>dist_PK<span class="ot">&lt;-</span> <span class="fu">st_distance</span>(resale_tidy_geo,Park_sf)</span>
@@ -673,7 +723,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>n_dist_PK<span class="ot">&lt;-</span> <span class="fu">apply</span>(dist_PK, <span class="dv">1</span>, min)</span>
 <span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>PROX_Park <span class="ot">&lt;-</span> n_dist_PK</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>#Codes to get proximity to the nearest Supermarket</p>
+</section>
+<section id="codes-to-get-proximity-to-the-nearest-supermarket" class="level3">
+<h3 class="anchored" data-anchor-id="codes-to-get-proximity-to-the-nearest-supermarket">Codes to get proximity to the nearest supermarket</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate distances between each HDB flat and Supermarket</span></span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>dist_supermkt<span class="ot">&lt;-</span> <span class="fu">st_distance</span>(resale_tidy_geo,Supermkt_sf)</span>
@@ -682,7 +734,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>n_dist_supermkt<span class="ot">&lt;-</span> <span class="fu">apply</span>(dist_supermkt, <span class="dv">1</span>, min)</span>
 <span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>PROX_Supermarket <span class="ot">&lt;-</span> n_dist_supermkt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>#Codes to get proximity to the nearest shopping mall</p>
+</section>
+<section id="codes-to-get-proximity-to-the-nearest-shopping-mall" class="level3">
+<h3 class="anchored" data-anchor-id="codes-to-get-proximity-to-the-nearest-shopping-mall">Codes to get proximity to the nearest shopping mall</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate distances between each HDB flat and shopping mall </span></span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>dist_Mall<span class="ot">&lt;-</span> <span class="fu">st_distance</span>(resale_tidy_geo,Mall_geo)</span>
@@ -691,8 +745,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>n_dist_Mall<span class="ot">&lt;-</span> <span class="fu">apply</span>(dist_Mall, <span class="dv">1</span>, min)</span>
 <span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>PROX_Mall <span class="ot">&lt;-</span> n_dist_Mall</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>#Codes to get proximity to the regional business districts</p>
-<p>In Singapore besides the central business districts there are other regional business districts, these area may have impact on local HDB resale prices.</p>
+</section>
+<section id="codes-to-get-proximity-to-the-regional-business-districts" class="level3">
+<h3 class="anchored" data-anchor-id="codes-to-get-proximity-to-the-regional-business-districts">Codes to get proximity to the regional business districts</h3>
+<p>In Singapore besides the central business district, there are other regional business districts, these area may have impact on local HDB resale prices as it reduce the travelling time.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate distances between each HDB flat another business districts</span></span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>dist_OBD<span class="ot">&lt;-</span> <span class="fu">st_distance</span>(resale_tidy_geo,Business_district)</span>
@@ -701,18 +757,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>n_dist_OBD<span class="ot">&lt;-</span> <span class="fu">apply</span>(dist_OBD, <span class="dv">1</span>, min)</span>
 <span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>PROX_OtherBusinessdistricts <span class="ot">&lt;-</span> n_dist_OBD</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>#Codes to get proximity to the CBD (Central Business District)</p>
-<p>Based on the URA data, the</p>
+<section id="codes-to-get-proximity-to-the-cbd-central-business-district" class="level4">
+<h4 class="anchored" data-anchor-id="codes-to-get-proximity-to-the-cbd-central-business-district">Codes to get proximity to the CBD (Central Business District)</h4>
+<p>Based on the information available on Wikipedia and URA (Urban Redevelopment Authority) website, CBD in Singapore lies within downtown core.</p>
+<p><a href="https://www.ura.gov.sg/Corporate/Guidelines/Urban-Design/Downtown-Core/Downtown-Core-Planning-Area" class="uri">https://www.ura.gov.sg/Corporate/Guidelines/Urban-Design/Downtown-Core/Downtown-Core-Planning-Area</a></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate distances between each HDB flat and Supermarket</span></span>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate distances between each HDB flat and CDD</span></span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>dist_CBD <span class="ot">&lt;-</span> <span class="fu">st_distance</span>(resale_tidy_geo,CBD)</span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>PROX_CBD <span class="ot">&lt;-</span> dist_CBD</span>
 <span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the numeric value from the string</span></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the numeric value, as the derived field are in  sting, the number are extracted to make sure it is relevent. </span></span>
 <span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>PROX_CBD <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">gsub</span>(<span class="st">"[^0-9.]"</span>, <span class="st">""</span>, resale_tidy_geo<span class="sc">$</span>PROX_CBD))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
 </section>
 </section>
 </section>
@@ -790,8 +849,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>num_Busstop_350 <span class="ot">&lt;-</span> num_Busstop</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="number-of-schools-within-1-km" class="level3">
-<h3 class="anchored" data-anchor-id="number-of-schools-within-1-km">Number of Schools within 1 KM</h3>
+<section id="number-of-schools-within-1km" class="level3">
+<h3 class="anchored" data-anchor-id="number-of-schools-within-1km">Number of Schools within 1km</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Spatial join to identify intersections</span></span>
 <span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>intersections <span class="ot">&lt;-</span> <span class="fu">st_intersects</span>(resale_tidy_geo_b1km, Sch_geo)</span>
@@ -803,8 +862,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>num_Sch_1km <span class="ot">&lt;-</span> num_Sch</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="number-of-good-primary-schools-within-1-km" class="level3">
-<h3 class="anchored" data-anchor-id="number-of-good-primary-schools-within-1-km">Number of good primary schools within 1 km</h3>
+<section id="number-of-good-primary-schools-within-1km" class="level3">
+<h3 class="anchored" data-anchor-id="number-of-good-primary-schools-within-1km">Number of good primary schools within 1km</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>Pop_prissch <span class="ot">&lt;-</span> <span class="fu">filter</span>(Sch_geo, Sch_geo<span class="sc">$</span><span class="st">`</span><span class="at">Popular School</span><span class="st">`</span><span class="sc">==</span> <span class="st">"yes"</span>)</span>
 <span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -818,8 +877,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo<span class="sc">$</span>num_pop_priSch_1km <span class="ot">&lt;-</span> num_popSch</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="number-of-primary-school-within-1-km" class="level3">
-<h3 class="anchored" data-anchor-id="number-of-primary-school-within-1-km">Number of primary school within 1 km</h3>
+<section id="number-of-primary-school-within-1km" class="level3">
+<h3 class="anchored" data-anchor-id="number-of-primary-school-within-1km">Number of primary school within 1km</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>Prisch <span class="ot">&lt;-</span> <span class="fu">filter</span>(Sch_geo, Sch_geo<span class="sc">$</span>mainlevel_code <span class="sc">==</span> <span class="st">"PRIMARY"</span> <span class="sc">|</span> </span>
 <span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>                   Sch_geo<span class="sc">$</span>school_name <span class="sc">==</span> <span class="st">"MARIS STELLA HIGH SCHOOL"</span>)</span>
@@ -853,7 +912,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo_5Rm<span class="ot">&lt;-</span> resale_tidy_geo_5Rm <span class="sc">%&gt;%</span></span>
 <span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_jitter</span>(<span class="at">amount =</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Further handling of storey range, in the current database, it is categorical, we will need to convert it to dummy variables using the following code chunks.</p>
+</section>
+<section id="handling-storey-range" class="level4">
+<h4 class="anchored" data-anchor-id="handling-storey-range">Handling Storey Range:</h4>
+<p>In the current database, storey level are categorical, we will need to convert it to dummy variables using the following code chunks.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>num_unique_story_orders <span class="ot">&lt;-</span> <span class="fu">unique</span>(resale_tidy_geo_5Rm<span class="sc">$</span>storey_range)</span>
 <span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>num_unique_story_orders</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -876,11 +938,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </section>
 <section id="summary-of-the-resale_tidy_geo_5rm-data" class="level4">
-<h4 class="anchored" data-anchor-id="summary-of-the-resale_tidy_geo_5rm-data">Summary of the resale_tidy_geo_5Rm data</h4>
+<h4 class="anchored" data-anchor-id="summary-of-the-resale_tidy_geo_5rm-data">Summary of the “resale_tidy_geo_5Rm” data</h4>
 <p>The following code block is to summarise the resale_tidy_geo_5Rm to check for data structure issues which may interfere with the predictive model</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(resale_tidy_geo_5Rm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+<section id="convert-the-distance-to-from-meters-to-kilometers" class="level4">
+<h4 class="anchored" data-anchor-id="convert-the-distance-to-from-meters-to-kilometers">Convert the distance to from meters to kilometers</h4>
 <p>The following code chunk is to convert the data from meters to kilometers.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert PROX_* variables to kilometers</span></span>
@@ -899,6 +964,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>resale_tidy_geo_5Rm <span class="ot">&lt;-</span><span class="fu">read_rds</span>(<span class="st">"data/rds/resale_tidy_geo_5Rm.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+</section>
+<section id="removing-the-extra-columns-which-are-not-needed-for-modelling." class="level3">
+<h3 class="anchored" data-anchor-id="removing-the-extra-columns-which-are-not-needed-for-modelling.">Removing the extra columns which are not needed for modelling.</h3>
 <p>Get the columns names of the required data.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(resale_tidy_geo_5Rm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -960,7 +1029,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  Max.   :10.000  </code></pre>
 </div>
 </div>
-</section>
 </section>
 <section id="final-checks-on-overlapping-points" class="level3">
 <h3 class="anchored" data-anchor-id="final-checks-on-overlapping-points">Final checks on overlapping points</h3>
