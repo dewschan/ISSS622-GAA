@@ -15,7 +15,6 @@ execute:
 pacman::p_load(tidyverse, sf, tmap, httr, performance)
 ```
 
-
 #Importing data
 
 ```{r}
@@ -27,6 +26,7 @@ file_list <- list.files(path = folder_path,
 realis_data <- file_list %>%
   map_dfr(read_csv)
 ```
+
 As I used the condo resale data to do this hands on exercise hence the code is slightly different from what was used in class.
 
 ```{r}
@@ -36,13 +36,12 @@ condo_resale <- realis_data %>%
            `Property Type` == "Condominium")
 ```
 
-
 ## Geocoding
+
 ```{r}
 #| eval: false
 postcode <- unique(condo_resale$`Postal Code`)
 ```
-
 
 ```{r}
 #| eval: false
@@ -75,7 +74,7 @@ found <- found %>%
 write_rds(found, "data/rds/found.rds")
 ```
 
-``` {r}
+```{r}
 found <-read_rds("data/rds/found.rds")
 ```
 
@@ -90,10 +89,10 @@ condo_resale_geocoded = left_join(
   by = c('Postal Code' = 'POSTAL'))
 ```
 
-
 As the postal code was not converted to character when reading the csv file.
 
 There are mismatch results from geo-coding.Hence to rectify, we will drop the missing data without xy.
+
 ```{r}
 # Drop rows with missing coordinates 
 condo_resale_geocoded <- na.omit(condo_resale_geocoded, cols = c("XCOORD", "YCOORD"))
@@ -105,6 +104,7 @@ condo_resale_sf <- st_as_sf(condo_resale_geocoded,
 ```
 
 ### Cleaning Spatial Data
+
 ```{r}
 overlapping_points <- condo_resale_sf %>%
   mutate(overlap = lengths(st_equals(., .)) > 1)
@@ -112,4 +112,3 @@ overlapping_points <- condo_resale_sf %>%
 condo_resale_sf <- condo_resale_sf %>%
   st_jitter(amount = 2)
 ```
-
