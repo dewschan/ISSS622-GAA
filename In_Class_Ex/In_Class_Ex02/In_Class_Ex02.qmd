@@ -1,0 +1,11 @@
+---
+title: "In Class Exercise 02"
+author: "Dew Stella Chan"
+date: "September 02, 2024"
+execute: 
+  eval: true
+  echo: true
+  message: false
+  freeze: true
+  warning: false
+---
