@@ -9,3 +9,135 @@ execute:
   freeze: true
   warning: false
 ---
+
+```{r}
+pacman::p_load(sf, sp, raster, spatstat, tmap, tidyverse)
+```
+
+
+
+## Issue 2: Creating coastal outline
+
+```{r}
+mpsz_sf <- st_read(dsn = "data", 
+                layer = "MP14_SUBZONE_WEB_PL")%>%
+    st_transform( crs = 3414)
+```
+
+```{r}
+sg_sf <- mpsz_sf %>%
+  st_union()
+```
+
+
+```{r}
+childcare_sf <- st_read("data/child-care-services-geojson.geojson") %>%
+  st_transform(crs = 3414)
+```
+
+
+```{r}
+childcare_ppp <- as.ppp(childcare_sf)
+plot(childcare_ppp)
+```
+```{r}
+summary(childcare_ppp)
+```
+Creating owin object from sf data.frame
+
+```{r}
+sg_owin <- as.owin(sg_sf)
+plot(sg_owin)
+```
+
+```{r}
+summary(sg_owin)
+```
+
+Combining point events object and owin object
+
+
+```{r}
+
+childcareSG_ppp = childcare_ppp[sg_owin]
+```
+
+```{r}
+plot(childcareSG_ppp)
+```
+Kernel Density Estimation of Spatial Point Event
+
+```{r}
+childcareSG_ppp.km <- rescale.ppp(childcareSG_ppp, 
+                                  1000, 
+                                  "km")
+
+kde_childcareSG_adaptive <- adaptive.density(
+  childcareSG_ppp.km, 
+  method="kernel")
+plot(kde_childcareSG_adaptive)
+```
+
+
+```{r}
+par(bg = '#E4D5C9')
+
+gridded_kde_childcareSG_ad <- maptools::as.SpatialGridDataFrame.im(
+  kde_childcareSG_adaptive)
+spplot(gridded_kde_childcareSG_ad)
+```
+
+```{r}
+gridded_kde_childcareSG_ad <- as(
+  kde_childcareSG_adaptive,
+  "SpatialGridDataFrame")
+spplot(gridded_kde_childcareSG_ad)
+```
+
+```{r}
+tm_shape(gridded_kde_childcareSG_ad) + 
+  tm_raster(palette = "viridis") +
+  tm_layout(legend.position = c("right", "bottom"), 
+            frame = FALSE,
+            bg.color = "#E4D5C9")
+```
+Extracting study area using sf objects
+
+```{r}
+pg_owin <- mpsz_sf %>%
+  filter(PLN_AREA_N == "PUNGGOL") %>%
+  as.owin()
+
+childcare_pg = childcare_ppp[pg_owin]
+
+plot(childcare_pg)  
+```
+
+Monte Carlo Simulation
+```{r}
+set.seed(1234)
+```
+
+##Geospatial Analytics for Social Good: Thailand Road Accident Case Study
+
+Background
+Road traffic injuries, WHO.
+Road traffic deaths and injuries in Thailand
+
+Importing Traffic Accident Data
+
+```{r}
+rdacc_sf <- read_csv("data/data/thai_road_accident_2019_2022.csv") %>%
+  filter(!is.na(longitude) & longitude != "", 
+         !is.na(latitude) & latitude != "") %>%
+  st_as_sf(coords = c(
+    "longitude", "latitude"),
+    crs=4326) %>%
+  st_transform(crs = 32647) 
+```
+
+```{r}
+# Set tmap mode to "plot" 
+tmap_mode("plot") 
+tm_shape(rdacc_sf) + tm_dots() 
+```
