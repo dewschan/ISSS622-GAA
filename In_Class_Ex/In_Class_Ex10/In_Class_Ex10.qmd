@@ -1,0 +1,115 @@
+---
+title: "In Class Exercise 10"
+author: "Dew Stella"
+date: "November 04, 2024"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  message: false
+  freeze: true
+  warning: false
+---
+
+```{r}
+pacman::p_load(tidyverse, sf, tmap, httr, performance)
+```
+
+
+#Importing data
+
+```{r}
+folder_path <- "data/aspatial"
+file_list <- list.files(path = folder_path, 
+                        pattern = "^realis.*\\.csv$", 
+                        full.names = TRUE)
+
+realis_data <- file_list %>%
+  map_dfr(read_csv)
+```
+As I used the condo resale data to do this hands on exercise hence the code is slightly different from what was used in class.
+
+```{r}
+condo_resale <- realis_data %>%
+  mutate(`Sale Date` = dmy(`Sale Date`)) %>%
+  filter(`Type of Sale` == "Resale" &
+           `Property Type` == "Condominium")
+```
+
+
+## Geocoding
+```{r}
+#| eval: false
+postcode <- unique(condo_resale$`Postal Code`)
+```
+
+
+```{r}
+#| eval: false
+url <- "https://onemap.gov.sg/api/common/elastic/search"
+found <- data.frame()
+not_found <- data.frame()
+
+for (postcode in postcode){
+  query <- list('searchVal'=postcode, 'returnGeom'='Y', 
+                'getAddrDetails'='Y', 'pageNum'='1')
+  res <- GET(url, query=query)
+  if ((content(res)$found)!=0){
+    found <- rbind(found, data.frame(content(res))[4:13])
+  } else {not_found = data.frame(postcode)
+  }
+}
+```
+
+```{r}
+#| eval: false
+found <- found %>%
+  select(c(6:8)) %>%
+  rename(POSTAL = `results.POSTAL`,
+         XCOORD = `results.X`,
+         YCOORD = `results.Y`)
+```
+
+```{r}
+#| eval: false
+write_rds(found, "data/rds/found.rds")
+```
+
+``` {r}
+found <-read_rds("data/rds/found.rds")
+```
+
+## Converting to Point Feature Data Frame
+
+```{r}
+# Convert Postal Code to character in the condo_resale data frame
+condo_resale$`Postal Code` <- as.character(condo_resale$`Postal Code`)
+
+condo_resale_geocoded = left_join(
+  condo_resale, found, 
+  by = c('Postal Code' = 'POSTAL'))
+```
+
+
+As the postal code was not converted to character when reading the csv file.
+
+There are mismatch results from geo-coding.Hence to rectify, we will drop the missing data without xy.
+```{r}
+# Drop rows with missing coordinates 
+condo_resale_geocoded <- na.omit(condo_resale_geocoded, cols = c("XCOORD", "YCOORD"))
+
+condo_resale_sf <- st_as_sf(condo_resale_geocoded, 
+                            coords = c("XCOORD",
+                                       "YCOORD"),
+                            crs=3414)
+```
+
+### Cleaning Spatial Data
+```{r}
+overlapping_points <- condo_resale_sf %>%
+  mutate(overlap = lengths(st_equals(., .)) > 1)
+
+condo_resale_sf <- condo_resale_sf %>%
+  st_jitter(amount = 2)
+```
+

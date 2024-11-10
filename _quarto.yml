@@ -33,7 +33,9 @@ website:
       menu:
         - text: "In Class Exercise 1"
           href: "In_Class_Ex/In_Class_Ex01/In_Class_Ex01.html"
-        - text: "In Class Exercise 3"
+        - text: "In Class Exercise 2"
+          href: "In_Class_Ex/In_Class_Ex02/In_Class_Ex02.html"
+        - text: "In Class Exercise 2"
           href: "In_Class_Ex/In_Class_Ex03/In_Class_Ex03.html"
         - text: "In Class Exercise 4"
           href: "In_Class_Ex/In_Class_Ex04/In_Class_Ex04.html"
